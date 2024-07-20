@@ -1,0 +1,5 @@
+-- PRA COMPILAR E RODAR OS CONTAINERS --
+sudo docker compose up -d --build
+
+-- PRA ENTRAR NO TERMINAL DO CONTAINER --
+sudo docker exec -it (nome do container) bin/bash/

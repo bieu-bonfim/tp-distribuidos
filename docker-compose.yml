@@ -1,0 +1,39 @@
+services:
+  server:
+    container_name: server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    working_dir: /home
+    ports:
+      - "8020:8020"
+    networks:
+      - network
+
+  client-alice:
+    container_name: client-alice
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - DISPLAY=$DISPLAY
+      - CLIENT_NAME=Alice
+    working_dir: /home
+    networks:
+      - network
+
+  client-bob:
+    container_name: client-bob
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - DISPLAY=$DISPLAY
+      - CLIENT_NAME=Bob
+    working_dir: /home
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
