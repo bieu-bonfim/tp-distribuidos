@@ -2,4 +2,4 @@
 sudo docker compose up -d --build
 
 -- PRA ENTRAR NO TERMINAL DO CONTAINER --
-sudo docker exec -it (nome do container) bin/bash/
+sudo docker exec -it bin/bash/
