@@ -9,4 +9,4 @@ COPY files /home
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["python", "server.py", "--host", "0.0.0.0","--ports", "8020"]
+CMD ["tail", "-f", "/dev/null"]

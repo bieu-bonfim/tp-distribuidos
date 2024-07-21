@@ -11,7 +11,7 @@ services:
       - network
 
   client-alice:
-    container_name: client-alice
+    container_name: thui
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -21,9 +21,11 @@ services:
     working_dir: /home
     networks:
       - network
+    depends_on:
+      - server
 
   client-bob:
-    container_name: client-bob
+    container_name: bija
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -33,6 +35,8 @@ services:
     working_dir: /home
     networks:
       - network
+    depends_on:
+      - server
 
 networks:
   network:
