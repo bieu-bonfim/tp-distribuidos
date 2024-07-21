@@ -27,13 +27,9 @@ class Connection(threading.Thread):
     def send(self, message):
         for client in Connection.clients:
             if client != self:
-                try:
-                    print(f"Olha a mensageeem: {message}")
-                    client.client_socket.sendall(message.encode())
-                except BrokenPipeError:
-                    print("Broken Pipe dog")
-                    client.client_socket.close()
-                    Connection.clients.remove(client)
+                print(f"Olha a mensageeem: {message}")
+                client.client_socket.sendall(message.encode())
+
 
 def start_server():
 
