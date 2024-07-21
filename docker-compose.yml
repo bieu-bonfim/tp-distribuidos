@@ -8,7 +8,7 @@ services:
     ports:
       - "8020:8020"
     networks:
-      - network
+      - main_network
 
   client-alice:
     container_name: thui
@@ -20,7 +20,7 @@ services:
       - CLIENT_NAME=Alice
     working_dir: /home
     networks:
-      - network
+      - main_network
     depends_on:
       - server
 
@@ -34,10 +34,10 @@ services:
       - CLIENT_NAME=Bob
     working_dir: /home
     networks:
-      - network
+      - main_network
     depends_on:
       - server
 
 networks:
-  network:
+  main_network:
     driver: bridge
