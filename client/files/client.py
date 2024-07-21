@@ -1,7 +1,7 @@
 import socket
 import sys
 
-def start_client(message, hostname):
+def handshake(message, hostname):
     server_port = 8020
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((hostname, server_port))
@@ -14,7 +14,7 @@ def start_client(message, hostname):
 if __name__ == "__main__":
     while True:
         message = input("enter message: ")
-        start_client(message, "server")
+        handshake(message, "server")
     #if len(sys.argv) != 3:
     #    print("Usage: python client.py <message> <hostname>")
     #    sys.exit(1)
