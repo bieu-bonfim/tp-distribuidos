@@ -1,21 +1,53 @@
 import socket
-import sys
+import threading
+import time
 
-def handshake(message, hostname):
-    server_port = 8020
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((hostname, server_port))
+host = 'server'
+port = 8020
 
-
-    client_socket.sendall(message.encode())
-    data = client_socket.recv(1024).decode()
-    print("Received:", data)
-
-if __name__ == "__main__":
+def send_message(client_socket):
     while True:
-        message = input("enter message: ")
-        handshake(message, "server")
-    #if len(sys.argv) != 3:
-    #    print("Usage: python client.py <message> <hostname>")
-    #    sys.exit(1)
-    #start_client(sys.argv[1], sys.argv[2])
+        message = input('Enter message: ')
+        if message.lower() == 'exit':
+            break
+        try:
+            client_socket.sendall(message.encode())
+        except socket.error as e:
+            print(str(e))
+            break
+        
+def receive_message(client_socket):
+    while True:
+        try:
+            data = client_socket.recv(1024)
+            print(f'Received {data.decode()}')
+        except socket.error as e:
+            print(str(e))
+            break
+
+def print_on_timer( ):
+    while True:
+        print( "Timer Test" )
+        time.sleep( 5 )
+    
+
+def main():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((host, port))
+    
+    thread_send = threading.Thread(target=send_message, args=(s,))
+    thread_receive = threading.Thread(target=receive_message, args=(s,))
+    thread_print = threading.Thread(target=print_on_timer)
+    
+    thread_send.start()
+    thread_receive.start()
+    thread_print.start()
+    
+    
+    thread_send.join()
+    
+    s.close()
+
+    
+if __name__ == '__main__':
+    main()
