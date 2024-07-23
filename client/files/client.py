@@ -3,7 +3,7 @@ import threading
 import time
 
 host = 'server'
-port = 8020
+#port = 8020
 
 def send_message(client_socket):
     while True:
@@ -32,6 +32,7 @@ def print_on_timer( ):
     
 
 def main():
+    port = int(input('Enter port: '))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
     
