@@ -13,28 +13,30 @@ class Server():
     def broadcastMessage(self, sender, data_dict):
         try:
             for client in self.clients:
+                # temporary solution
+                t.sleep(2)
+                
                 if client['connection'] != sender:
                     client['connection'].sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
-                    print(data_dict['message'])
         except socket.error as e:
             print(str(e))
             
     def handleClient(self, client_socket):
-        with client_socket:
-            while True:
-                try:
-                    data = client_socket.recv(1024)
-                    data_dict = json.loads(data.decode("utf-8"))
+        while True:
+            try:
+                data = client_socket.recv(1024)
+                data_dict = json.loads(data.decode("utf-8"))
+                if 'message' in data_dict:
                     if data_dict['message'] == 'exit':
                         self.serverStop()
                         break
-                    #
-                    # manipulação dos dados com o json recebido já convertido
-                    #
-                    self.broadcastMessage(client_socket, data_dict)
-                except socket.error as e:
-                    print(str(e))
-                    break
+                #
+                # manipulação dos dados com o json recebido já convertido
+                #
+                self.broadcastMessage(client_socket, data_dict)
+            except socket.error as e:
+                print(str(e))
+                break
 
     def serverStart(self):
         self.s.listen()
