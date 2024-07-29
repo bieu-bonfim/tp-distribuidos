@@ -19,6 +19,8 @@ services:
     environment:
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Thui
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
     networks:
       - main_network
@@ -33,6 +35,8 @@ services:
     environment:
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Bija
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
     networks:
       - main_network
