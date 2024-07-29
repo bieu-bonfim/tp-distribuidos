@@ -8,6 +8,7 @@ def broadcast_message(sender, data_dict):
     try:
         for client in clients:
             if client != sender:
+                print(data_dict['message'])
                 client.sendall(f"Broadcasted message: {data_dict['message']} from {sender.getpeername()}".encode())
     except socket.error as e:
         print(str(e))
