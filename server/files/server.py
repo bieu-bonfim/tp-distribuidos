@@ -8,7 +8,7 @@ def broadcast_message(sender, data_dict):
     try:
         for client in clients:
             if client != sender:
-                client.sendall(f"Broadcasted message: {data_dict['message']} from {sender.getpeername()}".encode())
+                client.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
     except socket.error as e:
         print(str(e))
         
@@ -19,9 +19,9 @@ def handle_client(client_socket):
             try:
                 data = client_socket.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
-                # if data_dict["message"] == 'exit':
-                #     clients.remove(client_socket)
-                #     break
+                #
+                # manipulação dos dados com o json recebido já convertido
+                #
                 broadcast_message(client_socket, data_dict)
             except socket.error as e:
                 print(str(e))
