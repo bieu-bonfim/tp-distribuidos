@@ -1,6 +1,7 @@
 import socket
 import threading
 import json
+import time as t
 
 clients = []
 
@@ -9,10 +10,19 @@ def broadcast_message(sender, data_dict):
         for client in clients:
             if client != sender:
                 client.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
-                print(data_dict['message'])
+                print(data_dict)
     except socket.error as e:
         print(str(e))
         
+def broadcast_player(sender, data_dict):
+    try:
+        for client in clients:
+            t.sleep(2)
+            if client != sender:
+                client.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+                print(data_dict['player_name_register'])
+    except socket.error as e:
+        print(str(e))
 
 def handle_client(client_socket):
     with client_socket:
@@ -20,10 +30,15 @@ def handle_client(client_socket):
             try:
                 data = client_socket.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
+                if 'player_name_register' in data_dict:
+                    print('enviando id dos players.')
+                    broadcast_player(client_socket, data_dict=data_dict)
                 #
                 # manipulação dos dados com o json recebido já convertido
                 #
-                broadcast_message(client_socket, data_dict)
+                else:
+                    print("enviando carta")
+                    broadcast_message(client_socket, data_dict)
             except socket.error as e:
                 print(str(e))
                 break

@@ -12,19 +12,24 @@ port = 8020
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((host, port))
 
+player_name = input()
+ready = input("pronto?")
+
+time.sleep(5)
+
 
 
 
 
 
 # Screen title and size
-SCREEN_WIDTH = 1024
-SCREEN_HEIGHT = 968
+SCREEN_WIDTH = 924
+SCREEN_HEIGHT = 868
 SCREEN_TITLE = "Cryptids: The Conspiracy"
 BASE_MARGIN = 30
 
 CARD_SCALE = 0.2
-SHOWCASE_CARD_SCALE = 0.4
+SHOWCASE_CARD_SCALE = 0.3
 
 # How big are the cards?
 CARD_WIDTH = 750 * CARD_SCALE
@@ -106,7 +111,7 @@ class MyGame(arcade.Window):
 
         # List of cards we are dragging with the mouse
         self.held_cards = None
-        opponents = []
+        self.opponents = []
 
         # Original location of cards we are dragging with the mouse in case
         # they have to go back.
@@ -118,10 +123,16 @@ class MyGame(arcade.Window):
         self.p1 = Player(None, None, None, None)
         self.p2 = Player(None, None, None, None)
         self.p3 = Player(None, None, None, None)
-        self.p2_mat = None
-        self.p2_card = None
-        self.p3_mat = None
-        self.p3_card = None
+
+        self.opponents.append(self.p2)
+        self.opponents.append(self.p3)
+
+        self.p1.name = player_name
+
+       # self.p2_mat = None
+       # self.p2_card = None
+       # self.p3_mat = None
+       # self.p3_card = None
 
         self.has_sent_message = False
         self.has_interacted_card = False
@@ -132,6 +143,16 @@ class MyGame(arcade.Window):
         
         thread_receive = threading.Thread(target=self.receive_message, args=(s,))
         thread_receive.start()
+
+        data = {'player_name_register': player_name}
+        data_str = json.dumps(data)
+
+        try:
+            s.sendall(bytes(data_str,encoding="utf-8"))
+        except socket.error as e:
+            print(str(e))
+
+
 
         self.held_cards = []
 
@@ -161,12 +182,12 @@ class MyGame(arcade.Window):
         # pilha segundo jogador
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
         pile.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
-        self.p2_mat = pile
+        self.p2.mat = pile
 
         # pilha terceiro jogador
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
         pile.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 150
-        self.p3_mat = pile
+        self.p3.mat = pile
 
         pile = arcade.SpriteSolidColor(SHOWCASE_MAT_WIDTH, SHOWCASE_MAT_HEIGHT, arcade.csscolor.GREY)
         pile.position = END_X, TOP_Y_SHOWCASE
@@ -205,23 +226,52 @@ class MyGame(arcade.Window):
 
         # Draw the mats the cards go on to
         self.pile_mat_list.draw()
-        self.p2_mat.draw()
-        self.p3_mat.draw()
+        self.p2.mat.draw()
+        self.p3.mat.draw()
 
         # Draw the cards
         self.card_list.draw()
 
         arcade.draw_lrtb_rectangle_outline(left=0, right=SCREEN_WIDTH, top=SCREEN_HEIGHT, bottom=0, color=arcade.color.BLACK, border_width=3)
 
+        arcade.draw_text(
+            self.p1.name,
+            start_x= START_X -80,
+            start_y= TOP_Y -100,
+            color=arcade.color.BLACK,
+            font_size=20,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
         if self.current_hovered_card:
             amplified_card = arcade.Sprite(self.current_hovered_card.image_file_name, SHOWCASE_CARD_SCALE)
             amplified_card.position = END_X, TOP_Y_SHOWCASE
             amplified_card.draw()
 
-        if self.p2_card != None:
-            self.p2_card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
-            self.p2_card.draw()
+        if self.p2.card != None and self.p2.name != None:
+            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
+            self.p2.card.draw()
+            arcade.draw_text(
+            self.p2.name,
+            start_x= (MIDDLE_SCREEN_X/2),
+            start_y= (MIDDLE_SCREEN_Y + 300),
+            color=arcade.color.BLACK,
+            font_size=20,
+            anchor_x="center",
+            anchor_y="center")
 
+        if self.p3.card != None and self.p3.name != None:
+            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 150
+            self.p3.card.draw()
+            arcade.draw_text(
+            self.p3.name,
+            start_x= (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X,
+            start_y= (MIDDLE_SCREEN_Y + 300),
+            color=arcade.color.BLACK,
+            font_size=20,
+            anchor_x="center",
+            anchor_y="center")
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -281,8 +331,8 @@ class MyGame(arcade.Window):
         # We are no longer holding cards
         self.held_cards = []
 
-        if self.has_interacted_card and self.has_sent_message == False and reset_position == False:
-            thread_send = threading.Thread(target=self.send_message, args=(s, dropped_card.name))
+        if self.has_interacted_card and reset_position == False:
+            thread_send = threading.Thread(target=self.send_card, args=(s, dropped_card.name))
             #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
             thread_send.start()  
             #thread_receive.start()
@@ -342,9 +392,19 @@ class MyGame(arcade.Window):
     #    except socket.error as e:
     #        print(str(e))
 
-    def send_message(self, client_socket, message):
+    def send_message(self, client_socket):
         
-        data = {'message': message}
+        data = {'player_name_register': self.p1.name}
+        data_str = json.dumps(data)
+        
+        try:
+            client_socket.sendall(bytes(data_str,encoding="utf-8"))
+        except socket.error as e:
+            print(str(e))
+
+    def send_card(self, client_socket, card):
+        
+        data = {'card': card, 'player_name': self.p1.name}
         data_str = json.dumps(data)
         
         try:
@@ -356,10 +416,25 @@ class MyGame(arcade.Window):
     def receive_message(self, client_socket):
         while True:
             try:
+
                 data = client_socket.recv(1024)
-                print(f'Received {data.decode()}')
-                message = data.decode()
-                self.render_opponent_card(message=message)
+                print(f"DATA DATA - {data.decode()}")
+                data_dict = json.loads(data.decode("utf-8"))
+                
+                if 'player_name_register' in data_dict:
+                    if self.opponents[0].name == None:
+                        self.opponents[0].name = data_dict['player_name_register']
+                        print(self.opponents[0].name)
+
+                    else:
+                        self.opponents[1].name = data_dict['player_name_register']
+                        print(self.opponents[1].name)
+                            
+                if 'card' in data_dict:
+                    print(f"Received {data_dict['card']}")
+                    print(f"From player {data_dict['player_name']}")
+
+                    self.render_opponent_card(message=data_dict)
             except socket.error as e:
                 print(str(e))
                 break
@@ -370,11 +445,13 @@ class MyGame(arcade.Window):
             time.sleep( 5 )
 
     def render_opponent_card(self, message):
-        for card in self.card_list:
-            print(f"{message} e {card.name}")
-            if message == card.name:
-                print(f"bap {message}")
-                self.p2_card = arcade.Sprite(card.image_file_name, CARD_SCALE)
+        for opponent in self.opponents:
+            print(f"oponente name: {opponent.name}")
+            print(message['player_name'])
+            if opponent.name == message['player_name']:
+                for card in self.card_list:
+                    if card.name == message['card']:
+                        opponent.card = arcade.Sprite(card.image_file_name, CARD_SCALE)
 
 
 

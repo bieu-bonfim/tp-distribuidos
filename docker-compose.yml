@@ -51,6 +51,8 @@ services:
     environment:
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Patic
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
     networks:
       - main_network
