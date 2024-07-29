@@ -5,6 +5,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     working_dir: /home
+    # command: python3 server.py
     ports:
       - "8020:8020"
     networks:
@@ -32,6 +33,20 @@ services:
     environment:
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Bija
+    working_dir: /home
+    networks:
+      - main_network
+    depends_on:
+      - server
+
+  client-patic:
+    container_name: patic
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - DISPLAY=$DISPLAY
+      - CLIENT_NAME=Patic
     working_dir: /home
     networks:
       - main_network

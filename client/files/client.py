@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+import json
 
 host = 'server'
 #port = 8020
@@ -8,10 +9,14 @@ host = 'server'
 def send_message(client_socket):
     while True:
         message = input('Enter message: ')
+        
+        data = {'message': message}
+        data_str = json.dumps(data)
+        
         if message.lower() == 'exit':
             break
         try:
-            client_socket.sendall(message.encode())
+            client_socket.sendall(bytes(data_str,encoding="utf-8"))
         except socket.error as e:
             print(str(e))
             break
