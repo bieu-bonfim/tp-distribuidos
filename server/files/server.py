@@ -2,41 +2,55 @@ import socket
 import threading
 import json
 
-clients = []
-
-def broadcast_message(sender, data_dict):
-    try:
-        for client in clients:
-            if client != sender:
-                client.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
-                print(data_dict['message'])
-    except socket.error as e:
-        print(str(e))
+class Server():
+    def __init__(self):
+        self.clients = list()
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.bind(('0.0.0.0', 8020))
+        print('Server created')
         
+    def broadcastMessage(self, sender, data_dict):
+        try:
+            for client in self.clients:
+                if client['connection'] != sender:
+                    client['connection'].sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+                    print(data_dict['message'])
+        except socket.error as e:
+            print(str(e))
+            
+    def handleClient(self, client_socket):
+        with client_socket:
+            while True:
+                try:
+                    data = client_socket.recv(1024)
+                    data_dict = json.loads(data.decode("utf-8"))
+                    if data_dict['message'] == 'exit':
+                        self.serverStop()
+                        break
+                    #
+                    # manipulação dos dados com o json recebido já convertido
+                    #
+                    self.broadcastMessage(client_socket, data_dict)
+                except socket.error as e:
+                    print(str(e))
+                    break
 
-def handle_client(client_socket):
-    with client_socket:
+    def serverStart(self):
+        self.s.listen()
         while True:
-            try:
-                data = client_socket.recv(1024)
-                data_dict = json.loads(data.decode("utf-8"))
-                #
-                # manipulação dos dados com o json recebido já convertido
-                #
-                broadcast_message(client_socket, data_dict)
-            except socket.error as e:
-                print(str(e))
-                break
-        
-def serve():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(('0.0.0.0', 8020))
-    s.listen()
-    while True:
-        conn, addr = s.accept()
-        clients.append(conn)
-        print(f'Connected to {addr}')
-        threading.Thread(target=handle_client, args=(conn,), daemon=True).start()
-        
-if __name__ == '__main__':
-    serve()
+            conn, addr = self.s.accept()
+            self.clients.append({
+                'connection': conn,
+                'address': addr,
+                # id do usuario
+                'id': len(self.clients) + 1
+            })
+            print(f'Connected to {addr}')
+            threading.Thread(target=self.handleClient, args=(conn,), daemon=True).start()
+            
+    def serverStop(self):
+        for client in self.clients:
+            client['connection'].sendall(bytes(json.dumps({'message': 'Server stopped'}), encoding="utf-8"))
+            client['connection'].close()
+        self.s.close()
+        print('Server stopped')
