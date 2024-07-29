@@ -84,6 +84,14 @@ class Card(arcade.Sprite):
         # Call the parent
         super().__init__(self.image_file_name, scale, hit_box_algorithm="None")
 
+class Player():
+
+    def __init__(self, id, name, card, mat):
+        self.id = id
+        self.name = name
+        self.card = card
+        self.mat = mat
+
 
 class MyGame(arcade.Window):
     """ Main application class. """
@@ -98,6 +106,7 @@ class MyGame(arcade.Window):
 
         # List of cards we are dragging with the mouse
         self.held_cards = None
+        opponents = []
 
         # Original location of cards we are dragging with the mouse in case
         # they have to go back.
@@ -106,6 +115,9 @@ class MyGame(arcade.Window):
         # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list = None
 
+        self.p1 = Player(None, None, None, None)
+        self.p2 = Player(None, None, None, None)
+        self.p3 = Player(None, None, None, None)
         self.p2_mat = None
         self.p2_card = None
         self.p3_mat = None
@@ -120,7 +132,6 @@ class MyGame(arcade.Window):
         
         thread_receive = threading.Thread(target=self.receive_message, args=(s,))
         thread_receive.start()
-
 
         self.held_cards = []
 
