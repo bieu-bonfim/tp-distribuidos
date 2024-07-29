@@ -1,14 +1,14 @@
 import socket
 import threading
+import json
 
 clients = []
 
-def broadcast_message(sender, message):
+def broadcast_message(sender, data_dict):
     try:
         for client in clients:
             if client != sender:
-                #client.sendall(f"Broadcasted message: {message} from {sender.getpeername()}".encode())
-                client.sendall(f"{message}".encode())
+                client.sendall(f"Broadcasted message: {data_dict['message']} from {sender.getpeername()}".encode())
     except socket.error as e:
         print(str(e))
         
@@ -18,11 +18,11 @@ def handle_client(client_socket):
         while True:
             try:
                 data = client_socket.recv(1024)
-                if data.decode() == 'exit':
-                    clients.remove(client_socket)
-                    break
-                print(data.decode())
-                broadcast_message(client_socket, data.decode())
+                data_dict = json.loads(data.decode("utf-8"))
+                # if data_dict["message"] == 'exit':
+                #     clients.remove(client_socket)
+                #     break
+                broadcast_message(client_socket, data_dict)
             except socket.error as e:
                 print(str(e))
                 break
