@@ -9,6 +9,7 @@ def broadcast_message(sender, data_dict):
         for client in clients:
             if client != sender:
                 client.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+                print(data_dict['message'])
     except socket.error as e:
         print(str(e))
         

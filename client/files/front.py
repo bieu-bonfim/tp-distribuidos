@@ -4,6 +4,7 @@ import socket
 import threading
 import time
 import client
+import json
 
 host = 'server'
 port = 8020
@@ -323,10 +324,20 @@ class MyGame(arcade.Window):
         self.card_list.remove(card)
         self.card_list.append(card)
 
+    #def send_message(self, client_socket, message):
+    #    try:
+    #        client_socket.sendall(message.encode())
+    #        self.has_sent_message = False
+    #    except socket.error as e:
+    #        print(str(e))
+
     def send_message(self, client_socket, message):
+        
+        data = {'message': message}
+        data_str = json.dumps(data)
+        
         try:
-            client_socket.sendall(message.encode())
-            self.has_sent_message = False
+            client_socket.sendall(bytes(data_str,encoding="utf-8"))
         except socket.error as e:
             print(str(e))
 
