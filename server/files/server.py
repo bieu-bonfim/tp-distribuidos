@@ -7,7 +7,8 @@ def broadcast_message(sender, message):
     try:
         for client in clients:
             if client != sender:
-                client.sendall(f"Broadcasted message: {message} from {sender.getpeername()}".encode())
+                #client.sendall(f"Broadcasted message: {message} from {sender.getpeername()}".encode())
+                client.sendall(f"{message}".encode())
     except socket.error as e:
         print(str(e))
         
@@ -20,6 +21,7 @@ def handle_client(client_socket):
                 if data.decode() == 'exit':
                     clients.remove(client_socket)
                     break
+                print(data.decode())
                 broadcast_message(client_socket, data.decode())
             except socket.error as e:
                 print(str(e))
