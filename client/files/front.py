@@ -74,6 +74,8 @@ MIDDLE_SCREEN_Y = SCREEN_HEIGHT / 2
 TOP_Y_SHOWCASE = SCREEN_HEIGHT - (SHOWCASE_MAT_HEIGHT / 2) - BASE_MARGIN
 END_X = TOTAL_SCREEN_WIDTH - (SHOWCASE_MAT_WIDTH/2) - BASE_MARGIN
 
+FACE_DOWN_IMAGE = "/home/cards/cardback.png"
+
 class Card(arcade.Sprite):
     """ Card sprite """
 
@@ -85,9 +87,28 @@ class Card(arcade.Sprite):
 
         # Image to use for the sprite when face up
         self.image_file_name = f"/home/cards/{name}.png"
+        self.is_face_up = False
 
         # Call the parent
-        super().__init__(self.image_file_name, scale, hit_box_algorithm="None")
+        super().__init__(FACE_DOWN_IMAGE, scale, hit_box_algorithm="None")
+
+    def faceUp(self):
+        self.texture = arcade.load_texture(self.image_file_name)
+        self.is_face_up = True
+
+    def faceDown(self):
+        self.texture = arcade.load_texture(FACE_DOWN_IMAGE)
+        self.is_face_up = False
+
+    def isFaceUp(self):
+        if self.is_face_up == True:
+            return True
+        else:
+            return False
+
+    @property
+    def isFaceDown(self):
+        return not self.is_face_up
 
 class Player():
 
@@ -192,19 +213,6 @@ class MyGame(arcade.Window):
         pile = arcade.SpriteSolidColor(SHOWCASE_MAT_WIDTH, SHOWCASE_MAT_HEIGHT, arcade.csscolor.GREY)
         pile.position = END_X, TOP_Y_SHOWCASE
         self.pile_mat_list.append(pile)
-
-        # Create the seven middle piles
-        #for i in range(7):
-        #    pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_OLIVE_GREEN)
-        #    pile.position = START_X + i * X_SPACING, MIDDLE_Y
-        #    self.pile_mat_list.append(pile)
-
-        # Create the top "play" piles
-        #for i in range(4):
-        #    pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_OLIVE_GREEN)
-        #    pile.position = START_X + i * X_SPACING, TOP_Y
-        #    self.pile_mat_list.append(pile)
-
 
         # Sprite list with all the cards, no matter what pile they are in.
         self.card_list = arcade.SpriteList()
@@ -313,6 +321,7 @@ class MyGame(arcade.Window):
             for i, dropped_card in enumerate(self.held_cards):
                 # Move cards to proper position
                 dropped_card.position = pile.center_x, pile.center_y
+                dropped_card.faceUp()
                 print(dropped_card.name)
 
 
@@ -367,7 +376,8 @@ class MyGame(arcade.Window):
                 self.last_hovered_card = hovered_card
 
             # Update the current hovered card for drawing the amplified image
-            self.current_hovered_card = hovered_card
+            if hovered_card.isFaceUp() == True:
+                self.current_hovered_card = hovered_card
 
         else:
             # Reset the last hovered card if no card is under the mouse pointer
@@ -451,7 +461,7 @@ class MyGame(arcade.Window):
             if opponent.name == message['player_name']:
                 for card in self.card_list:
                     if card.name == message['card']:
-                        opponent.card = arcade.Sprite(card.image_file_name, CARD_SCALE)
+                        opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
 
 
 
