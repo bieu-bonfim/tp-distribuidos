@@ -1,4 +1,4 @@
-from server import Server
+from classes.server import Server
 import threading
 
 def main():
