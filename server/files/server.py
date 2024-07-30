@@ -14,7 +14,7 @@ class Server():
         try:
             for client in self.clients:
                 # temporary solution
-                t.sleep(2)
+                # t.sleep(2)
                 
                 if client['connection'] != sender:
                     client['connection'].sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
@@ -26,10 +26,9 @@ class Server():
             try:
                 data = client_socket.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
-                if 'message' in data_dict:
-                    if data_dict['message'] == 'exit':
-                        self.serverStop()
-                        break
+                if data_dict['header'] == 'exit':
+                    self.serverStop()
+                    break
                 #
                 # manipulação dos dados com o json recebido já convertido
                 #
@@ -53,7 +52,7 @@ class Server():
             
     def serverStop(self):
         for client in self.clients:
-            client['connection'].sendall(bytes(json.dumps({'message': 'Server stopped'}), encoding="utf-8"))
+            client['connection'].sendall(bytes(json.dumps({'header': 'Server stopped'}), encoding="utf-8"))
             client['connection'].close()
         self.s.close()
         print('Server stopped')
