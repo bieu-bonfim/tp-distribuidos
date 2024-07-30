@@ -14,7 +14,7 @@ class Server():
         try:
             for client in self.clients:
                 # temporary solution
-                # t.sleep(2)
+                t.sleep(2)
                 
                 if client['connection'] != sender:
                     client['connection'].sendall(bytes(json.dumps(data_dict), encoding="utf-8"))

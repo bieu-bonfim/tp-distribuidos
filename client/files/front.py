@@ -57,7 +57,9 @@ BOTTOM_Y = MAT_HEIGHT / 2 + BASE_MARGIN
 START_X = MAT_WIDTH / 2 + BASE_MARGIN
 # Card constants
 
-CARD_NAMES = ["bigfoot", "chupacabra", "mothman", "ness", "ufo"]
+CARD_NAMES = ["bigfoot", "chupacabra", "mothman", "ness", "ufo", "anunnaki", "ashtasheran", "bloop", "fairy", "gnome", 
+              "greys", "kraken", "mapinguari", "megalodon", "nightcrawler", "poltergeist", "reptilian", "siren", 
+              "skinwalker", "slenderman", "thunderbird", "vampire", "varginha", "wendigo", "werewolf", "witch", "yeti"]
 
 # The Y of the top row (4 piles)
 TOP_Y = SCREEN_HEIGHT - (MAT_HEIGHT / 2) - BASE_MARGIN
@@ -74,7 +76,7 @@ MIDDLE_SCREEN_Y = SCREEN_HEIGHT / 2
 TOP_Y_SHOWCASE = SCREEN_HEIGHT - (SHOWCASE_MAT_HEIGHT / 2) - BASE_MARGIN
 END_X = TOTAL_SCREEN_WIDTH - (SHOWCASE_MAT_WIDTH/2) - BASE_MARGIN
 
-FACE_DOWN_IMAGE = "/home/cards/cardback.png"
+FACE_DOWN_IMAGE = "/home/cards/backcard.png"
 
 class Card(arcade.Sprite):
     """ Card sprite """
@@ -128,7 +130,7 @@ class MyGame(arcade.Window):
         # Sprite list with all the cards, no matter what pile they are in.
         self.card_list = None
 
-        arcade.set_background_color(arcade.color.ARSENIC)
+        arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
 
         # List of cards we are dragging with the mouse
         self.held_cards = None
@@ -165,7 +167,7 @@ class MyGame(arcade.Window):
         thread_receive = threading.Thread(target=self.receive_message, args=(s,))
         thread_receive.start()
 
-        data = {'player_name_register': player_name}
+        data = {'header': 'player_connection','player_name_register': player_name}
         data_str = json.dumps(data)
 
         try:
@@ -187,26 +189,26 @@ class MyGame(arcade.Window):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
         # Create the mats for the bottom face down and face up piles
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
+        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
         pile.position = START_X, BOTTOM_Y
         self.pile_mat_list.append(pile)
 
-        #pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_OLIVE_GREEN)
+        #pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.DARK_OLIVE_GREEN)
         #pile.position = START_X + X_SPACING, BOTTOM_Y
         #self.pile_mat_list.append(pile)
 
 
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
+        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
         pile.position = MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y
         self.pile_mat_list.append(pile)
 
         # pilha segundo jogador
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
+        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
         pile.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
         self.p2.mat = pile
 
         # pilha terceiro jogador
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.csscolor.DARK_SLATE_GREY)
+        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
         pile.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 150
         self.p3.mat = pile
 
@@ -404,7 +406,7 @@ class MyGame(arcade.Window):
 
     def send_message(self, client_socket):
         
-        data = {'player_name_register': self.p1.name}
+        data = {'header': 'player_connection','player_name_register': self.p1.name}
         data_str = json.dumps(data)
         
         try:
@@ -414,7 +416,7 @@ class MyGame(arcade.Window):
 
     def send_card(self, client_socket, card):
         
-        data = {'card': card, 'player_name': self.p1.name}
+        data = {'header': 'card_send', 'card': card, 'player_name': self.p1.name}
         data_str = json.dumps(data)
         
         try:
