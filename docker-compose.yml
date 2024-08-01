@@ -10,28 +10,48 @@ services:
     networks:
       - main_network
 
-  client-alice:
+  client-thui:
     container_name: thui
     build:
       context: ./client
       dockerfile: Dockerfile
     environment:
       - DISPLAY=$DISPLAY
-      - CLIENT_NAME=Alice
+      - CLIENT_NAME=Thui
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
     networks:
       - main_network
     depends_on:
       - server
 
-  client-bob:
+  client-bija:
     container_name: bija
     build:
       context: ./client
       dockerfile: Dockerfile
     environment:
       - DISPLAY=$DISPLAY
-      - CLIENT_NAME=Bob
+      - CLIENT_NAME=Bija
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    working_dir: /home
+    networks:
+      - main_network
+    depends_on:
+      - server
+
+  client-patic:
+    container_name: patic
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - DISPLAY=$DISPLAY
+      - CLIENT_NAME=Patic
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
     networks:
       - main_network
