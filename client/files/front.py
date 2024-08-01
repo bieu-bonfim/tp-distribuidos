@@ -404,11 +404,9 @@ class MyGame(arcade.Window):
     #    except socket.error as e:
     #        print(str(e))
 
-    def send_message(self, client_socket):
-        
-        data = {'header': 'player_connection','player_name_register': self.p1.name}
+    def send_message(self, client_socket, message):
+        data = {'message': message}
         data_str = json.dumps(data)
-        
         try:
             client_socket.sendall(bytes(data_str,encoding="utf-8"))
         except socket.error as e:
