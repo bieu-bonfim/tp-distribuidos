@@ -28,6 +28,18 @@ CREATE TABLE IF NOT EXISTS card (
 	PRIMARY KEY("card_id" AUTOINCREMENT)
 );
 ''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS deck (
+	"deck_id"	INTEGER NOT NULL,
+	"valid"	TEXT NOT NULL,
+	"name"	TEXT NOT NULL,
+	"user_id"	INTEGER NOT NULL,
+	"deleted_at"	TEXT,
+	PRIMARY KEY("deck_id" AUTOINCREMENT),
+	FOREIGN KEY("user_id") REFERENCES "user"("user_id") ON DELETE RESTRICT
+);
+''')
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS user_cards (
 	"user_id"	INTEGER NOT NULL,
