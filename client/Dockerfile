@@ -1,6 +1,8 @@
 FROM python:3.10
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-dev libglu1-mesa-dev x11-apps && \
+    rm -rf /var/lib/apt/lists/*
 
 
 COPY requirements.txt ./
