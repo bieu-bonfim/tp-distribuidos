@@ -1,3 +1,5 @@
+from classes.client import Client
+
 class Lobby():
     def __init__(self):
         self.players = list()

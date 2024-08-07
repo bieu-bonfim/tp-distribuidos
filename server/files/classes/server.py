@@ -2,7 +2,7 @@ import socket
 import threading
 import json
 import time as t
-from client import Client
+from classes.client import Client
 
 class Server():
     def __init__(self):
@@ -15,7 +15,7 @@ class Server():
         try:
             for client in self.clients:
                 # temporary solution
-                t.sleep(2)
+                # t.sleep(2)
                 
                 if client.conn != sender:
                     client.conn.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
