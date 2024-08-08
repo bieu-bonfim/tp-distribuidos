@@ -16,15 +16,18 @@ CREATE TABLE IF NOT EXISTS user (
 );
 ''')
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS card (
+CREATE TABLE "card" (
 	"card_id"	INTEGER NOT NULL,
+	"name"	TEXT NOT NULL,
 	"type"	TEXT NOT NULL,
-	"first_appearance"	TEXT NOT NULL,
+	"first_appearance"	NUMERIC NOT NULL,
 	"level_of_fear"	TEXT NOT NULL,
-	"size"	INTEGER NOT NULL,
-	"danger"	INTEGER NOT NULL,
-	"rarity"	INTEGER NOT NULL,
-	"deleted_at"	TEXT,
+	"size"	NUMERIC NOT NULL,
+	"danger"	TEXT NOT NULL,
+	"rarity"	TEXT NOT NULL,
+	"image"	TEXT NOT NULL,
+	"thumbnail"	TEXT,
+	"deletedAt"	TEXT,
 	PRIMARY KEY("card_id" AUTOINCREMENT)
 );
 ''')
@@ -86,18 +89,12 @@ CREATE TABLE IF NOT EXISTS friend_list (
 
 
 
-users = [('Bija', 'bija@ufv.br', 'bija123', '26/07/2024-22:57:20'), 
-        ('Patras','patras@ufv.br', 'patras123', '26/07/2024-22:58:31'), 
-        ('Thui', 'thui@ufv.br', 'thui123', '26/07/2024-22:59:47')]
-cursor.executemany('''
-INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
-''', users)
-
-cursor.execute('SELECT * FROM user')
-rows = cursor.fetchall()
-
-for row in rows:
-    print(row)
+# users = [('Bija', 'bija@ufv.br', 'bija123', '26/07/2024-22:57:20'), 
+#         ('Patras','patras@ufv.br', 'patras123', '26/07/2024-22:58:31'), 
+#         ('Thui', 'thui@ufv.br', 'thui123', '26/07/2024-22:59:47')]
+# cursor.executemany('''
+# INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
+# ''', users)
 
 conn.commit()
 
