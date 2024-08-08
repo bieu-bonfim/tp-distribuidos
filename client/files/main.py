@@ -1,4 +1,4 @@
-from server.files.classes.client import Client
+from client import Client
 import threading
 
 def main():
