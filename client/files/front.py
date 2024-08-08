@@ -5,6 +5,7 @@ import threading
 import time
 import client
 import json
+from arcade.gui import UIManager
 
 host = 'server'
 port = 8020
@@ -23,13 +24,13 @@ time.sleep(5)
 
 
 # Screen title and size
-SCREEN_WIDTH = 924
+SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 868
 SCREEN_TITLE = "Cryptids: The Conspiracy"
 BASE_MARGIN = 30
 
 CARD_SCALE = 0.2
-SHOWCASE_CARD_SCALE = 0.3
+SHOWCASE_CARD_SCALE = 0.35
 
 # How big are the cards?
 CARD_WIDTH = 750 * CARD_SCALE
@@ -77,6 +78,11 @@ TOP_Y_SHOWCASE = SCREEN_HEIGHT - (SHOWCASE_MAT_HEIGHT / 2) - BASE_MARGIN
 END_X = TOTAL_SCREEN_WIDTH - (SHOWCASE_MAT_WIDTH/2) - BASE_MARGIN
 
 FACE_DOWN_IMAGE = "/home/cards/backcard.png"
+
+PILE_COUNT = 3
+DRAW = 0
+HAND = 1
+PLAY = 2
 
 class Card(arcade.Sprite):
     """ Card sprite """
@@ -127,6 +133,45 @@ class MyGame(arcade.Window):
     def __init__(self):
         super().__init__(TOTAL_SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
+        self.reset_position = False
+        self.selected_card = None
+        self.piles = None
+        self.hand_size = 0
+        self.has_selected = False
+
+
+
+
+
+        # Create a vertical BoxGroup to align buttons
+        self.v_box = arcade.gui.UIBoxLayout()
+
+        tipo_button = arcade.gui.UIFlatButton(text="Tipo", width=200)
+        self.v_box.add(tipo_button.with_space_around(bottom=15))
+        tipo_button.on_click = self.on_click_tipo
+
+        tamanho_button = arcade.gui.UIFlatButton(text="Tamanho", width=200)
+        self.v_box.add(tamanho_button.with_space_around(bottom=15))
+        tamanho_button.on_click = self.on_click_tamanho
+
+        perigo_button = arcade.gui.UIFlatButton(text="Perigo", width=200)
+        self.v_box.add(perigo_button.with_space_around(bottom=15))
+        perigo_button.on_click = self.on_click_perigo
+
+        medo_button = arcade.gui.UIFlatButton(text="Medo", width=200)
+        self.v_box.add(medo_button.with_space_around(bottom=15))
+        medo_button.on_click = self.on_click_medo
+
+        avistamento_button = arcade.gui.UIFlatButton(text="Avistamento", width=200)
+        self.v_box.add(avistamento_button.with_space_around(bottom=15))
+        avistamento_button.on_click = self.on_click_avistamento
+
+        confirmar_button = arcade.gui.UIFlatButton(text="Escolher Carta", width=200)
+        confirmar_button.on_click = self.on_click_confirmar
+
         # Sprite list with all the cards, no matter what pile they are in.
         self.card_list = None
 
@@ -162,6 +207,61 @@ class MyGame(arcade.Window):
         self.last_hovered_card = None
         self.current_hovered_card = None
 
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                align_y=-50,
+                align_x=-195,
+                child=confirmar_button
+            )
+        )
+
+        # Create a widget to hold the v_box widget, that will center the buttons
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                align_x=510,
+                align_y=-240,
+                child=self.v_box)
+        )
+
+    def on_click_confirmar(self, event):
+        print("enviar carta")
+        if self.has_interacted_card and self.reset_position == False:
+            self.has_selected = True
+            thread_send = threading.Thread(target=self.send_card, args=(s, self.selected_card.name))
+            #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
+            thread_send.start()  
+            #thread_receive.start()
+            self.has_sent_message = True 
+            self.has_interacted_card = False
+
+
+    def on_click_tipo(self, event):
+        print("tipo")
+
+    def on_click_tamanho(self, event):
+        print("tamanho")
+
+    def on_click_perigo(self, event):
+        print("perigo")
+
+    def on_click_medo(self, event):
+        print("medo")
+
+    def on_click_tamanho(self, event):
+        print("tamanho")
+
+    def on_click_avistamento(self, event):
+        print("avistamento")
+
+
+
+
+
+    
     def setup(self):
         
         thread_receive = threading.Thread(target=self.receive_message, args=(s,))
@@ -169,6 +269,7 @@ class MyGame(arcade.Window):
 
         data = {'header': 'player_connection','player_name_register': player_name}
         data_str = json.dumps(data)
+
 
         try:
             s.sendall(bytes(data_str,encoding="utf-8"))
@@ -193,23 +294,28 @@ class MyGame(arcade.Window):
         pile.position = START_X, BOTTOM_Y
         self.pile_mat_list.append(pile)
 
+        # Create the mats for the bottom face down and face up piles
+        pile = arcade.SpriteSolidColor((MAT_WIDTH*3), MAT_HEIGHT, arcade.color.ARSENIC)
+        pile.position = (START_X+ 510), BOTTOM_Y
+        self.pile_mat_list.append(pile)
+
         #pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.DARK_OLIVE_GREEN)
         #pile.position = START_X + X_SPACING, BOTTOM_Y
         #self.pile_mat_list.append(pile)
 
 
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
-        pile.position = MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y
+        pile.position = MIDDLE_SCREEN_X, (MIDDLE_SCREEN_Y + 120)
         self.pile_mat_list.append(pile)
 
         # pilha segundo jogador
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
-        pile.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
+        pile.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
         self.p2.mat = pile
 
         # pilha terceiro jogador
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
-        pile.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 150
+        pile.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, (MIDDLE_SCREEN_Y + 270)
         self.p3.mat = pile
 
         pile = arcade.SpriteSolidColor(SHOWCASE_MAT_WIDTH, SHOWCASE_MAT_HEIGHT, arcade.csscolor.GREY)
@@ -225,14 +331,44 @@ class MyGame(arcade.Window):
             card.position = START_X, BOTTOM_Y
             self.card_list.append(card)
 
+
+        
+        self.piles = [[] for _ in range(PILE_COUNT)]
+
+        for card in self.card_list:
+            self.piles[DRAW].append(card)
+
         for pos1 in range(len(self.card_list)):
             pos2 = random.randrange(len(self.card_list))
             self.card_list.swap(pos1, pos2)
+
+    def get_pile_for_card(self, card):
+        for index, pile in enumerate(self.piles):
+            if card in pile:
+                print("checkpoint")
+                return index
+            
+    def remove_card_from_pile(self, card):
+        for pile in self.piles:
+            if card in pile:
+                pile.remove(card)
+                break
+
+    def move_card_to_new_pile(self, card, pile_index):
+        self.remove_card_from_pile(card)
+        self.piles[pile_index].append(card)
+
+    def reorganize_hand(self, pile_index):
+        count = 0
+        for card in self.piles[pile_index]:
+            card.position = (START_X+ 510) + 100 * (count), BOTTOM_Y
+            count += 1
 
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
         self.clear()
+        self.manager.draw()
 
         # Draw the mats the cards go on to
         self.pile_mat_list.draw()
@@ -260,7 +396,7 @@ class MyGame(arcade.Window):
             amplified_card.draw()
 
         if self.p2.card != None and self.p2.name != None:
-            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 150)
+            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
             self.p2.card.draw()
             arcade.draw_text(
             self.p2.name,
@@ -272,7 +408,7 @@ class MyGame(arcade.Window):
             anchor_y="center")
 
         if self.p3.card != None and self.p3.name != None:
-            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 150
+            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
             self.p3.card.draw()
             arcade.draw_text(
             self.p3.name,
@@ -314,26 +450,69 @@ class MyGame(arcade.Window):
 
         # Find the closest pile, in case we are in contact with more than one
         pile, distance = arcade.get_closest_sprite(self.held_cards[0], self.pile_mat_list)
-        reset_position = True
+        self.reset_position = True
 
         # See if we are in contact with the closest pile
         if arcade.check_for_collision(self.held_cards[0], pile):
 
+            pile_index = self.pile_mat_list.index(pile)
+            print(pile_index)
+
+            if pile_index == self.get_pile_for_card(self.held_cards[0] or pile_index == DRAW):
+                self.reset_position = True
+                pass
+
+            elif pile_index == HAND and self.hand_size < 3:
+                if len(self.piles[pile_index]) > 0:
+                    top_card = self.piles[pile_index][-1]
+                    for i, dropped_card in enumerate(self.held_cards):
+                        dropped_card.position = top_card.center_x + 100 * (i + 1), top_card.center_y 
+                        dropped_card.faceUp()
+                        print(dropped_card.name)
+                        self.hand_size += 1
+                else:
+                    for i, dropped_card in enumerate(self.held_cards):
+                        dropped_card.position = pile.center_x, pile.center_y
+                        dropped_card.faceUp()
+                        print(dropped_card.name)
+                        self.hand_size += 1
+
+                for card in self.held_cards:
+                    self.move_card_to_new_pile(card, pile_index)
+
+                self.reset_position = False
+
+            elif pile_index == PLAY:
+                self.held_cards[0].position = pile.position
+                for i, dropped_card in enumerate(self.held_cards):   
+                    dropped_card.faceUp()
+                    print(dropped_card.name)
+                    self.selected_card = dropped_card
+
+
+                for card in self.held_cards:
+                    self.move_card_to_new_pile(card, pile_index)
+
+                self.reorganize_hand(HAND)
+                self.reset_position = False
+
+
             # For each held card, move it to the pile we dropped on
-            for i, dropped_card in enumerate(self.held_cards):
-                # Move cards to proper position
-                dropped_card.position = pile.center_x, pile.center_y
-                dropped_card.faceUp()
-                print(dropped_card.name)
+            #for i, dropped_card in enumerate(self.held_cards):
+            #    # Move cards to proper position
+            #    dropped_card.position = pile.center_x, pile.center_y
+            #    dropped_card.faceUp()
+            #    print(dropped_card.name)
+            #    self.selected_card = dropped_card
 
 
 
 
             # Success, don't reset position of cards
-            reset_position = False
+            #self.reset_position = False
 
             # Release on top play pile? And only one card held?
-        if reset_position:
+        if self.reset_position:
             # Where-ever we were dropped, it wasn't valid. Reset the each card's position
             # to its original spot.
             for pile_index, card in enumerate(self.held_cards):
@@ -342,13 +521,13 @@ class MyGame(arcade.Window):
         # We are no longer holding cards
         self.held_cards = []
 
-        if self.has_interacted_card and reset_position == False:
-            thread_send = threading.Thread(target=self.send_card, args=(s, dropped_card.name))
-            #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
-            thread_send.start()  
-            #thread_receive.start()
-            self.has_sent_message = True 
-            self.has_interacted_card = False
+        #if self.has_interacted_card and self.reset_position == False:
+        #    thread_send = threading.Thread(target=self.send_card, args=(s, dropped_card.name))
+        #    #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
+        #    thread_send.start()  
+        #    #thread_receive.start()
+        #    self.has_sent_message = True 
+        #    self.has_interacted_card = False
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ User moves mouse """
