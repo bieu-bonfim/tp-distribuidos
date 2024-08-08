@@ -1,9 +1,13 @@
 import json
+from app.AuthManager import AuthManager
+from app.GameManager import GameManager
 
 class RequestHandler:
     def __init__(self, client, socket_server):
         self.client = client
         self.socket_server = socket_server
+        self.authManager = AuthManager()
+        self.gameManager = GameManager()
 
     def handleRequest(self):
         while True:
@@ -24,15 +28,14 @@ class RequestHandler:
         header = request['header']
         
         if header == 'login':
-            return self.login(request['username'], request['password'])
+            result = self.authManager.login(request['username'], request['password'])
         elif header == 'logout':
-            return self.logout(request['username'])
+            result = self.authManager.logout(request['username'])
         elif header == 'register':
-            return self.register(request['username'], request['password'])
-        elif header == 'buyBooster':
-            return self.buyBooster(request['user_id'], request['booster_id'])
-        elif header == 'getAvailableBoosters':
-            return self.getAvailableBoosters()
+            result = self.authManager.register(request['username'], request['password'])
+        elif header == 'play_card':
+            result = self.gameManager.play_card(request['card'])
+            self.socket_server.broadcastMessage(self.client.conn, request)
         else:
             self.socket_server.broadcastMessage(self.client.conn, {'header': 'broadcasted invalid message'})
             return {'header': 'broadcasted invalid message to all other users'}

@@ -1,4 +1,5 @@
 services:
+
   server:
     container_name: server
     build:
@@ -9,6 +10,8 @@ services:
       - "8020:8020"
     networks:
       - main_network
+    volumes:
+      - ./server/files/database:/home/database
 
   client-thui:
     container_name: thui
