@@ -1,9 +1,9 @@
-from classes.server import Server
+from network.SocketServer import SocketServer
 import threading
 
 def main():
     
-    server = Server()
+    server = SocketServer()
     threading.Thread(target=server.serverStart).start()
     print('Server started')
         
