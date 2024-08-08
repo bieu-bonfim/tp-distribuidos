@@ -1,4 +1,4 @@
-class Card:
+class CardModel:
     def __init__(self, name, type, firstAppearance, levelOfFear, size, danger, rarity, deletedAt):
         self.name = name
         self.type = type

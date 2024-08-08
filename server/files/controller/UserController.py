@@ -15,16 +15,28 @@ def getById(userId):
     conn.commit()
     conn.close()
     return rows
+
+def getByName(userName):
+    cursor.execute('SELECT * FROM user WHERE username = ?', (userName,))
+    rows = cursor.fetchone()
+    conn.commit()
+    return rows
+
 def insert(user):
     try:
-        cursor.execute('''
-            INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
-        ''', user)
-        conn.commit()
-        conn.close()
+        username = user[0]
+        existsUser = getByName(username)
+        if existsUser == None :
+            cursor.execute('''
+                INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
+            ''', user)
+            conn.commit()
+            conn.close()
+        else:
+            print("Username já existente")
     except Exception as e:
         print('Não foi possível inserir usuário: ',e)
-        
+        conn.rollback()
     
 def update(self, username, email, password, createAt, deletedAt):
     self.username = username
@@ -43,12 +55,26 @@ def delete(userId):
     conn.commit()
     conn.close()
 
+def login(username, password):
+    try:
+        user = getByName(username)
+        print(user)
+        if user != None and user[3] == password:
+            print("Login realizado com sucesso")
+            return True
+        else:
+            print("Credenciais inválidas")
+            return False
+    except Exception as e:
+        conn.rollback()
+
 def main():
     print("Escolha uma opção:")
     print("1) GetAll")
     print("2) GetById")
     print("3) Insert")
     print("4) Delete")
+    print("5) Login")
     escolha = int(input())
 
     if escolha == 1:
@@ -68,12 +94,16 @@ def main():
         dataAtual = datetime.now()
         user = (username ,email, senha, dataAtual)
         insert(user)
-        print('usuário inserido com sucesso')
         print(user)
     
     elif escolha == 4:
         userId = int(input('digte o id: '))
         user = delete(userId)
+
+    elif escolha == 5:
+        username = input('digte o username: ')
+        password = input('digite a senha: ')
+        user = login(username, password) 
 
 if __name__ == "__main__":
     main()

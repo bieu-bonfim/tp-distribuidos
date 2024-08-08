@@ -1,0 +1,2 @@
+UBUNTU
+sqlite3
