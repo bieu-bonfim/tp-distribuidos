@@ -1,12 +1,12 @@
-from controller import UserController
+from controller.UserController import UserController
 
 class AuthManager:
     def __init__(self, conn):
         self.userController = UserController(conn)
 
     def login(self, username, password):
-        result = self.userController.login(username, password)
-        return {'header': 'login', 'result': result}
+        # result = self.userController.login(username, password)
+        return {'header': 'login', 'result': 'logado'}
 
     def register(self, username, password):
         result = self.userController.register(username, password)

@@ -43,6 +43,12 @@ class SocketServer():
         except socket.error as e:
             print(str(e))
             
+    def sendMessage(self, receiver, data_dict):
+        try:
+            receiver.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+        except socket.error as e:
+            print(str(e))
+            
     def handleClient(self, client):
         while True:
             handler = RequestHandler(client, self)

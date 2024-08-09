@@ -17,7 +17,14 @@ class Client():
     def sendMessage(self):
         while True:
             message = input('Enter message: ')
-            data = {'header': message}
+            print(f"Sending message: {message}")
+            data = ''
+            request = ''
+            if message == 'login':
+                user = input('Enter username: ')
+                password = input('Enter password: ')
+                request = {'username': user, 'password': password}
+            data = {'header': message, 'request': request}
             data_str = json.dumps(data)
         
             try:
