@@ -1,13 +1,15 @@
 import json
 from app.AuthManager import AuthManager
 from app.GameManager import GameManager
+import sqlite3
 
 class RequestHandler:
     def __init__(self, client, socket_server):
         self.client = client
         self.socket_server = socket_server
-        self.authManager = AuthManager()
-        self.gameManager = GameManager()
+        self.db_conn = sqlite3.connect('../database/cryptid.db')
+        self.authManager = AuthManager(self.db_conn)
+        self.gameManager = GameManager(self.db_conn)
 
     def handleRequest(self):
         while True:

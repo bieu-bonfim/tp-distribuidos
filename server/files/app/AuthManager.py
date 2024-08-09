@@ -1,8 +1,8 @@
 from controller import UserController
 
 class AuthManager:
-    def __init__(self):
-        self.userController = UserController()
+    def __init__(self, conn):
+        self.userController = UserController(conn)
 
     def login(self, username, password):
         result = self.userController.login(username, password)
