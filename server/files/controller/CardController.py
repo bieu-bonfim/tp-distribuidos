@@ -1,6 +1,6 @@
 from datetime import datetime
 import sqlite3
-conn = sqlite3.connect('cryptid.db')
+conn = sqlite3.connect('../database/cryptid.db')
 cursor = conn.cursor()
 
 def getAll():
@@ -9,6 +9,13 @@ def getAll():
     conn.commit()
     conn.close()
     return row
+
+def getById(cardId):
+    print("entra aqui com o id: ", cardId)
+    cursor.execute('SELECT * FROM card WHERE card_id = ?', (cardId,))
+    rows = cursor.fetchone()
+    conn.commit()
+    return rows
 
 def getByName(cardName):
     cursor.execute('SELECT * FROM card WHERE name = ?', (cardName,))
