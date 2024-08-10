@@ -1,6 +1,6 @@
 from datetime import datetime
 import sqlite3
-conn = sqlite3.connect('cryptid.db')
+conn = sqlite3.connect('../database/cryptid.db')
 cursor = conn.cursor()
 
 def getAll():
