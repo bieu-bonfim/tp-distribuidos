@@ -24,6 +24,11 @@ class Client():
                 user = input('Enter username: ')
                 password = input('Enter password: ')
                 request = {'username': user, 'password': password}
+            if message == 'register':
+                user = input('Enter username: ')
+                email = input('Enter email: ')
+                password = input('Enter password: ')
+                request = {'username': user, 'email': email, 'password': password}
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
         
@@ -38,7 +43,20 @@ class Client():
             try:
                 data = self.s.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
-                print(f"Received message: {data_dict['header']}")
+                if data_dict['header'] == 'login':
+                    print(f"Received message: {data_dict['header']}")
+                    response = data_dict['response']
+                    print(f"Status: {response['status']}")
+                    print(f"Message: {response['message']}")
+                    print(f"Id: {response['data']['user_id']}")
+                if data_dict['header'] == 'register':
+                    print(f"Received message: {data_dict['header']}")
+                    response = data_dict['response']
+                    print(f"Status: {response['status']}")
+                    print(f"Message: {response['message']}")
+                    
+                else:
+                    print(f"Received message: {data_dict['header']}")
             except socket.error as e:
                 print(str(e))
                 break

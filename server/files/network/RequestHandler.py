@@ -15,11 +15,11 @@ class RequestHandler:
     def handleRequest(self):
         while True:
             try:    
+                t.sleep(3)
                 data = self.client.conn.recv(1024).decode("utf-8")
                 request = json.loads(data)                
                 response = self.handleRequestType(request)
                 self.socket_server.sendMessage(self.client.conn, response)
-                
             except Exception as e:
                 print(str(e))
                 break
@@ -34,7 +34,7 @@ class RequestHandler:
         elif header == 'logout':
             result = self.authManager.logout(body['username'])
         elif header == 'register':
-            result = self.authManager.register(body['username'], body['password'])
+            result = self.authManager.register(body['username'], body['password'], body['email'])
         elif header == 'play_card':
             result = self.gameManager.play_card(body['card'])
             self.socket_server.broadcastMessage(self.client.conn, body)
