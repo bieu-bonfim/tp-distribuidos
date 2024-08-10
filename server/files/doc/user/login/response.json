@@ -1,0 +1,10 @@
+{
+  "header": "login",
+  "response": {
+    "status": "success",
+    "message": "Usuário logado com sucesso!",
+    "data": {
+      "user_id": "user_id"
+    }
+  }
+}

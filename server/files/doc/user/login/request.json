@@ -1,0 +1,7 @@
+{
+  "header": "login",
+  "data": {
+    "username": "username",
+    "password": "hashed_pass"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "header": "register",
+  "request": {
+      "username": "username",
+      "password": "hashed_pass"
+  }
+}

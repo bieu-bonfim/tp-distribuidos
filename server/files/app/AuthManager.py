@@ -5,8 +5,8 @@ class AuthManager:
         self.userController = UserController(conn)
 
     def login(self, username, password):
-        # result = self.userController.login(username, password)
-        return {'header': 'login', 'result': 'logado'}
+        result = self.userController.login(username, password)
+        return {'header': 'login', 'response': {'status': 'success', 'message': 'Usuário logado com sucesso'}}
 
     def register(self, username, password):
         result = self.userController.register(username, password)

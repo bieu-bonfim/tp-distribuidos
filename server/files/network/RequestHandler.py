@@ -15,18 +15,10 @@ class RequestHandler:
     def handleRequest(self):
         while True:
             try:    
-                print('Waiting for message')
-                t.sleep(2)
                 data = self.client.conn.recv(1024).decode("utf-8")
-                print(f"Received message: {data}")
-                request = json.loads(data)
-                self.socket_server.broadcastMessage(self.client.conn, request)
-                
+                request = json.loads(data)                
                 response = self.handleRequestType(request)
-                
-                # print(f"Response: {response}")
-                # t.sleep(2)
-                # self.socket_server.sendMessage(self.client.conn, response)
+                self.socket_server.sendMessage(self.client.conn, response)
                 
             except Exception as e:
                 print(str(e))
@@ -34,20 +26,17 @@ class RequestHandler:
 
     def handleRequestType(self, request):
         header = request['header']
-        print(f"Header: {header}")
+        body = request['request']
+        result = {'header': 'invalid message'}
         
         if header == 'login':
-            result = self.authManager.login(request['username'], request['password'])
-            print(f"Result: {result}")
-            return result
+            result = self.authManager.login(body['username'], body['password'])
         elif header == 'logout':
-            result = self.authManager.logout(request['username'])
+            result = self.authManager.logout(body['username'])
         elif header == 'register':
-            result = self.authManager.register(request['username'], request['password'])
+            result = self.authManager.register(body['username'], body['password'])
         elif header == 'play_card':
-            result =     self.gameManager.play_card(request['card'])
-            self.socket_server.broadcastMessage(self.client.conn, request)
-        else:
-            self.socket_server.broadcastMessage(self.client.conn, {'header': 'broadcasted invalid message'})
-            return {'header': 'broadcasted invalid message to all other users'}
+            result = self.gameManager.play_card(body['card'])
+            self.socket_server.broadcastMessage(self.client.conn, body)
         
+        return result

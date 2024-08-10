@@ -1,0 +1,10 @@
+{
+  "header": "register",
+  "response": {
+    "status": "success",
+    "message": "Usuário registrado com sucesso!",
+    "data": {
+      "user_id": "user_id"
+    }
+  }
+}

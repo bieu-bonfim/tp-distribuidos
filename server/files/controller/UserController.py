@@ -63,10 +63,8 @@ class UserController:
             user = self.getByName(username)
             print(user)
             if user != None and user[3] == password:
-                print("Login realizado com sucesso")
                 return True
             else:
-                print("Credenciais inválidas")
                 return False
         except Exception as e:
             self.conn.rollback()
