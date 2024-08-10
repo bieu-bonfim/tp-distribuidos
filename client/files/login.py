@@ -12,7 +12,7 @@ import json
 import main_menu
 
 # Screen title and size
-SCREEN_WIDTH = 924
+SCREEN_WIDTH = 1412
 SCREEN_HEIGHT = 868
 SCREEN_TITLE = "Cryptids: The Conspiracy Login"
 BASE_MARGIN = 30

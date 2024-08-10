@@ -47,6 +47,9 @@ class MainMenu(arcade.View):
         self.v_box.add(shop_button.with_space_around(bottom=20))
         shop_button.on_click = self.on_click_shop
 
+        self.flag_deck = 0
+        self.flag_game = 0
+        self.flag_shop = 0
 
 
         arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
@@ -65,12 +68,17 @@ class MainMenu(arcade.View):
     def on_click_edit(self, event):
         print("edit")
         edit_window = edit_deck.EditDeck()
+        edit_window.setup()
         self.window.show_view(edit_window)
 
     def on_click_shop(self, event):
         print("shop")
 
-    
+    def on_hide_view(self):
+        self.manager.disable()
+        self.manager.clear()
+
+
 
     def on_show_view(self):
         print("Menu principal iniciado")
@@ -86,10 +94,6 @@ class MainMenu(arcade.View):
         #except socket.error as e:
         #    print(str(e))
 
-
-    def on_click_start(self, event):
-        print("Start: ", event )
-
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
@@ -102,8 +106,6 @@ class MainMenu(arcade.View):
         # Draw the text
         #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
 
-    def on_hide_view(self):
-        self.manager.disable()
 
 
 def start_menu():

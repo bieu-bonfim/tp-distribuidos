@@ -46,6 +46,7 @@ SHOWCASE_MAT_HEIGHT = int(SHOWCASE_HEIGHT * MAT_PERCENT_OVERSIZE)
 SHOWCASE_MAT_WIDTH = int(SHOWCASE_WIDTH * MAT_PERCENT_OVERSIZE)
 
 TOTAL_SCREEN_WIDTH = SCREEN_WIDTH + SHOWCASE_MAT_WIDTH + (BASE_MARGIN*2)
+print("Total width: ", TOTAL_SCREEN_WIDTH)
 
 # How much space do we leave as a gap between the mats?
 # Done as a percent of the mat size.
@@ -229,6 +230,7 @@ class MyGame(arcade.Window):
 
     def on_click_confirmar(self, event):
         print("enviar carta")
+        self.hand_size -= 1
         if self.has_interacted_card and self.reset_position == False:
             self.has_selected = True
             thread_send = threading.Thread(target=self.send_card, args=(s, self.selected_card.name))
@@ -360,9 +362,36 @@ class MyGame(arcade.Window):
 
     def reorganize_hand(self, pile_index):
         count = 0
+        size = len(self.piles[pile_index])
+        print("size:", size)
         for card in self.piles[pile_index]:
-            card.position = (START_X+ 510) + 100 * (count), BOTTOM_Y
+            card.position = ((START_X+ 510) + 120 * (count)), BOTTOM_Y
+            print("VALUE: ", (START_X+ 510) + 120 * (count))
             count += 1
+        if size > 1: 
+            for card in self.piles[pile_index]:
+                card.position = card.center_x - 60, card.center_y   
+            
+    def centralize_hand_add(self, pile_index):
+        size = len(self.piles[pile_index]) + 1
+        if size == 1:
+            print(size)
+            for card in self.piles[pile_index]:
+                card.position = (START_X+ 510), BOTTOM_Y     
+        if size == 2:
+            count = 0
+            #for card in self.piles[pile_index]:
+            #    card.position = ((START_X+ 510) + 60 * (count)), BOTTOM_Y
+             #   count += 1
+            for card in self.piles[pile_index]:
+                card.position = card.center_x - 60, card.center_y         
+        if size == 3:
+            count = 0
+            #for card in self.piles[pile_index]:
+            #    card.position = ((START_X+ 510) + 60 * (count)), BOTTOM_Y
+             #   count += 1
+            for card in self.piles[pile_index]:
+                card.position = card.center_x - 60, card.center_y    
 
     def on_draw(self):
         """ Render the screen. """
@@ -466,15 +495,17 @@ class MyGame(arcade.Window):
                 if len(self.piles[pile_index]) > 0:
                     top_card = self.piles[pile_index][-1]
                     for i, dropped_card in enumerate(self.held_cards):
-                        dropped_card.position = top_card.center_x + 100 * (i + 1), top_card.center_y 
+                        dropped_card.position = (top_card.center_x + 60 * (i + 1)), top_card.center_y
                         dropped_card.faceUp()
                         print(dropped_card.name)
                         self.hand_size += 1
+                        self.centralize_hand_add(HAND)
                 else:
                     for i, dropped_card in enumerate(self.held_cards):
                         dropped_card.position = pile.center_x, pile.center_y
                         dropped_card.faceUp()
                         print(dropped_card.name)
+                        self.centralize_hand_add(HAND)
                         self.hand_size += 1
 
                 for card in self.held_cards:

@@ -11,7 +11,7 @@ from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
 
 # Screen title and size
-SCREEN_WIDTH = 924
+SCREEN_WIDTH = 1412
 SCREEN_HEIGHT = 868
 SCREEN_TITLE = "Cryptids: The Conspiracy"
 BASE_MARGIN = 30
