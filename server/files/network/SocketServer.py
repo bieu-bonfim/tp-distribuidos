@@ -11,6 +11,7 @@ class SocketServer():
         self.socketServer.bind((host, port))
         self.threads = list()
         self.clients = list()
+        self.db_semaphore = threading.Semaphore(1)
         print('Server created!')
 
     

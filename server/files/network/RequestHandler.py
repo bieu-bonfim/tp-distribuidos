@@ -17,13 +17,16 @@ class RequestHandler:
             try:    
                 t.sleep(3)
                 data = self.client.conn.recv(1024).decode("utf-8")
-                request = json.loads(data)                
+                request = json.loads(data)
+                self.socket_server.db_semaphore.acquire()
                 response = self.handleRequestType(request)
                 self.socket_server.sendMessage(self.client.conn, response)
             except Exception as e:
                 print(str(e))
                 break
-
+            finally:
+                self.socket_server.db_semaphore.release()
+                
     def handleRequestType(self, request):
         header = request['header']
         body = request['request']
