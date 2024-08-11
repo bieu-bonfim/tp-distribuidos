@@ -20,6 +20,7 @@ class SocketServer():
     def serverStart(self):
         self.socketServer.listen()
         print('Server started!')
+        shutdown_thread = threading.Thread(target=self.serverShutdown, daemon=True)
         while True:
             conn, addr = self.socketServer.accept()
             client = Client(conn, addr, (len(self.clients) + 1))
@@ -37,6 +38,12 @@ class SocketServer():
         self.socketServer.close()
         print('Server stopping...')
         
+    def serverShutdown(self):
+        while True:
+            command = input()
+            if command == 'shutdown':
+                self.serverStop()
+                break
                 
     def broadcastMessage(self, sender, data_dict):
         try:

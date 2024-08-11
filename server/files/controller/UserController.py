@@ -61,7 +61,7 @@ class UserController:
             if user != None and user[3] == password:
                 return True, user[0], user[1], user[2]  # user_id, username, email
             else:
-                return False, 0
+                return False, 0, None, None
         except Exception as e:
             self.conn.rollback()
 
