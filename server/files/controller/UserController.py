@@ -1,5 +1,7 @@
 from datetime import datetime
 from controller.DeckController import DeckController
+from controller.DeckCardsController import DeckCardsController
+import random
 class UserController:
     def __init__(self, conn):
         self.conn = conn
@@ -45,6 +47,11 @@ class UserController:
                 self.deckController.insert(deck1)
                 self.deckController.insert(deck2)
                 self.deckController.insert(deck3)
+                cardIdBooster = random.sample(range(1, 28), 9)
+                deckId = DeckController.getFirstDeckByUser(userId)
+                for cardId in cardIdBooster:
+                    deckCard = (deckId, cardId, 1)
+                    DeckCardsController.insert(deckCard)
                 self.conn.commit()
                 return True
             else:
