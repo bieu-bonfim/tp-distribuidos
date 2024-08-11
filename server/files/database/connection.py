@@ -66,14 +66,13 @@ CREATE TABLE IF NOT EXISTS deck_cards (
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS match (
 	"match_id"	INTEGER NOT NULL,
-	"deck_winner_id"	INTEGER NOT NULL,
-	"deck_second_id"	INTEGER NOT NULL,
-	"deck_loser_id"	INTEGER NOT NULL,
-	"match_date"	TEXT NOT NULL,
+	"winner_deck_id"	INTEGER NOT NULL,
+	"player1_deck_id"	INTEGER NOT NULL,
+	"player2_deck_id"	INTEGER NOT NULL,
 	PRIMARY KEY("match_id" AUTOINCREMENT),
-	FOREIGN KEY("deck_winner_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT,
-	FOREIGN KEY("deck_second_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT,
-	FOREIGN KEY("deck_loser_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT
+	FOREIGN KEY("player1_deck_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT,
+	FOREIGN KEY("player2_deck_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT,
+	FOREIGN KEY("winner_deck_id") REFERENCES "deck"("deck_id") ON DELETE RESTRICT
 );
 ''')
 cursor.execute('''

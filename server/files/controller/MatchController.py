@@ -1,57 +1,50 @@
 from datetime import datetime
 import CardController
+import DeckController
 import sqlite3
-conn = sqlite3.connect('cryptid.db')
+conn = sqlite3.connect('../database/cryptid.db')
 cursor = conn.cursor()
-
-class CardModel:
-    def __init__(self, name, type, firstAppearance, levelOfFear, size, danger, rarity, deletedAt):
-        self.name = name
-        self.type = type
-        self.firstAppearance = firstAppearance
-        self.levelOfFear = levelOfFear
-        self.size = size
-        self.danger = danger
-        self.rarity = rarity
-        self.deletedAt = deletedAt
 
 def getAll():
     cursor.execute('SELECT * FROM match')
     rows = cursor.fetchall()
     conn.commit()
-    conn.close()
+    
     return rows
 
-#todo
-# def getById(cardId):
-#     cursor.execute('SELECT * FROM card WHERE card_id = ?', (cardId,))
-#     rows = cursor.fetchall()
-#     conn.commit()
-#     conn.close()
-#     return rows
 
-#todo
-# def insert(card):
-#     try:
-#         cursor.execute('''
-#             INSERT INTO card (name, type, first_appearance, level_of_fear, size, danger, rarity, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-#         ''', card)
-#         conn.commit()
-#         conn.close()
-#     except Exception as e:
-#         print('Não foi possível inserir a carta: ',e)
+def getById(matchId):
+    cursor.execute('SELECT * FROM match WHERE match_id = ?', (matchId,))
+    rows = cursor.fetchall()
+    conn.commit()
+    return rows
+
+def getByAmountWinsByDeck(deckId):
+    cursor.execute('SELECT COUNT(*) FROM match WHERE winner_deck_id = ?', (deckId,))
+    rows = cursor.fetchall()
+    conn.commit()
+    return rows
+
+def getAmountWinsByUser(userId):
+    userDecksList = DeckController.getDeckByUser(userId)
+    userDecks = [decks[0]for decks in userDecksList]
+    amount = 0
+    for i in userDecks:
+        amountByDeckList = getByAmountWinsByDeck(i)
+        amountDeck = [quantity[0]for quantity in amountByDeckList][0]
+        amount = amount + amountDeck
+    print("Vitórias do usuario: ",amount)
+    return amount
+
+def insert(match):
+    try:
+        cursor.execute('''
+            INSERT INTO match (winner_deck_id, player1_deck_id, player2_deck_id) VALUES (?, ?, ?)
+        ''', match)
+        conn.commit()         
+    except Exception as e:
+        print('Não foi possível inserir a carta: ',e)
         
-    
-#todo
-# def delete(cardId):
-#     currentDate = datetime.now()
-#     cursor.execute('''
-#     UPDATE card
-#     SET deleted_at = ?
-#     WHERE card_id = ?
-#     ''', (currentDate, cardId))
-#     conn.commit()
-#     conn.close()
 
 type = [
     #todo
@@ -182,6 +175,7 @@ def main():
     print("Escolha uma opção:")
     print("1) GetAll")
     print("2) RoundResult")
+    print("3) getAmountWinsByUser")
     escolha = int(input())
 
     if escolha == 1:
@@ -198,6 +192,9 @@ def main():
         print("6) Rarity")
         attribute = int(input())
         RoundResult("Yeti","Bruxa","Slenderman",attribute)
+    elif escolha == 3:
+        userId = input('digte o userId: ')
+        matches = getAmountWinsByUser(userId)
 
 
 
