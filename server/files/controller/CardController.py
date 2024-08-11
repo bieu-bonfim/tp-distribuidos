@@ -11,8 +11,13 @@ def getAll():
     return row
 
 def getById(cardId):
-    print("entra aqui com o id: ", cardId)
     cursor.execute('SELECT * FROM card WHERE card_id = ?', (cardId,))
+    rows = cursor.fetchone()
+    conn.commit()
+    return rows
+
+def getNameById(cardId):
+    cursor.execute('SELECT name FROM card WHERE card_id = ?', (cardId,))
     rows = cursor.fetchone()
     conn.commit()
     return rows
