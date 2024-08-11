@@ -150,7 +150,7 @@ class Login(arcade.View):
         self.loginKey.draw()
 
         if self.valid_login:
-            menu_main = main_menu.MainMenu()
+            menu_main = main_menu.MainMenu(self.client)
             self.window.show_view(menu_main)
 
 

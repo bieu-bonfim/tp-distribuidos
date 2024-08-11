@@ -85,8 +85,9 @@ class Card(arcade.Sprite):
         return not self.is_face_up
 
 class EditDeck(arcade.View):
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
+        self.client = client
         self.pile_mat_list = None
         self.piles = None
         self.card_list = None
@@ -103,6 +104,8 @@ class EditDeck(arcade.View):
         self.deck3 = None
         self.choosed_deck = 1
 
+        self.cards_array = None
+
 
     def setup(self):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
@@ -113,6 +116,12 @@ class EditDeck(arcade.View):
         self.deck3 = arcade.SpriteList()
         self.deck_list = self.deck1
         
+        # --------------------------
+        data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
+        self.client.sendMessage(data)
+        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+        # --------------------------
+
         self.held_cards = []
 
         self.v_box = arcade.gui.UIBoxLayout()
@@ -383,3 +392,21 @@ class EditDeck(arcade.View):
     def on_hide_view(self):
         self.manager.disable()
         print("hide deck")
+
+    def receive_message(self, client_socket):
+        while True:
+            try:
+                data = client_socket.recv(1024)
+                print(f"DATA DATA - {data.decode()}")
+                data_dict = json.loads(data.decode("utf-8"))
+
+                self.cards_array = data_dict['response']['data']['cards']
+                print(self.cards_array)
+
+                        
+
+            except socket.error as e:
+                print(str(e))
+                break
+
+

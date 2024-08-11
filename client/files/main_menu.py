@@ -23,9 +23,9 @@ MIDDLE_Y = SCREEN_HEIGHT/2
 class MainMenu(arcade.View):
     """ Main application class. """
 
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
-
+        self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
@@ -67,7 +67,7 @@ class MainMenu(arcade.View):
 
     def on_click_edit(self, event):
         print("edit")
-        edit_window = edit_deck.EditDeck()
+        edit_window = edit_deck.EditDeck(self.client)
         edit_window.setup()
         self.window.show_view(edit_window)
     
