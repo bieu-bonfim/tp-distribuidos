@@ -6,6 +6,8 @@ class LobbyManager:
         
     def createLobby(self, client):
         lobby = self.lobbyController.createLobby(client)
+        client.in_lobby = True
+        client.current_lobby = lobby.index
         return {
             'header': 'lobby_created', 
             'response': {
@@ -92,13 +94,44 @@ class LobbyManager:
                     }
                 }
             }
-        client.in_lobby = True
         lobby = self.lobbyController.addPlayer(int(index), client)
+        client.in_lobby = True
+        client.current_lobby = index
         return {
             'header': 'join_lobby',
             'response': {
                 'status': 'success',
                 'message': 'Entrou na sala com sucesso',
+                'data': {
+                    'lobby': {
+                        'index': lobby.index,
+                        'name': lobby.name,
+                        'players': len(lobby.players),
+                        'status': lobby.status
+                    }
+                }
+            }
+        }
+        
+    def leaveLobby(self, client):
+        if client.in_lobby == False:
+            return {
+                'header': 'leave_lobby',
+                'response': {
+                    'status': 'error',
+                    'message': 'Não está em nenhuma sala',
+                    'data': {
+                        'lobby': {}
+                    }
+                }
+            }
+        lobby = self.lobbyController.removePlayer(client.current_lobby, client)
+        client.in_lobby = False
+        return {
+            'header': 'leave_lobby',
+            'response': {
+                'status': 'success',
+                'message': 'Saiu da sala com sucesso',
                 'data': {
                     'lobby': {
                         'index': lobby.index,

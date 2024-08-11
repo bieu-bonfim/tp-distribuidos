@@ -21,6 +21,7 @@ class SocketServer():
         self.socketServer.listen()
         print('Server started!')
         shutdown_thread = threading.Thread(target=self.serverShutdown, daemon=True)
+        shutdown_thread.start()
         while True:
             conn, addr = self.socketServer.accept()
             client = Client(conn, addr, (len(self.clients) + 1))
@@ -35,6 +36,7 @@ class SocketServer():
         for client in self.clients:
             client.conn.sendall(bytes(json.dumps({'header': 'Server stopped'}), encoding="utf-8"))
             client.conn.close()
+        self.socketServer.shutdown(socket.SHUT_RDWR)
         self.socketServer.close()
         print('Server stopping...')
         
