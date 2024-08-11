@@ -1,75 +1,74 @@
 from datetime import datetime
 import random
+from controller.CardController import CardController
 import sqlite3
-conn = sqlite3.connect('../database/cryptid.db')
-cursor = conn.cursor()
 
-def getAll():
-    cursor.execute('SELECT * FROM user_cards')
-    rows = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return rows
-
-def getCardByUser(userId):
-    cursor.execute('SELECT c.name FROM user_cards uc INNER JOIN card c on uc.card_id = c.card_id WHERE user_id = ?', (userId,))
-    rows = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return rows
-
-def buyBooster(userId):
-    numeros = [random.randint(1, 27),random.randint(1, 27),random.randint(1, 27)]
-    print("numeros: ", numeros)
-    userCard1 = (userId, numeros[0], 1)
-    userCard2 = (userId, numeros[1], 1)
-    userCard3 = (userId, numeros[2], 1)
-    insert(userCard1)
-    insert(userCard2)
-    insert(userCard3)
-
-def insert(user_card):
-    try:
-        cursor.execute('''
-            INSERT INTO user_cards (user_id, card_id, quantity) VALUES (?, ?, ?)
-        ''', user_card)
-        conn.commit()
-    except Exception as e:
-        print('Não foi possível inserir o deck: ',e)
-        
+class UserCardsController:
+    def __init__(self, conn):
+        self.conn = conn
+        self.cursor = conn.cursor()
+        self.cardController = CardController(conn)
     
+    def getAll(self):
+        self.cursor.execute('SELECT * FROM user_cards')
+        rows = self.cursor.fetchall()
+        self.conn.commit()
 
+        return rows
 
-def main():
-    print("Escolha uma opção:")
-    print("1) GetAll")
-    print("2) GetCardByUser")
-    print("3) Insert")
-    print("4) BuyBooster")
-    escolha = int(input())
+    def getCardNameByUser(self, userId):
+        self.cursor.execute('SELECT c.name FROM user_cards uc INNER JOIN card c on uc.card_id = c.card_id WHERE user_id = ?', (userId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
 
-    if escolha == 1:
-        decks = getAll()
-        for deck in decks:
-            print(deck)
+        return rows
 
-    elif escolha == 2:
-        deckId = int(input('digte o id: '))
-        deck = getCardByUser(deckId)
-        print(deck)
+    def getCardIdByUser(self, userId):
+        self.cursor.execute('SELECT c.card_id FROM user_cards uc INNER JOIN card c on uc.card_id = c.card_id WHERE user_id = ?', (userId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
 
-    elif escolha == 3:
-        deck = input('digte o id do usuario: ')
-        carta = input('digte o id da carta: ') 
-        quantidade = input('digte a quantidade: ')
-        deckCard = (deck, carta, quantidade)
-        insert(deckCard)
-        print('inserido com sucesso')
-        print(deckCard)
-    elif escolha == 4:
-        userId = int(input('digte o id: '))
-        userCard = buyBooster(userId)
-        print(userCard)
+        return rows
 
-if __name__ == "__main__":
-    main()
+    def getQuantityCardByUser(self, userId, cardId):
+        self.cursor.execute('SELECT uc.quantity FROM user_cards uc WHERE user_id = ? and card_id = ?', (userId, cardId))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+
+    def buyBooster(self, userId):
+        cardIdBooster = random.sample(range(1, 28), 3)
+        userCardsTuple = self.getCardIdByUser(userId)
+        idCardUser = [item[0] for item in userCardsTuple]
+        for cardId in cardIdBooster:
+            if cardId not in idCardUser:
+                userCard = (userId, cardId, 1)
+                self.insert(userCard)
+                print("Carta nova inserida com sucesso, você ganhou um: ", self.cardController.getNameById(cardId))
+            else:
+                quantity = self.getQuantityCardByUser(userId, cardId)
+                newQuantity = [q[0]for q in quantity][0] + 1
+                userCard = (userId, cardId, newQuantity)
+                self.updateQuantityCard(userCard)
+                print("Você já possuía esta carta, agora você tem ", newQuantity," ", self.cardController.getNameById(cardId))
+
+    def insert(self, user_card):
+        try:
+            self.cursor.execute('''
+                INSERT INTO user_cards (user_id, card_id, quantity) VALUES (?, ?, ?)
+            ''', user_card)
+            self.conn.commit()
+        except Exception as e:
+            print('Não foi possível inserir o deck: ',e)
+            
+    def updateQuantityCard(self, userCard):
+        try:
+            self.cursor.execute('''
+            UPDATE user_cards
+            SET quantity = ?
+            WHERE user_id = ? and card_id = ?
+            ''', (userCard))
+            self.conn.commit()
+        except Exception as e:
+            print('Não foi possível inserir o deck: ',e)
+

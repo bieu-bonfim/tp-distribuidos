@@ -1,0 +1,30 @@
+{
+  "header": "show_user_inventory", 
+  "response": 
+  {
+    "status": "success", 
+    "message": "Cartas do usuário", 
+    "data": 
+    {
+      "cards": ["Anunnaki", "Ashtar Sheran", "Pé Grande", "O Bloop", "Chupacabra", "Fada", "Gnomo", "Mapinguari", "Megalodon", "Mothman", "Poltergeist", "Sereia", "Skin Walker", "E.T. de Varginha", "Wendigo", "Yeti"], 
+      "decks": [
+        {
+          "deck_id": 1, 
+          "cards": ["Anunnaki", "Ashtar Sheran", "Pé Grande", "O Bloop", "Anunnaki"]
+        },
+        {
+          "deck_id": 3, 
+          "cards": ["Anunnaki", "Ashtar Sheran", "Pé Grande", "O Bloop", "Anunnaki"]
+        },
+        {
+          "deck_id": 5, 
+          "cards": ["Anunnaki", "Ashtar Sheran", "Pé Grande", "O Bloop", "Anunnaki"]
+        },
+        {
+          "deck_id": 6, 
+          "cards": ["Anunnaki", "Ashtar Sheran", "Pé Grande", "O Bloop", "Anunnaki"]
+        }
+      ]
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import json
 from app.AuthManager import AuthManager
 from app.GameManager import GameManager
+from app.InventoryManager import InventoryManager
 import time as t
 import sqlite3
 
@@ -11,6 +12,7 @@ class RequestHandler:
         self.db_conn = sqlite3.connect('database/cryptid.db')
         self.authManager = AuthManager(self.db_conn)
         self.gameManager = GameManager(self.db_conn)
+        self.inventoryManager = InventoryManager(self.db_conn)
 
     def handleRequest(self):
         while True:
@@ -45,12 +47,17 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
-            print('join_lobby')
         elif header == 'start_game':
             # result = self.gameManager.startGame(body['lobby'])
             self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
             # result = self.gameManager.startGame(body['lobby'])
-            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
+            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
+        elif header == 'end_game':
+            # result = self.gameManager.startGame(body['lobby'])
+            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
+        elif header == 'manage_inventory':
+            result = self.inventoryManager.showUserInventory(body['user_id'])
+            print(result)
         
         return result

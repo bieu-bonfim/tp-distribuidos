@@ -1,78 +1,65 @@
 from datetime import datetime
 import sqlite3
-conn = sqlite3.connect('../database/cryptid.db')
-cursor = conn.cursor()
 
-def getAll():
-    cursor.execute('SELECT * FROM deck')
-    rows = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return rows
-def getById(deckId):
-    cursor.execute('SELECT * FROM deck WHERE deck_id = ?', (deckId,))
-    rows = cursor.fetchall()
-    conn.commit()
-    conn.close()
-    return rows
-def insert(deck):
-    try:
-        cursor.execute('''
-            INSERT INTO deck (valid, name, user_id) VALUES (?, ?, ?)
-        ''', deck)
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print('Não foi possível inserir o deck: ',e)
+class DeckController:
+    def __init__(self, conn):
+        self.conn = conn
+        self.cursor = conn.cursor()
+
+    def getAll(self):
+        self.cursor.execute('SELECT * FROM deck')
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+    
+    def getById(self, deckId):
+        self.cursor.execute('SELECT * FROM deck WHERE deck_id = ?', (deckId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+
+    def getAmountDeckByUser(self, userId):
+        self.cursor.execute('SELECT COUNT(*) FROM deck WHERE user_id = ?', (userId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+
+    def getDeckByUser(self, userId):
+        self.cursor.execute('SELECT deck_id FROM deck WHERE user_id = ?', (userId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+
+    def insert(self, deck):
+        try:
+            amountDecks = self.getAmountDeckByUser(deck[2])
+            amount = [quantity[0]for quantity in amountDecks][0]
+            if(amount <= 3):
+                self.cursor.execute('''
+                    INSERT INTO deck (valid, name, user_id) VALUES (?, ?, ?)
+                ''', deck)
+                self.conn.commit()
+                print("Deck inserido com sucesso!")
+            else:
+                print("O usuário pode ter no máximo 3 Decks")
+        except Exception as e:
+            print('Não foi possível inserir o deck: ',e)
+            
         
-    
-def update(self, username, email, password, createAt, deletedAt):
-    self.username = username
-    self.email = email
-    self.password = password
-    self.createAt = createAt
-    self.deletedAt = deletedAt
-    
-def delete(deckId):
-    currentDate = datetime.now()
-    cursor.execute('''
-    UPDATE deck
-    SET deleted_at = ?
-    WHERE deck_id = ?
-    ''', (currentDate, deckId))
-    conn.commit()
-    conn.close()
+    def update(self, username, email, password, createAt, deletedAt):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.createAt = createAt
+        self.deletedAt = deletedAt
+        
+    def delete(self, deckId):
+        currentDate = datetime.now()
+        self.cursor.execute('''
+        UPDATE deck
+        SET deleted_at = ?
+        WHERE deck_id = ?
+        ''', (currentDate, deckId))
+        self.conn.commit()
 
-def main():
-    print("Escolha uma opção:")
-    print("1) GetAll")
-    print("2) GetById")
-    print("3) Insert")
-    print("4) Delete")
-    escolha = int(input())
 
-    if escolha == 1:
-        decks = getAll()
-        for deck in decks:
-            print(deck)
-
-    elif escolha == 2:
-        deckId = int(input('digte o id: '))
-        deck = getById(deckId)
-        print(deck)
-
-    elif escolha == 3:
-        valid = input('digte o valid: ')
-        name = input('digte o name: ')
-        userId = input('digte a userId: ')
-        deck = (valid, name, userId)
-        insert(deck)
-        print('usuário inserido com sucesso')
-        print(deck)
-    
-    elif escolha == 4:
-        deckId = int(input('digte o id: '))
-        deck = delete(deckId)
-
-if __name__ == "__main__":
-    main()
