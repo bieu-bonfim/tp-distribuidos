@@ -188,6 +188,7 @@ class EditDeck(arcade.View):
         )
 
         while self.cards_array == None:
+            time.sleep(3)
             print("Carregando cartas...")
 
         for card_name in self.cards_array:
@@ -238,7 +239,7 @@ class EditDeck(arcade.View):
         self.choosed_deck = 3
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu()
+        menu = main_menu.MainMenu(self.client)
         self.window.show_view(menu)
 
     def on_draw(self):
