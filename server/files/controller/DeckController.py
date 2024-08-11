@@ -7,21 +7,37 @@ def getAll():
     cursor.execute('SELECT * FROM deck')
     rows = cursor.fetchall()
     conn.commit()
-    conn.close()
     return rows
 def getById(deckId):
     cursor.execute('SELECT * FROM deck WHERE deck_id = ?', (deckId,))
     rows = cursor.fetchall()
     conn.commit()
-    conn.close()
     return rows
+
+def getAmountDeckByUser(userId):
+    cursor.execute('SELECT COUNT(*) FROM deck WHERE user_id = ?', (userId,))
+    rows = cursor.fetchall()
+    conn.commit()
+    return rows
+
+def getDeckByUser(userId):
+    cursor.execute('SELECT deck_id FROM deck WHERE user_id = ?', (userId,))
+    rows = cursor.fetchall()
+    conn.commit()
+    return rows
+
 def insert(deck):
     try:
-        cursor.execute('''
-            INSERT INTO deck (valid, name, user_id) VALUES (?, ?, ?)
-        ''', deck)
-        conn.commit()
-        conn.close()
+        amountDecks = getAmountDeckByUser(deck[2])
+        amount = [quantity[0]for quantity in amountDecks][0]
+        if(amount <= 3):
+            cursor.execute('''
+                INSERT INTO deck (valid, name, user_id) VALUES (?, ?, ?)
+            ''', deck)
+            conn.commit()
+            print("Deck inserido com sucesso!")
+        else:
+            print("O usuário pode ter no máximo 3 Decks")
     except Exception as e:
         print('Não foi possível inserir o deck: ',e)
         
@@ -41,7 +57,6 @@ def delete(deckId):
     WHERE deck_id = ?
     ''', (currentDate, deckId))
     conn.commit()
-    conn.close()
 
 def main():
     print("Escolha uma opção:")
@@ -67,7 +82,6 @@ def main():
         userId = input('digte a userId: ')
         deck = (valid, name, userId)
         insert(deck)
-        print('usuário inserido com sucesso')
         print(deck)
     
     elif escolha == 4:
