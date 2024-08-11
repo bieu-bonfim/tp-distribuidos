@@ -4,6 +4,7 @@ class UserController:
     def __init__(self, conn):
         self.conn = conn
         self.cursor = conn.cursor()
+        self.deckController = DeckController(conn)
     
     def getAll(self):
         self.cursor.execute('SELECT * FROM user')
@@ -38,12 +39,12 @@ class UserController:
                     INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
                 ''', user)
                 userId = self.getIdByUsername(username)
-                deck1 = ("Sim", "Deck 1", userId)
-                deck2 = ("Sim", "Deck 2", userId)
-                deck3 = ("Sim", "Deck 3", userId)
-                DeckController.insert(deck1)
-                DeckController.insert(deck2)
-                DeckController.insert(deck3)
+                deck1 = ("Sim", "Deck 1", userId[0])
+                deck2 = ("Sim", "Deck 2", userId[0])
+                deck3 = ("Sim", "Deck 3", userId[0])
+                self.deckController.insert(deck1)
+                self.deckController.insert(deck2)
+                self.deckController.insert(deck3)
                 self.conn.commit()
                 return True
             else:
