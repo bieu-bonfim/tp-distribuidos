@@ -52,14 +52,14 @@ class RequestHandler:
         elif header == 'leave_lobby':
             result = self.socket_server.lobbyManager.leaveLobby(self.client)
         elif header == 'start_game':
-            # result = self.gameManager.startGame(body['lobby'])
-            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
+            result = self.gameManager.startGame(self.client.current_lobby)
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
-            # result = self.gameManager.startGame(body['lobby'])
-            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
+            result = self.gameManager.playCard(self.client.current_lobby, body['card_id'])
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
         elif header == 'end_game':
-            # result = self.gameManager.startGame(body['lobby'])
-            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
+            result = self.gameManager.endGame(self.client.current_lobby)
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':
