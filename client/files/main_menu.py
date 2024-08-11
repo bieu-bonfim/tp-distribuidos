@@ -51,14 +51,14 @@ class MainMenu(arcade.View):
         self.flag_game = 0
         self.flag_shop = 0
 
-
-        arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
+        self.background = arcade.load_texture("/home/sprites/main_menu.png")
 
         # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
                 anchor_y="center_y",
+                align_y=-200,
                 child=self.v_box)
         )
 
@@ -70,7 +70,7 @@ class MainMenu(arcade.View):
         edit_window = edit_deck.EditDeck()
         edit_window.setup()
         self.window.show_view(edit_window)
-
+    
     def on_click_shop(self, event):
         print("shop")
 
@@ -98,6 +98,7 @@ class MainMenu(arcade.View):
         """ Render the screen. """
         # Clear the screen
         self.clear()
+        arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
 
         #arcade.draw_rectangle_filled(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.WHITE)
@@ -105,20 +106,3 @@ class MainMenu(arcade.View):
         
         # Draw the text
         #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
-
-
-
-def start_menu():
-    
-    #port = int(input('Enter port: '))
-
-    #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #s.connect((host, port))
-
-
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = MainMenu()
-    window.show_view(start_view)
-    start_view.setup()
-    #arcade.run()
-    #return s

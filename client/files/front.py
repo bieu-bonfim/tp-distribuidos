@@ -150,33 +150,39 @@ class MyGame(arcade.Window):
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
 
-        tipo_button = arcade.gui.UIFlatButton(text="Tipo", width=200)
+        tipo_button = arcade.gui.UIFlatButton(text="Tipo", width=200, height = 30)
         self.v_box.add(tipo_button.with_space_around(bottom=15))
         tipo_button.on_click = self.on_click_tipo
 
-        tamanho_button = arcade.gui.UIFlatButton(text="Tamanho", width=200)
+        tamanho_button = arcade.gui.UIFlatButton(text="Tamanho", width=200, height = 30)
         self.v_box.add(tamanho_button.with_space_around(bottom=15))
         tamanho_button.on_click = self.on_click_tamanho
 
-        perigo_button = arcade.gui.UIFlatButton(text="Perigo", width=200)
+        perigo_button = arcade.gui.UIFlatButton(text="Perigo", width=200, height = 30)
         self.v_box.add(perigo_button.with_space_around(bottom=15))
         perigo_button.on_click = self.on_click_perigo
 
-        medo_button = arcade.gui.UIFlatButton(text="Medo", width=200)
+        medo_button = arcade.gui.UIFlatButton(text="Medo", width=200, height = 30)
         self.v_box.add(medo_button.with_space_around(bottom=15))
         medo_button.on_click = self.on_click_medo
 
-        avistamento_button = arcade.gui.UIFlatButton(text="Avistamento", width=200)
+        avistamento_button = arcade.gui.UIFlatButton(text="Raridade", width=200, height = 30)
+        self.v_box.add(avistamento_button.with_space_around(bottom=15))
+        avistamento_button.on_click = self.on_click_avistamento
+        
+        avistamento_button = arcade.gui.UIFlatButton(text="Avistamento", width=200, height = 30)
         self.v_box.add(avistamento_button.with_space_around(bottom=15))
         avistamento_button.on_click = self.on_click_avistamento
 
-        confirmar_button = arcade.gui.UIFlatButton(text="Escolher Carta", width=200)
+
+        confirmar_button = arcade.gui.UIFlatButton(text="Escolher Carta", width=200, height = 40)
         confirmar_button.on_click = self.on_click_confirmar
 
         # Sprite list with all the cards, no matter what pile they are in.
         self.card_list = None
 
-        arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
+        self.background = arcade.load_texture("/home/sprites/game_screen.png")
+        #arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
 
         # List of cards we are dragging with the mouse
         self.held_cards = None
@@ -224,7 +230,7 @@ class MyGame(arcade.Window):
                 anchor_x="center_x",
                 anchor_y="center_y",
                 align_x=510,
-                align_y=-240,
+                align_y=-280,
                 child=self.v_box)
         )
 
@@ -292,12 +298,12 @@ class MyGame(arcade.Window):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
         # Create the mats for the bottom face down and face up piles
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
+        pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = START_X, BOTTOM_Y
         self.pile_mat_list.append(pile)
 
         # Create the mats for the bottom face down and face up piles
-        pile = arcade.SpriteSolidColor((MAT_WIDTH*3), MAT_HEIGHT, arcade.color.ARSENIC)
+        pile = arcade.Sprite("/home/sprites/hand.png", scale=0.2)
         pile.position = (START_X+ 510), BOTTOM_Y
         self.pile_mat_list.append(pile)
 
@@ -306,21 +312,21 @@ class MyGame(arcade.Window):
         #self.pile_mat_list.append(pile)
 
 
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
+        pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = MIDDLE_SCREEN_X, (MIDDLE_SCREEN_Y + 120)
         self.pile_mat_list.append(pile)
 
         # pilha segundo jogador
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
+        pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
         self.p2.mat = pile
 
         # pilha terceiro jogador
-        pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
+        pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, (MIDDLE_SCREEN_Y + 270)
         self.p3.mat = pile
 
-        pile = arcade.SpriteSolidColor(SHOWCASE_MAT_WIDTH, SHOWCASE_MAT_HEIGHT, arcade.csscolor.GREY)
+        pile = arcade.Sprite("/home/sprites/preview_card_mat.png", scale=0.35)
         pile.position = END_X, TOP_Y_SHOWCASE
         self.pile_mat_list.append(pile)
 
@@ -397,6 +403,9 @@ class MyGame(arcade.Window):
         """ Render the screen. """
         # Clear the screen
         self.clear()
+        arcade.start_render()
+
+        arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
 
         # Draw the mats the cards go on to
@@ -406,8 +415,6 @@ class MyGame(arcade.Window):
 
         # Draw the cards
         self.card_list.draw()
-
-        arcade.draw_lrtb_rectangle_outline(left=0, right=SCREEN_WIDTH, top=SCREEN_HEIGHT, bottom=0, color=arcade.color.BLACK, border_width=3)
 
         arcade.draw_text(
             self.p1.name,

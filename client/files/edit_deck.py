@@ -9,6 +9,7 @@ import arcade.gui
 from arcade import load_texture
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
+import main_menu
 
 # screen width - 1412
 CARD_SCALE = 0.2
@@ -42,14 +43,12 @@ CARD_NAMES = ["bigfoot", "chupacabra", "mothman", "ness", "ufo", "anunnaki", "as
               "greys", "kraken", "mapinguari", "megalodon", "nightcrawler", "poltergeist", "reptilian", "siren", 
               "skinwalker", "slenderman", "thunderbird", "vampire", "varginha", "wendigo", "werewolf", "witch", "yeti"]
 
-PILE_COUNT = 7
+PILE_COUNT = 5
 CARDS1 = 0
 CARDS2 = 1
 DECK1 = 2
 DECK2 = 3
 DECK3 = 4
-DECK4 = 5
-DECK5 = 6
 
 class Card(arcade.Sprite):
     """ Card sprite """
@@ -99,14 +98,49 @@ class EditDeck(arcade.View):
         self.last_hovered_card = None
         self.current_hovered_card = None
         self.deck_list = None
+        self.deck1 = None
+        self.deck2 = None
+        self.deck3 = None
+        self.choosed_deck = 1
 
 
     def setup(self):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
         self.card_list = arcade.SpriteList()
-        self.deck_list = arcade.SpriteList()
+        self.deck1 = arcade.SpriteList()
+        self.deck2 = arcade.SpriteList()
+        self.deck3 = arcade.SpriteList()
+        self.deck_list = self.deck1
+        
         self.held_cards = []
+
+        self.v_box = arcade.gui.UIBoxLayout()
+        self.deck_box = arcade.gui.UIBoxLayout()
+
+        deck1_button = arcade.gui.UIFlatButton(text="Deck 1", width=200, height = 30)
+        self.deck_box.add(deck1_button.with_space_around(bottom=15))
+        deck1_button.on_click = self.on_click_deck1
+
+        deck2_button = arcade.gui.UIFlatButton(text="Deck 2", width=200, height = 30)
+        self.deck_box.add(deck2_button.with_space_around(bottom=15))
+        deck2_button.on_click = self.on_click_deck2
+
+        deck3_button = arcade.gui.UIFlatButton(text="Deck 3", width=200, height = 30)
+        self.deck_box.add(deck3_button.with_space_around(bottom=15))
+        deck3_button.on_click = self.on_click_deck3
+
+        tipo_button = arcade.gui.UIFlatButton(text="Salvar Deck", width=200, height = 40)
+        self.v_box.add(tipo_button.with_space_around(bottom=15))
+        tipo_button.on_click = self.on_click_salvar
+
+        tamanho_button = arcade.gui.UIFlatButton(text="Escolher Deck", width=200, height = 40)
+        self.v_box.add(tamanho_button.with_space_around(bottom=15))
+        tamanho_button.on_click = self.on_click_escolher
+
+        tamanho_button = arcade.gui.UIFlatButton(text="Voltar", width=200, height = 40)
+        self.v_box.add(tamanho_button.with_space_around(bottom=15))
+        tamanho_button.on_click = self.on_click_voltar
 
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.CORDOVAN)
         pile.position = START_X, TOP_Y_SHOWCASE + 100
@@ -117,7 +151,7 @@ class EditDeck(arcade.View):
         self.pile_mat_list.append(pile)
 
         pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.ARSENIC)
-        pile.position = START_X + (MAT_WIDTH*2.5), TOP_Y_SHOWCASE + 100
+        pile.position = START_X + (MAT_WIDTH*2.5) + 150, TOP_Y_SHOWCASE + 100
         self.pile_mat_list.append(pile)
 
 
@@ -125,6 +159,24 @@ class EditDeck(arcade.View):
         pile.position = END_X, TOP_Y_SHOWCASE
         self.pile_mat_list.append(pile)
         
+        # Create a widget to hold the v_box widget, that will center the buttons
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                align_x= 40,
+                align_y= -320,
+                child=self.deck_box)
+        )
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center_x",
+                anchor_y="center_y",
+                align_x=510,
+                align_y=-320,
+                child=self.v_box)
+        )
 
 
         for card_name in CARD_NAMES:
@@ -155,15 +207,40 @@ class EditDeck(arcade.View):
         for card in self.piles[CARDS2]:
             card.position = START_X + MAT_WIDTH, (TOP_Y_SHOWCASE + 100) - (30*count)
             count += 1
+            
+    def on_click_salvar(self, event):
+        print("salvar")
 
+    def on_click_escolher(self, event):
+        print("Escolher")
+
+    def on_click_deck1(self, event):
+        self.choosed_deck = 1
+
+    def on_click_deck2(self, event):
+        self.choosed_deck = 2
+
+    def on_click_deck3(self, event):
+        self.choosed_deck = 3
+
+    def on_click_voltar(self, event):
+        menu = main_menu.MainMenu()
+        self.window.show_view(menu)
 
     def on_draw(self):
         self.clear()
         self.manager.draw()
         self.pile_mat_list.draw()
         self.card_list.draw()
-        self.deck_list.draw()
-
+        if self.choosed_deck == 1:
+            self.deck_list = self.deck1
+            self.deck_list.draw()
+        if self.choosed_deck == 2:
+            self.deck_list = self.deck2
+            self.deck_list.draw()
+        if self.choosed_deck == 3:
+            self.deck_list = self.deck3
+            self.deck_list.draw()
 
         if self.current_hovered_card:
             amplified_card = arcade.Sprite(self.current_hovered_card.image_file_name, SHOWCASE_CARD_SCALE)
@@ -184,8 +261,9 @@ class EditDeck(arcade.View):
 
     def handle_hover(self, x, y):
         """ Handle card hover action """
-        # Get the card currently under the mouse pointer
         cards = arcade.get_sprites_at_point((x, y), self.card_list)
+
+
 
         # If hovering over a card, change its appearance or perform an action
         if len(cards) > 0:
@@ -229,16 +307,16 @@ class EditDeck(arcade.View):
             if self.held_cards[0] in self.piles[CARDS1] or self.held_cards[0] in self.piles[CARDS2]:
                 print(self.held_cards[0].name)
                 card = Card(self.held_cards[0].name, CARD_SCALE)
-                self.add_card(card, DECK1)
+                self.add_card(card, self.choosed_deck + 1)
 
         
         elif len(cards_deck) > 0:
             primary_card_deck = cards_deck[-1]
             self.held_cards_deck = [primary_card_deck]
 
-            if self.held_cards_deck[0] in self.piles[DECK1]:
+            if self.held_cards_deck[0] in self.piles[self.choosed_deck + 1]:
                 print("Deletar")
-                self.remove_card(self.held_cards_deck[0], DECK1)
+                self.remove_card(self.held_cards_deck[0], self.choosed_deck + 1)
 
 
 
@@ -272,17 +350,27 @@ class EditDeck(arcade.View):
         self.piles[pile_index].append(card)
 
     def add_card(self, card, pile_index):
-        self.piles[pile_index].append(card)
-        self.deck_list.append(card)
-        card.faceUp()
-        self.show_deck(pile_index)
+        if self.is_valid_card(card, pile_index):
+            self.piles[pile_index].append(card)
+            self.deck_list.append(card)
+            card.faceUp()
+            self.show_deck(pile_index)
 
-
+    def is_valid_card(self, card, pile_index):
+        count = 0
+        for card_search in self.piles[pile_index]:
+            if card_search.name == card.name:
+                count += 1
+        
+        if count == 3:
+            return False
+        elif count < 3 and len(self.piles[pile_index]) < 9:
+            return True
 
     def show_deck(self, pile_index):
         count = 0
         for card in self.piles[pile_index]:
-            card.position = START_X + (MAT_WIDTH*2.5), (TOP_Y_SHOWCASE + 100) - (30*count)
+            card.position = START_X + (MAT_WIDTH*2.5) + 150, (TOP_Y_SHOWCASE + 100) - (30*count)
             count += 1
 
         
