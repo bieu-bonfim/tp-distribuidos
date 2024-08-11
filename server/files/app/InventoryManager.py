@@ -20,6 +20,8 @@ class InventoryManager:
       for card in deck_cards:
         deck_card_obj.append(card[1])
       decks_obj.append({"deck_id": deck[0], "cards": deck_card_obj})
+      deck_card_obj = []
+      
     
     return {
       'header': 'show_user_inventory',
