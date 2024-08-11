@@ -25,7 +25,7 @@ class UserCardsController:
 
     def getCardIdByUser(self, userId):
         self.cursor.execute('SELECT c.card_id FROM user_cards uc INNER JOIN card c on uc.card_id = c.card_id WHERE user_id = ?', (userId,))
-        rows = self.cursor.fetchall()
+        rows = self.cursor.fetchall()   
         self.conn.commit()
 
         return rows

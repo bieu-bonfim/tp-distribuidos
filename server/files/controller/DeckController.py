@@ -29,12 +29,20 @@ class DeckController:
         rows = self.cursor.fetchall()
         self.conn.commit()
         return rows
+    
+    def getUserByDeck(self, deckId):
+        self.cursor.execute('SELECT user_id FROM deck WHERE deck_id = ?', (deckId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
 
     def insert(self, deck):
         try:
+            print(deck)
             amountDecks = self.getAmountDeckByUser(deck[2])
             amount = [quantity[0]for quantity in amountDecks][0]
             if(amount <= 3):
+                print('executar inserção')
                 self.cursor.execute('''
                     INSERT INTO deck (valid, name, user_id) VALUES (?, ?, ?)
                 ''', deck)

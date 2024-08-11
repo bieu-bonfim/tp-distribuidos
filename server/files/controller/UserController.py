@@ -1,9 +1,10 @@
 from datetime import datetime
-
+from controller.DeckController import DeckController
 class UserController:
     def __init__(self, conn):
         self.conn = conn
         self.cursor = conn.cursor()
+        self.deckController = DeckController(conn)
     
     def getAll(self):
         self.cursor.execute('SELECT * FROM user')
@@ -14,6 +15,12 @@ class UserController:
     def getById(self, userId):
         self.cursor.execute('SELECT * FROM user WHERE user_id = ?', (userId,))
         rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+
+    def getIdByUsername(self, username):
+        self.cursor.execute('SELECT user_id FROM user WHERE username = ?', (username,))
+        rows = self.cursor.fetchone()
         self.conn.commit()
         return rows
 
@@ -31,6 +38,13 @@ class UserController:
                 self.cursor.execute('''
                     INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
                 ''', user)
+                userId = self.getIdByUsername(username)
+                deck1 = ("Sim", "Deck 1", userId[0])
+                deck2 = ("Sim", "Deck 2", userId[0])
+                deck3 = ("Sim", "Deck 3", userId[0])
+                self.deckController.insert(deck1)
+                self.deckController.insert(deck2)
+                self.deckController.insert(deck3)
                 self.conn.commit()
                 return True
             else:
