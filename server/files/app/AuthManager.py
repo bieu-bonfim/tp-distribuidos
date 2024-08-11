@@ -8,14 +8,16 @@ class AuthManager:
         print('Login calling database')
         result, id = self.userController.login(username, password)
         if result == False:
-            return {'header': 'login', 'response': {'status': 'error', 'message': 'Usuário ou senha inválidos'}}
+            return {'header': 'login', 'response': {'status': 'error', 'message': 'Usuário ou senha inválidos', 'data': {}}}
         return {
             'header': 'login', 
             'response': {
                 'status': 'success', 
                 'message': 'Usuário logado com sucesso', 
                 'data': {
-                    'user_id': id
+                    'user_id': id,
+                    'username': username,
+                    'email': self.userController.get_email(username),
                     }
                 }
             }
