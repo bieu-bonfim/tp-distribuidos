@@ -124,8 +124,17 @@ class EditDeck(arcade.View):
         
         # --------------------------
         data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
+        receiving_thread = threading.Thread(target=self.receive_message)
+        receiving_thread.start()
+        
         self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+        
+        while True:
+            time.sleep(1)
+            if self.is_loaded:
+                break
+
+        
         # --------------------------
         print(self.cards_array)
         self.held_cards = []
@@ -193,26 +202,11 @@ class EditDeck(arcade.View):
                 child=self.v_box)
         )
 
-        # SEMAFORO -----------------------------
-        print("ANTES DE COMEÇAR O LOOP ", self.cards_array)
-        while True:
-            time.sleep(2)
-            #sem.acquire()
-            print(self.cards_array)
-            if self.is_loaded:
-                break
-            print("Carregando cartas...")
-            #sem.release()
-
-        # ------------------------------------
-
         for card_name in self.cards_array:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, TOP_Y_SHOWCASE
             self.card_list.append(card)
             card.faceUp()
-
-        
 
         self.piles = [[] for _ in range(PILE_COUNT)]
 
@@ -442,19 +436,11 @@ class EditDeck(arcade.View):
         self.manager.disable()
         print("hide deck")
 
-    def receive_message(self, client_socket):
+    def receive_message(self):
         try:
-            data = client_socket.recv(1024)
-            #sem.acquire()
-            self.is_loaded = True
-            #print(f"DATA DATA - {data.decode('utf-8')}")
-            print(data)
-            data_dict = json.loads(data.decode("utf-8"))
-            print(data_dict)
+            data_dict = self.client.receiveMessage()
 
             self.cards_array = data_dict['response']['data']['cards']
-            print(self.cards_array)
-
             count = 0
             for deck in data_dict['response']['data']['decks']:
                 if count == 0:
@@ -468,11 +454,8 @@ class EditDeck(arcade.View):
                     print(self.deck3_cards)
                 count += 1
 
-            #sem.release()
-            print("bap")
+            self.is_loaded = True
                 
-                    
-
         except Exception as e:
             print(str(e))
                 
