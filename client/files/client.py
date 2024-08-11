@@ -14,7 +14,6 @@ class Client():
         
     def startClient(self):
         self.s.connect((self.host, self.port))
-        #threading.Thread(target=self.receiveMessage).start()
         print('Connected to server')
         
     def sendMessage(self, data):
@@ -33,7 +32,7 @@ class Client():
                 data = self.s.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
                 print(data_dict)
-
+                return data_dict
             except socket.error as e:
                 print(str(e))
                 break

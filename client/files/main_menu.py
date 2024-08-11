@@ -69,6 +69,7 @@ class MainMenu(arcade.View):
         print("edit")
         edit_window = edit_deck.EditDeck(self.client)
         edit_window.setup()
+        time.sleep(2)
         self.window.show_view(edit_window)
     
     def on_click_shop(self, event):

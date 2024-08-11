@@ -56,6 +56,8 @@ class RequestHandler:
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
             result = self.gameManager.playCard(self.client.current_lobby, body['card_id'])
+        elif header == 'choose_stat':
+            result = self.gameManager.chooseStat(self.client.current_lobby, body['stat'])
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
