@@ -58,8 +58,10 @@ class UserCardsController:
                 INSERT INTO user_cards (user_id, card_id, quantity) VALUES (?, ?, ?)
             ''', user_card)
             self.conn.commit()
+            return True
         except Exception as e:
             print('Não foi possível inserir o deck: ',e)
+            return False
             
     def updateQuantityCard(self, userCard):
         try:
@@ -69,6 +71,8 @@ class UserCardsController:
             WHERE user_id = ? and card_id = ?
             ''', (userCard))
             self.conn.commit()
+            return True
         except Exception as e:
             print('Não foi possível inserir o deck: ',e)
+            return False
 

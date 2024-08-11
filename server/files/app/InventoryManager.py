@@ -32,3 +32,21 @@ class InventoryManager:
         }
       }
     }
+    
+  def addCardToInventory(self, user_id, card_id):
+    if self.userCardsController.insert((user_id, card_id, 1)):
+      return {
+        'header': 'add_card_to_inventory',
+        'response': {
+          'status': 'success',
+          'message': 'Carta adicionada ao inventário do usuário'
+        }
+      }
+    else:
+      return {
+        'header': 'add_card_to_inventory',
+        'response': {
+          'status': 'error',
+          'message': 'Erro ao adicionar carta ao inventário do usuário'
+        }
+      }

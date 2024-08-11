@@ -58,6 +58,7 @@ class RequestHandler:
             self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
-            print(result)
+        elif header == 'add_card_to_inventory':
+            result = self.inventoryManager.addCardToInventory(body['user_id'], body['card_id'])
         
         return result

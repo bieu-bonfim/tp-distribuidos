@@ -45,6 +45,10 @@ class Client():
             if message == 'manage_inventory':
                 user_id = input('Enter id: ')
                 request = {'user_id': user_id}
+            if message == 'add_card_to_inventory':
+                user_id = input('Enter id: ')
+                card_id = input('Enter card id: ')
+                request = {'user_id': user_id, 'card_id': card_id}
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
         
