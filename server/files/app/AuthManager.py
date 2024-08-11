@@ -5,7 +5,6 @@ class AuthManager:
         self.userController = UserController(conn)
 
     def login(self, username, password):
-        print('Login calling database')
         result, user_id, username, email = self.userController.login(username, password)
         if result == False:
             return {'header': 'login', 'response': {'status': 'error', 'message': 'Usuário ou senha inválidos', 'data': {}}}
