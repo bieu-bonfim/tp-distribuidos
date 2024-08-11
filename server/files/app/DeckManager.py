@@ -1,6 +1,7 @@
 from controller.UserCardsController import UserCardsController
 from controller.DeckController import DeckController
 from controller.DeckCardsController import DeckCardsController
+from controller.CardController import CardController
 
 class DeckManager:
   def __init__(self, conn):
@@ -8,6 +9,7 @@ class DeckManager:
     self.userCardsController = UserCardsController(conn)
     self.deckController = DeckController(conn)
     self.deckCardsController = DeckCardsController(conn)
+    self.cardController = CardController(conn)
 
   def editDeck(self, deck_id, cards):
     deck = self.deckController.getById(deck_id)
@@ -23,7 +25,9 @@ class DeckManager:
       print("entrou aqui")
       self.deckCardsController.deleteByDeck(deck_id)
       for card in cards:
-        self.deckCardsController.insert((deck_id, card, 1))
+        card_id = self.cardController.getIdByName(card)[0]
+        print(f'Card id {card_id}')
+        self.deckCardsController.insert((deck_id, card_id, 1))
       return {
         'header': 'edit_deck',
         'response': {
