@@ -10,6 +10,7 @@ class Client():
         self.client_id = None
         self.client_name = None
         self.client_email = None
+        self.client_deck = 0
         
     def startClient(self):
         self.s.connect((self.host, self.port))
