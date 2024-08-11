@@ -1,0 +1,8 @@
+{
+  "header": "add_card_to_inventory", 
+  "response": 
+  {
+    "status": "success", 
+    "message": "Carta adicionada ao inventário do usuário"
+  }
+}
