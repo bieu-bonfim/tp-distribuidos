@@ -111,14 +111,11 @@ def getWinnerByFirstAppearance(card1, card2, card3):
     card1 = CardController.getByName(card1)
     card2 = CardController.getByName(card2)
     card3 = CardController.getByName(card3)
-    cards = [card1, card2, card3]
+    cardList = [card1, card2, card3]
 
-    # elements = [sub[3] for sub in cards]
-    # indices = [fear.index(element) for element in elements]
-    # winner = indices.index(max(indices))
-
-    # print("vencedor: ", cards[winner])
-    # return cards[winner]
+    cardListSorted = sorted(cardList, key=lambda item: item[3])
+    print("vencedor: ",cardListSorted[0])
+    return cardListSorted[0]
 
 def getWinnerByLevelOfFear(cardName1, cardName2, cardName3):
     card1 = CardController.getByName(cardName1)
@@ -137,13 +134,10 @@ def getWinnerBySize(card1, card2, card3):
     card1 = CardController.getByName(card1)
     card2 = CardController.getByName(card2)
     card3 = CardController.getByName(card3)
-    cards = [card1, card2, card3]
-    # elements = [sub[4] for sub in cards]
-    # indices = [fear.index(element) for element in elements]
-    # winner = indices.index(max(indices))
-
-    # print("vencedor: ", cards[winner])
-    # return cards[winner]
+    cardList = [card1, card2, card3]
+    cardListSorted = sorted(cardList, key=lambda item: item[5], reverse=True)
+    print("vencedor: ",cardListSorted[0])
+    return cardListSorted[0]
 
 def getWinnerByDanger(card1, card2, card3):
     card1 = CardController.getByName(card1)
