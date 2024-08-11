@@ -9,14 +9,12 @@ class UserController:
         self.cursor.execute('SELECT * FROM user')
         rows = self.cursor.fetchall()
         self.conn.commit()
-        self.conn.close()
         return rows
 
     def getById(self, userId):
         self.cursor.execute('SELECT * FROM user WHERE user_id = ?', (userId,))
         rows = self.cursor.fetchall()
         self.conn.commit()
-        self.conn.close()
         return rows
 
     def getByName(self, userName):
@@ -34,9 +32,9 @@ class UserController:
                     INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
                 ''', user)
                 self.conn.commit()
-                self.conn.close()
+                return True
             else:
-                print("Username já existente")
+                return False
         except Exception as e:
             print('Não foi possível inserir usuário: ',e)
             self.conn.rollback()
@@ -56,18 +54,14 @@ class UserController:
         WHERE user_id = ?
         ''', (currentDate, userId))
         self.conn.commit()
-        self.conn.close()
 
     def login(self, username, password):
         try:
             user = self.getByName(username)
-            print(user)
             if user != None and user[3] == password:
-                print("Login realizado com sucesso")
-                return True
+                return True, user[0], user[1], user[2]  # user_id, username, email
             else:
-                print("Credenciais inválidas")
-                return False
+                return False, 0
         except Exception as e:
             self.conn.rollback()
 
