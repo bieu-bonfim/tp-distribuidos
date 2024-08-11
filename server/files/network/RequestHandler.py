@@ -2,6 +2,7 @@ import json
 from app.AuthManager import AuthManager
 from app.GameManager import GameManager
 from app.InventoryManager import InventoryManager
+from app.DeckManager import DeckManager
 import time as t
 import sqlite3
 
@@ -13,6 +14,7 @@ class RequestHandler:
         self.authManager = AuthManager(self.db_conn)
         self.gameManager = GameManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
+        self.deckManager = DeckManager(self.db_conn)
 
     def handleRequest(self):
         while True:
@@ -60,5 +62,7 @@ class RequestHandler:
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':
             result = self.inventoryManager.addCardToInventory(body['user_id'], body['card_id'])
+        elif header == 'edit_deck':
+            result = self.deckManager.editDeck(body['deck_id'], body['cards'])
         
         return result

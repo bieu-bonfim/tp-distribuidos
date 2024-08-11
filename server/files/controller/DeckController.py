@@ -29,6 +29,12 @@ class DeckController:
         rows = self.cursor.fetchall()
         self.conn.commit()
         return rows
+    
+    def getUserByDeck(self, deckId):
+        self.cursor.execute('SELECT user_id FROM deck WHERE deck_id = ?', (deckId,))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
 
     def insert(self, deck):
         try:
