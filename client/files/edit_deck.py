@@ -103,7 +103,7 @@ class EditDeck(arcade.View):
         self.deck2 = None
         self.deck3 = None
         self.choosed_deck = 1
-
+        self.background = arcade.load_texture("/home/sprites/edit_deck_screen.png")
         self.cards_array = None
 
 
@@ -121,7 +121,7 @@ class EditDeck(arcade.View):
         self.client.sendMessage(data)
         threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
         # --------------------------
-
+        print(self.cards_array)
         self.held_cards = []
 
         self.v_box = arcade.gui.UIBoxLayout()
@@ -187,8 +187,10 @@ class EditDeck(arcade.View):
                 child=self.v_box)
         )
 
+        while self.cards_array == None:
+            print("Carregando cartas...")
 
-        for card_name in CARD_NAMES:
+        for card_name in self.cards_array:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, TOP_Y_SHOWCASE
             self.card_list.append(card)
@@ -218,7 +220,10 @@ class EditDeck(arcade.View):
             count += 1
             
     def on_click_salvar(self, event):
-        print("salvar")
+        if len(self.deck_list) < 9:
+            print("Deck precisa ter 9 cartas!")
+        else:
+            print("salvar")
 
     def on_click_escolher(self, event):
         print("Escolher")
@@ -238,6 +243,7 @@ class EditDeck(arcade.View):
 
     def on_draw(self):
         self.clear()
+        arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
         self.pile_mat_list.draw()
         self.card_list.draw()
