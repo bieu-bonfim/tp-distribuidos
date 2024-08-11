@@ -32,7 +32,7 @@ class DeckController:
 
     def insert(self, deck):
         try:
-            amountDecks = getAmountDeckByUser(deck[2])
+            amountDecks = self.getAmountDeckByUser(deck[2])
             amount = [quantity[0]for quantity in amountDecks][0]
             if(amount <= 3):
                 self.cursor.execute('''
