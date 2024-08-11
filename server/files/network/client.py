@@ -3,3 +3,4 @@ class Client():
         self.conn = conn
         self.address = address
         self.player = player 
+        self.in_lobby = False

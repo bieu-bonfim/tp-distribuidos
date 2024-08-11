@@ -31,6 +31,7 @@ class RequestHandler:
         header = request['header']
         body = request['request']
         result = {'header': 'invalid message'}
+        print(request)
         
         if header == 'login':
             result = self.authManager.login(body['username'], body['password'])
@@ -38,8 +39,18 @@ class RequestHandler:
             result = self.authManager.logout(body['username'])
         elif header == 'register':
             result = self.authManager.register(body['username'], body['password'], body['email'])
+        elif header == 'create_lobby':
+            result = self.socket_server.lobbyManager.createLobby(self.client)
+        elif header == 'available_lobbies':
+            result = self.socket_server.lobbyManager.getAvailableLobbies()
+        elif header == 'join_lobby':
+            result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
+            print('join_lobby')
+        elif header == 'start_game':
+            # result = self.gameManager.startGame(body['lobby'])
+            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
-            result = self.gameManager.play_card(body['card'])
-            self.socket_server.broadcastMessage(self.client.conn, body)
+            # result = self.gameManager.startGame(body['lobby'])
+            self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         
         return result

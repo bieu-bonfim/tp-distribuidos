@@ -29,6 +29,19 @@ class Client():
                 email = input('Enter email: ')
                 password = input('Enter password: ')
                 request = {'username': user, 'email': email, 'password': password}
+            if message == 'join_lobby':
+                index = input('Enter index: ')
+                request = {'index': index}
+            if message == 'create_lobby':
+                request = {}
+            if message == 'available_lobbies':
+                request = {}
+            if message == 'start_game':
+                index = input('Enter index: ')
+                request = {'index': index}
+            if message == 'play_card':
+                index = input('Enter index: ')
+                request = {'index': index}
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
         
@@ -43,20 +56,8 @@ class Client():
             try:
                 data = self.s.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
-                if data_dict['header'] == 'login':
-                    print(f"Received message: {data_dict['header']}")
-                    response = data_dict['response']
-                    print(f"Status: {response['status']}")
-                    print(f"Message: {response['message']}")
-                    print(f"Id: {response['data']['user_id']}")
-                if data_dict['header'] == 'register':
-                    print(f"Received message: {data_dict['header']}")
-                    response = data_dict['response']
-                    print(f"Status: {response['status']}")
-                    print(f"Message: {response['message']}")
-                    
-                else:
-                    print(f"Received message: {data_dict['header']}")
+                print(data_dict)
+
             except socket.error as e:
                 print(str(e))
                 break

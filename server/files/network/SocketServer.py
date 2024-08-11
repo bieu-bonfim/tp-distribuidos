@@ -2,8 +2,9 @@ import socket
 import threading
 import json
 import time as t
-from client import Client
+from network.client import Client
 from network.RequestHandler import RequestHandler
+from app.LobbyManager import LobbyManager
 
 class SocketServer():
     def __init__(self, host='0.0.0.0', port=8020):
@@ -11,6 +12,7 @@ class SocketServer():
         self.socketServer.bind((host, port))
         self.threads = list()
         self.clients = list()
+        self.lobbyManager = LobbyManager()
         self.db_semaphore = threading.Semaphore(1)
         print('Server created!')
 
@@ -55,25 +57,7 @@ class SocketServer():
             handler = RequestHandler(client, self)
             handler.handleRequest()
             client.conn.close()
-                
-                # data = client.conn.recv(1024)
-                # data_dict = json.loads(data.decode("utf-8"))
-                # header = data_dict['header']
-                # if header == 'exit':
-                #     self.serverStop()
-                #     break
-                # #
-                # manipulação dos dados com o json recebido já convertido
-                #
-                # header: enter_lobby <=> lobby_id : string
-                # header: create_lobby <=> none
-                # header: leave_lobby <=> none
-                # header: buy_booster <=> none
-                # header: create_deck <=> cards : list<string>
-                # header: manage_deck <=> deck_id: string, cards: list<string>
-                # header: select_deck <=> deck_id: string
-                # header: choose_card <=> card_id: string
-                # header: choose_stat <=> stat: string
-                # 
-                
-                # self.broadcastMessage(client.conn, data_dict)
+
+    def broadcastMessageToLobby(self, index, data_dict):
+        for player in self.lobbyManager.lobbyController.getLobby(int(index)).players:
+            self.sendMessage(player.conn, data_dict)
