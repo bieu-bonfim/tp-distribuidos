@@ -30,6 +30,13 @@ class CardController:
         rows = self.cursor.fetchone()
         self.conn.commit()
         return rows
+    
+    def getIdByName(self, cardName):
+        self.cursor.execute('SELECT card_id FROM card WHERE name = ?', (cardName,))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows
+    
     def insert(self, card):
         try:
             self.cursor.execute('''
