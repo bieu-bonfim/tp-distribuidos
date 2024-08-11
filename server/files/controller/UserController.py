@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from controller.DeckController import DeckController
 class UserController:
     def __init__(self, conn):
         self.conn = conn
@@ -17,6 +17,12 @@ class UserController:
         self.conn.commit()
         return rows
 
+    def getIdByUsername(self, username):
+        self.cursor.execute('SELECT user_id FROM user WHERE username = ?', (username,))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows
+
     def getByName(self, userName):
         self.cursor.execute('SELECT * FROM user WHERE username = ?', (userName,))
         rows = self.cursor.fetchone()
@@ -31,6 +37,13 @@ class UserController:
                 self.cursor.execute('''
                     INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
                 ''', user)
+                userId = self.getIdByUsername(username)
+                deck1 = ("Sim", "Deck 1", userId)
+                deck2 = ("Sim", "Deck 2", userId)
+                deck3 = ("Sim", "Deck 3", userId)
+                DeckController.insert(deck1)
+                DeckController.insert(deck2)
+                DeckController.insert(deck3)
                 self.conn.commit()
                 return True
             else:
