@@ -99,15 +99,16 @@ class KeyBox:
 class Login(arcade.View):
     """ Main application class. """
 
-    def __init__(self):
+    def __init__(self, client):
         super().__init__()
-
+        self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.loginText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-120, 250, 40) 
         self.loginKey = KeyBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-200, 250, 40) 
         self.active = False
         self.key_active = False
+        self.valid_login = False
 
 
         # Create a vertical BoxGroup to align buttons
@@ -134,8 +135,10 @@ class Login(arcade.View):
     def on_click_login(self, event):
         print(self.loginText.text)
         print(self.loginKey.text)
-        menu_main = main_menu.MainMenu()
-        self.window.show_view(menu_main)
+        data = {'header': 'login', 'request': {'username': self.loginText.text, 'password': self.loginKey.text}}
+        self.client.sendMessage(data)
+        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+
 
     def on_draw(self):
         """ Render the screen. """
@@ -160,6 +163,31 @@ class Login(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.loginText.on_mouse_press(x, y, button, modifiers)
             self.loginKey.on_mouse_press(x, y, button, modifiers)
+
+    def receive_message(self, client_socket):
+        while True:
+            try:
+                data = client_socket.recv(1024)
+                print(f"DATA DATA - {data.decode()}")
+                data_dict = json.loads(data.decode("utf-8"))
+
+                if self.valid_login:
+                    menu_main = main_menu.MainMenu()
+                    self.window.show_view(menu_main)
+                
+                if data_dict['header'] == 'login':
+                    if data_dict['response']['data'] != {}:
+                        print(data_dict)
+                        #self.client.client_id = data['user_id']
+                        #self.client.client_name = data['username']
+                        #self.client.client_email = data['email']
+                        #self.valid_login = True
+
+                        
+
+            except socket.error as e:
+                print(str(e))
+                break
 
 
 
