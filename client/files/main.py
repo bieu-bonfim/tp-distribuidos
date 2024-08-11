@@ -17,8 +17,6 @@ SCREEN_HEIGHT = 868
 SCREEN_TITLE = "Cryptids: The Conspiracy"
 BASE_MARGIN = 30
 
-time.sleep(5)
-
 def main():
 
     client = Client()

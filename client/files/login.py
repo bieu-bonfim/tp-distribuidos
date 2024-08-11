@@ -149,6 +149,10 @@ class Login(arcade.View):
         self.loginText.draw()
         self.loginKey.draw()
 
+        if self.valid_login:
+            menu_main = main_menu.MainMenu()
+            self.window.show_view(menu_main)
+
 
         #arcade.draw_rectangle_filled(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.WHITE)
         #arcade.draw_rectangle_outline(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.BLACK)
@@ -171,17 +175,15 @@ class Login(arcade.View):
                 print(f"DATA DATA - {data.decode()}")
                 data_dict = json.loads(data.decode("utf-8"))
 
-                if self.valid_login:
-                    menu_main = main_menu.MainMenu()
-                    self.window.show_view(menu_main)
+
                 
                 if data_dict['header'] == 'login':
                     if data_dict['response']['data'] != {}:
-                        print(data_dict)
-                        #self.client.client_id = data['user_id']
-                        #self.client.client_name = data['username']
-                        #self.client.client_email = data['email']
-                        #self.valid_login = True
+                        data = data_dict['response']['data']
+                        self.client.client_id = data['user_id']
+                        self.client.client_name = data['username']
+                        self.client.client_email = data['email']
+                        self.valid_login = True
 
                         
 
