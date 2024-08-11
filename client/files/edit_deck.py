@@ -183,7 +183,7 @@ class EditDeck(arcade.View):
         self.pile_mat_list.append(pile)
 
 
-        pile = arcade.SpriteSolidColor(SHOWCASE_MAT_WIDTH, SHOWCASE_MAT_HEIGHT, arcade.csscolor.GREY)
+        pile = arcade.Sprite("/home/sprites/preview_card_mat.png", scale=0.35)
         pile.position = END_X, TOP_Y_SHOWCASE
         self.pile_mat_list.append(pile)
         
@@ -278,10 +278,12 @@ class EditDeck(arcade.View):
                     }
                     }
             
+            self.client.sendMessage(send_deck)
             print(send_deck)
             print("salvar")
 
     def on_click_escolher(self, event):
+        self.client.client_deck = self.selected_deck_id
         print("Escolher")
 
     def on_click_deck1(self, event):
