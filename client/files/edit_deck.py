@@ -108,9 +108,13 @@ class EditDeck(arcade.View):
         self.background = arcade.load_texture("/home/sprites/edit_deck_screen.png")
         self.cards_array = None
         self.deck1_cards = None
+        self.deck1_id = None
         self.deck2_cards = None
+        self.deck2_id = None
         self.deck3_cards = None
+        self.deck3_id = None
         self.is_loaded = False
+        self.selected_deck_id = None
 
 
     def setup(self):
@@ -124,8 +128,9 @@ class EditDeck(arcade.View):
         
         # --------------------------
         data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
-        self.client.sendMessage(data)
         threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+        self.client.sendMessage(data)
+
         # --------------------------
         print(self.cards_array)
         self.held_cards = []
@@ -224,7 +229,7 @@ class EditDeck(arcade.View):
             else:
                 self.piles[CARDS2].append(card)
 
-
+        self.deck1_id = self.deck1_cards['deck_id']
         for card in self.deck1_cards['cards']:
             print(card)
             card = Card(card, CARD_SCALE)
@@ -233,6 +238,7 @@ class EditDeck(arcade.View):
             self.piles[DECK1].append(card)
             self.show_deck(DECK1)
 
+        self.deck2_id = self.deck2_cards['deck_id']
         for card in self.deck2_cards['cards']:
             print(card)
             card = Card(card, CARD_SCALE)
@@ -241,6 +247,7 @@ class EditDeck(arcade.View):
             self.piles[DECK2].append(card)
             self.show_deck(DECK2)
 
+        self.deck3_id = self.deck3_cards['deck_id']
         for card in self.deck3_cards['cards']:
             print(card)
             card = Card(card, CARD_SCALE)
@@ -266,6 +273,19 @@ class EditDeck(arcade.View):
         if len(self.deck_list) < 9:
             print("Deck precisa ter 9 cartas!")
         else:
+            names = []
+            for name in self.deck_list:
+                names.append(name.name)
+
+            send_deck = {
+                    "header": "edit_deck",
+                    "request": {
+                    "deck_id": self.selected_deck_id,
+                    "cards": names
+                    }
+                    }
+            
+            print(send_deck)
             print("salvar")
 
     def on_click_escolher(self, event):
@@ -273,12 +293,15 @@ class EditDeck(arcade.View):
 
     def on_click_deck1(self, event):
         self.choosed_deck = 1
+        self.selected_deck_id = self.deck1_id
 
     def on_click_deck2(self, event):
         self.choosed_deck = 2
+        self.selected_deck_id = self.deck2_id
 
     def on_click_deck3(self, event):
         self.choosed_deck = 3
+        self.selected_deck_id = self.deck3_id
 
     def on_click_voltar(self, event):
         menu = main_menu.MainMenu(self.client)
