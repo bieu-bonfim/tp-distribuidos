@@ -15,6 +15,10 @@ class LobbyController:
     def addPlayer(self, index, client):
         self.lobbies[index].players.append(client)
         return self.lobbies[index]
+    
+    def removePlayer(self, index, client): 
+        self.lobbies[index].players.remove(client)
+        return self.lobbies[index]
         
     def getAvailableLobbies(self):
         available_lobbies = []

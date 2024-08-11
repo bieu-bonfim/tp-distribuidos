@@ -49,6 +49,8 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
+        elif header == 'leave_lobby':
+            result = self.socket_server.lobbyManager.leaveLobby(self.client)
         elif header == 'start_game':
             # result = self.gameManager.startGame(body['lobby'])
             self.socket_server.broadcastMessageToLobby(body['index'], {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})

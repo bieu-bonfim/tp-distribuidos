@@ -4,3 +4,4 @@ class Client():
         self.address = address
         self.player = player 
         self.in_lobby = False
+        self.current_lobby = None
