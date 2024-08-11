@@ -26,8 +26,7 @@ services:
     working_dir: /home
     networks:
       - main_network
-    depends_on:
-      - server
+
 
   client-bija:
     container_name: bija
@@ -42,8 +41,7 @@ services:
     working_dir: /home
     networks:
       - main_network
-    depends_on:
-      - server
+
 
   client-patic:
     container_name: patic
@@ -58,8 +56,7 @@ services:
     working_dir: /home
     networks:
       - main_network
-    depends_on:
-      - server
+
 
 networks:
   main_network:

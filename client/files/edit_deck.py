@@ -50,6 +50,8 @@ DECK1 = 2
 DECK2 = 3
 DECK3 = 4
 
+sem = threading.Semaphore()
+
 class Card(arcade.Sprite):
     """ Card sprite """
 
@@ -105,6 +107,10 @@ class EditDeck(arcade.View):
         self.choosed_deck = 1
         self.background = arcade.load_texture("/home/sprites/edit_deck_screen.png")
         self.cards_array = None
+        self.deck1_cards = None
+        self.deck2_cards = None
+        self.deck3_cards = None
+        self.is_loaded = False
 
 
     def setup(self):
@@ -187,15 +193,26 @@ class EditDeck(arcade.View):
                 child=self.v_box)
         )
 
-        while self.cards_array == None:
-            time.sleep(3)
+        # SEMAFORO -----------------------------
+        print("ANTES DE COMEÇAR O LOOP ", self.cards_array)
+        while True:
+            time.sleep(2)
+            #sem.acquire()
+            print(self.cards_array)
+            if self.is_loaded:
+                break
             print("Carregando cartas...")
+            #sem.release()
+
+        # ------------------------------------
 
         for card_name in self.cards_array:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, TOP_Y_SHOWCASE
             self.card_list.append(card)
             card.faceUp()
+
+        
 
         self.piles = [[] for _ in range(PILE_COUNT)]
 
@@ -207,6 +224,31 @@ class EditDeck(arcade.View):
             else:
                 self.piles[CARDS2].append(card)
 
+
+        for card in self.deck1_cards['cards']:
+            print(card)
+            card = Card(card, CARD_SCALE)
+            self.deck1.append(card)
+            card.faceUp()
+            self.piles[DECK1].append(card)
+            self.show_deck(DECK1)
+
+        for card in self.deck2_cards['cards']:
+            print(card)
+            card = Card(card, CARD_SCALE)
+            self.deck2.append(card)
+            card.faceUp()
+            self.piles[DECK2].append(card)
+            self.show_deck(DECK2)
+
+        for card in self.deck3_cards['cards']:
+            print(card)
+            card = Card(card, CARD_SCALE)
+            self.deck3.append(card)
+            card.faceUp()
+            self.piles[DECK3].append(card)
+            self.show_deck(DECK3)
+    
         count = 0
         for card in self.piles[CARDS1]:
             if count < 20:
@@ -401,19 +443,38 @@ class EditDeck(arcade.View):
         print("hide deck")
 
     def receive_message(self, client_socket):
-        while True:
-            try:
-                data = client_socket.recv(1024)
-                print(f"DATA DATA - {data.decode()}")
-                data_dict = json.loads(data.decode("utf-8"))
+        try:
+            data = client_socket.recv(1024)
+            #sem.acquire()
+            self.is_loaded = True
+            #print(f"DATA DATA - {data.decode('utf-8')}")
+            print(data)
+            data_dict = json.loads(data.decode("utf-8"))
+            print(data_dict)
 
-                self.cards_array = data_dict['response']['data']['cards']
-                print(self.cards_array)
+            self.cards_array = data_dict['response']['data']['cards']
+            print(self.cards_array)
 
-                        
+            count = 0
+            for deck in data_dict['response']['data']['decks']:
+                if count == 0:
+                    self.deck1_cards = deck
+                    print(self.deck1_cards)
+                if count == 1:
+                    self.deck2_cards = deck
+                    print(self.deck2_cards)
+                if count == 2:
+                    self.deck3_cards = deck
+                    print(self.deck3_cards)
+                count += 1
 
-            except socket.error as e:
-                print(str(e))
-                break
+            #sem.release()
+            print("bap")
+                
+                    
+
+        except Exception as e:
+            print(str(e))
+                
 
 

@@ -172,7 +172,7 @@ class Login(arcade.View):
         while True:
             try:
                 data = client_socket.recv(1024)
-                print(f"DATA DATA - {data.decode()}")
+                #print(f"DATA DATA - {data.decode()}")
                 data_dict = json.loads(data.decode("utf-8"))
 
 
