@@ -30,6 +30,12 @@ class DeckController:
         self.conn.commit()
         return rows
     
+    def getFirstDeckByUser(self, userId):
+        self.cursor.execute('SELECT deck_id FROM deck WHERE user_id = ? LIMIT 1', (userId,))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows
+    
     def getUserByDeck(self, deckId):
         self.cursor.execute('SELECT user_id FROM deck WHERE deck_id = ?', (deckId,))
         rows = self.cursor.fetchall()
