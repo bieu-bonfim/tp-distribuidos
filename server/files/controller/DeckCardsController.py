@@ -2,6 +2,7 @@ from datetime import datetime
 import sqlite3
 import UserCardsController
 import CardController
+import DeckController
 conn = sqlite3.connect('../database/cryptid.db')
 cursor = conn.cursor()
 
@@ -19,6 +20,25 @@ def getCardByDeck(deckId):
     conn.close()
     return rows
 
+def getCardNameByDeck(deckId):
+    cursor.execute('SELECT c.name FROM deck_cards dc INNER JOIN card c on dc.card_id = c.card_id WHERE deck_id = ?', (deckId,))
+    rows = cursor.fetchall()
+    conn.commit()
+    return rows
+
+def getCardNameByUserDeck(userId):
+    deckUserList = DeckController.getDeckByUser(userId)
+    deckUser = [quantity[0]for quantity in deckUserList]
+    nameCardsByUser = {}
+
+    for index, deck in enumerate(deckUser, start=1):
+        cards = getCardNameByDeck(deck)
+        print(f"Cartas do {index}º deck:", cards)
+
+        deck_key = f"deck {index}"
+        nameCardsByUser[deck_key] = cards
+    return nameCardsByUser
+    
 def insert(deck_card, userId):
     try:
         userCards = UserCardsController.getCardByUser(userId)
@@ -61,6 +81,8 @@ def main():
     print("2) GetById")
     print("3) Insert")
     print("4) Delete")
+    print("5) GetCardNameByUserDeck")
+
     escolha = int(input())
 
     if escolha == 1:
@@ -86,6 +108,10 @@ def main():
     elif escolha == 4:
         deckId = int(input('digte o id: '))
         deck = delete(deckId)
+
+    elif escolha == 5:
+        userId = int(input('digte o id do usuario: '))
+        deck = getCardNameByUserDeck(userId)
 
 if __name__ == "__main__":
     main()
