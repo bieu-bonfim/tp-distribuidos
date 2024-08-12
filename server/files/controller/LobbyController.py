@@ -1,4 +1,5 @@
 from models.LobbyModel import Lobby
+from app.GameManager import GameManager
 
 class LobbyController:
     def __init__(self):
@@ -18,6 +19,11 @@ class LobbyController:
     
     def removePlayer(self, index, client): 
         self.lobbies[index].players.remove(client)
+        return self.lobbies[index]
+        
+    def startGame(self, index, conn):
+        self.lobbies[index].status = 'playing'
+        self.lobbies[index].gameManager = GameManager(conn)
         return self.lobbies[index]
         
     def getAvailableLobbies(self):

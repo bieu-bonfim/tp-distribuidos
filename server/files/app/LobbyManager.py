@@ -18,7 +18,8 @@ class LobbyManager:
                         'index': lobby.index,
                         'name': lobby.name,
                         'players': len(lobby.players),
-                        'status': lobby.status
+                        'status': lobby.status,
+                        'players': lobby.players
                     } 
                 }
             }
@@ -142,3 +143,45 @@ class LobbyManager:
                 }
             }
         }
+        
+    def startGame(self, index, conn):
+        if self.lobbyController.lobbies[index].status == 'playing':
+            return {
+                'header': 'start_game',
+                'response': {
+                    'status': 'error',
+                    'message': 'Jogo já iniciado',
+                    'data': {
+                        'lobby': {}
+                    }
+                }
+            }
+        if len(self.lobbyController.lobbies[index].players) < 3:
+            return {
+                'header': 'start_game',
+                'response': {
+                    'status': 'error',
+                    'message': 'Não há jogadores suficientes',
+                    'data': {
+                        'lobby': {}
+                    }
+                }
+            }
+        lobby = self.lobbyController.startGame(index, conn)
+        return {
+            'header': 'start_game',
+            'response': {
+                'status': 'success',
+                'message': 'Jogo iniciado',
+                'data': {
+                    'lobby': {
+                        'index': lobby[index].index,
+                        'name': lobby[index].name,
+                        'player_count': len(lobby[index].players),
+                        'status': lobby[index].status,
+                        'players': lobby[index].players
+                    }
+                }
+            }
+        }
+        

@@ -1,6 +1,5 @@
 import json
 from app.AuthManager import AuthManager
-from app.GameManager import GameManager
 from app.InventoryManager import InventoryManager
 from app.DeckManager import DeckManager
 import time as t
@@ -12,7 +11,6 @@ class RequestHandler:
         self.socket_server = socket_server
         self.db_conn = sqlite3.connect('database/cryptid.db')
         self.authManager = AuthManager(self.db_conn)
-        self.gameManager = GameManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
 
@@ -51,16 +49,16 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
         elif header == 'leave_lobby':
             result = self.socket_server.lobbyManager.leaveLobby(self.client)
+        elif header == 'choose_deck':
+            self.client.current_deck = body['deck_id']
+            result = {'header': 'choose_deck', 'response': {'status': 'success', 'message': 'Baralho escolhido!'}}
         elif header == 'start_game':
-            result = self.gameManager.startGame(self.client.current_lobby)
+            result = self.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
-            result = self.gameManager.playCard(self.client.current_lobby, body['card_id'])
-        elif header == 'choose_deck':
-            # result = self.gameManager.chooseDeck(self.client.current_lobby, body['deck_id'])
-            pass
+            result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card_id'])
         elif header == 'choose_stat':
-            result = self.gameManager.chooseStat(self.client.current_lobby, body['stat'])
+            result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.chooseStat(self.client, body['stat'])
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
@@ -71,5 +69,7 @@ class RequestHandler:
             result = self.inventoryManager.addCardToInventory(body['user_id'], body['card_id'])
         elif header == 'edit_deck':
             result = self.deckManager.editDeck(body['deck_id'], body['cards'])
+        elif header == 'retrieve_deck':
+            result = self.deckManager.retrieveDeck(self.client.current_deck)
         
         return result

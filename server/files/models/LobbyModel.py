@@ -1,3 +1,5 @@
+from app.GameManager import GameManager
+
 class Lobby():
   def __init__(self, index, name, status):
     self.index = index
@@ -5,3 +7,4 @@ class Lobby():
     self.players = list()
     self.max_players = 3
     self.status = status
+    self.gameManager = None
