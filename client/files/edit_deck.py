@@ -136,9 +136,7 @@ class EditDeck(arcade.View):
         while True:
             time.sleep(1)
             if self.is_loaded:
-                break
-
-        
+                break        
         # --------------------------
         print(self.cards_array)
         self.held_cards = []
@@ -463,7 +461,7 @@ class EditDeck(arcade.View):
     def receive_message(self):
         try:
             data_dict = self.client.receiveMessage()
-
+            print(data_dict)
             self.cards_array = data_dict['response']['data']['cards']
             count = 0
             for deck in data_dict['response']['data']['decks']:
