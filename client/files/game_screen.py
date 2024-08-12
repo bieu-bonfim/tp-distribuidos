@@ -3,7 +3,6 @@ import random
 import socket
 import threading
 import time
-import client
 import json
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
@@ -697,16 +696,58 @@ class Game(arcade.Window):
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
 
 
+def fabricateGame(client):
+    player = input("insira o numero do jogador: ")
+    deck = 1
+    lobby = 0
+    nome = ''
+    senha = ''
+    if player == '1':
+        nome="bija"
+        senha="bija123"
+        pass
+    elif player == '2':
+        nome="patras"
+        senha="patras123"
+        pass
+    elif player == '3':
+        nome="thui"
+        senha="thui123"
+        pass
+    
+    msg1 = {'header': 'login', 'request': {'username': nome, 'password': senha}}
+    msg2 = {'header': 'choose_deck', 'request': {'deck_id': deck}}
+    msg3 = {'header': 'join_lobby', 'request': {'index': lobby}}
+    msgs=[msg1, msg2, msg3]
+    
+    for i in range(3):
+        data_str = json.dumps(msgs[i])
+        try:
+            client.s.sendall(bytes(data_str, encoding="utf-8"))
+            time.sleep(3)
+        except socket.error as e:
+            print(str(e))
+            client.s.close()
+            
+def receiveAnswer(client):
+    while True:
+        try:
+            time.sleep(0.1)
+            data = client.s.recv(1024)
+            data_dict = json.loads(data.decode("utf-8"))
+            print(data_dict)
+        except socket.error as e:
+            print(str(e))
+            break
+
 def main():
 
     client = Client()
-    threading.Thread(target=client.startClient).start()
-    data = {'header': 'join_lobby', 'request': {'index': 0}}
-    client.sendMessage(data)
+    client.startClient()
+    threading.Thread(target=receiveAnswer, args=(client,)).start()
     
-    data = {'header': 'join_lobby', 'request': {'index': 0}}
-    client.sendMessage(data)
-    """ Main function """
+    fabricateGame(client)
+    
     window = Game(client)
     window.setup()
     arcade.run()
@@ -714,3 +755,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

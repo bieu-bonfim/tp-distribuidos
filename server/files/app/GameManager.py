@@ -8,3 +8,12 @@ class GameManager:
         self.lobby = lobby
         self.round = 1
         self.current_player = randint(0, 3)
+        
+    def playCard(self, player, card):
+        return {
+            'header': 'play_card',
+            'response': {
+                'player': player.username,
+                'card': card
+            }
+        }
