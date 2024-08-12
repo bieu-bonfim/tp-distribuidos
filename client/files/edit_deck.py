@@ -130,7 +130,9 @@ class EditDeck(arcade.View):
         data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
         receiving_thread = threading.Thread(target=self.receive_message)
         receiving_thread.start()
-        
+
+        # AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        time.sleep(1)
         self.client.sendMessage(data)
         
         while True:
@@ -260,6 +262,8 @@ class EditDeck(arcade.View):
             card.position = START_X + MAT_WIDTH, (TOP_Y_SHOWCASE + 100) - (30*count)
             count += 1
             
+        self.selected_deck_id = self.deck1_id
+
     def on_click_salvar(self, event):
         if len(self.deck_list) < 9:
             print("Deck precisa ter 9 cartas!")
