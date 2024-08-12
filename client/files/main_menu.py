@@ -30,6 +30,8 @@ class MainMenu(arcade.View):
         self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
+        self.go_to_edit = False
+        self.data_dict = None
 
 
         # Create a vertical BoxGroup to align buttons
@@ -72,10 +74,10 @@ class MainMenu(arcade.View):
 
     def on_click_edit(self, event):
         print("edit")
-        edit_window = edit_deck.EditDeck(self.client)
-        edit_window.setup()
-        time.sleep(2)
-        self.window.show_view(edit_window)
+        data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
+        self.client.sendMessage(data)
+        threading.Thread(target=self.receive_message).start()   
+        
     
     def on_click_shop(self, event):
         print("shop")
@@ -112,3 +114,20 @@ class MainMenu(arcade.View):
         
         # Draw the text
         #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
+
+        if self.go_to_edit == True:
+            edit_window = edit_deck.EditDeck(self.client, self.data_dict['response']['data'])
+            edit_window.setup()
+            time.sleep(2)
+            self.window.show_view(edit_window)
+
+    def receive_message(self):
+        try:
+            self.data_dict = self.client.receiveMessage()
+            print(self.data_dict)
+            
+            if self.data_dict['header'] == 'show_user_inventory':
+                self.go_to_edit = True            
+                
+        except Exception as e:
+            print(str(e))

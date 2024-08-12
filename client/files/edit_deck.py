@@ -87,8 +87,9 @@ class Card(arcade.Sprite):
         return not self.is_face_up
 
 class EditDeck(arcade.View):
-    def __init__(self, client):
+    def __init__(self, client, data_chunk):
         super().__init__()
+        self.data_chunk = data_chunk
         self.client = client
         self.pile_mat_list = None
         self.piles = None
@@ -106,19 +107,14 @@ class EditDeck(arcade.View):
         self.deck3 = None
         self.choosed_deck = 1
         self.background = arcade.load_texture("/home/sprites/edit_deck_screen.png")
-        self.cards_array = None
-        self.deck1_cards = None
-        self.deck1_id = None
-        self.deck2_cards = None
-        self.deck2_id = None
-        self.deck3_cards = None
-        self.deck3_id = None
-        self.is_loaded = False
+        self.cards_array = data_chunk['cards']
+        self.deck1_cards = data_chunk['decks'][0]['cards']
+        self.deck1_id = data_chunk['decks'][0]['deck_id']
+        self.deck2_cards = data_chunk['decks'][1]['cards']
+        self.deck2_id = data_chunk['decks'][1]['deck_id']
+        self.deck3_cards = data_chunk['decks'][2]['cards']
+        self.deck3_id = data_chunk['decks'][2]['deck_id']
         self.selected_deck_id = None
-        self.lock = threading.Lock()
-        receiving_thread = threading.Thread(target=self.receive_message)
-
-        receiving_thread.start()
 
     def setup(self):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
@@ -130,18 +126,6 @@ class EditDeck(arcade.View):
         self.deck_list = self.deck1
         
         # --------------------------
-        data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
-
-        time.sleep(1)
-
-        sending_thread = threading.Thread(target=self.client.sendMessage, args=(data,))
-        sending_thread.start()
-        
-        while True:
-            if self.is_loaded:
-                break        
-            time.sleep(2)
-            
         # --------------------------
         print(self.cards_array)
         self.held_cards = []
@@ -225,8 +209,7 @@ class EditDeck(arcade.View):
             else:
                 self.piles[CARDS2].append(card)
 
-        self.deck1_id = self.deck1_cards['deck_id']
-        for card in self.deck1_cards['cards']:
+        for card in self.deck1_cards:
             print(card)
             card = Card(card, CARD_SCALE)
             self.deck1.append(card)
@@ -234,8 +217,7 @@ class EditDeck(arcade.View):
             self.piles[DECK1].append(card)
             self.show_deck(DECK1)
 
-        self.deck2_id = self.deck2_cards['deck_id']
-        for card in self.deck2_cards['cards']:
+        for card in self.deck2_cards:
             print(card)
             card = Card(card, CARD_SCALE)
             self.deck2.append(card)
@@ -243,8 +225,7 @@ class EditDeck(arcade.View):
             self.piles[DECK2].append(card)
             self.show_deck(DECK2)
 
-        self.deck3_id = self.deck3_cards['deck_id']
-        for card in self.deck3_cards['cards']:
+        for card in self.deck3_cards:
             print(card)
             card = Card(card, CARD_SCALE)
             self.deck3.append(card)
@@ -467,31 +448,7 @@ class EditDeck(arcade.View):
         self.manager.disable()
         print("hide deck")
 
-    def receive_message(self):
-        try:
-            data_dict = self.client.receiveMessage()
-            print(data_dict)
-            
-            self.cards_array = data_dict['response']['data']['cards']
-            count = 0
-            for deck in data_dict['response']['data']['decks']:
-                if count == 0:
-                    self.deck1_cards = deck
-                    print(self.deck1_cards)
-                if count == 1:
-                    self.deck2_cards = deck
-                    print(self.deck2_cards)
-                if count == 2:
-                    self.deck3_cards = deck
-                    print(self.deck3_cards)
-                count += 1
-                
-                
-                self.is_loaded = True
-            
-                
-        except Exception as e:
-            print(str(e))
+
                 
 
 
