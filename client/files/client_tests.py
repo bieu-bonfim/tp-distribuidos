@@ -54,6 +54,10 @@ class Client():
                 cards = input('Enter cards: ')
                 cards = cards.split(',')
                 request = {'deck_id': deck_id, 'cards': cards}
+            if message == 'choose_deck':
+                deck_id = input('Enter deck id: ')
+                request = {'deck_id': deck_id}
+                
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
         

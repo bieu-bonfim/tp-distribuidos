@@ -35,3 +35,36 @@ class DeckManager:
           'message': 'Deck editado com sucesso'
         }
       }
+      
+  def retrieveDeck(self, deck_id):
+    print(deck_id)
+    deck = self.deckController.getById(deck_id)
+    if len(deck) == 0:
+      return {
+        'header': 'retrieve_deck',
+        'response': {
+          'status': 'error',
+          'message': 'Deck não encontrado'
+        }
+      }
+    else:
+      cards_list = []
+      print(deck)
+      deck_cards = self.deckCardsController.getCardByDeck(deck[0][0])
+      for card in deck_cards:
+        for i in range(card[11]):
+          cards_list.append(card[1])
+      return {
+        'header': 'retrieve_deck',
+        'response': {
+          'status': 'success',
+          'message': 'Deck encontrado',
+          'data': {
+            'deck': {
+              'id': deck[0][0],
+              'name': deck[0][1],
+              'cards': cards_list
+            }
+          }
+        }
+      }
