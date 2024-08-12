@@ -249,9 +249,8 @@ class Game(arcade.Window):
         self.hand_size -= 1
         if self.has_interacted_card and self.reset_position == False:
             self.has_selected = True
-            thread_send = threading.Thread(target=self.send_card, args=(s, self.selected_card.name))
-            #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
-            thread_send.start()  
+            data = {'header': 'play_card', 'request': {'name': self.selected_card.name} }
+            self.client.sendMessage(data)
             #thread_receive.start()
             self.has_sent_message = True 
             self.has_interacted_card = False
@@ -291,8 +290,8 @@ class Game(arcade.Window):
 
     
     def setup(self):
-        #threading.Thread(target=self.receive_message).start()
-        #time.sleep(2)
+        threading.Thread(target=self.receive_message).start()
+        time.sleep(2)
         #data = {'header': 'retrieve_deck', 'request': {}}
         #self.client.sendMessage(data)
         #draw_deck_cards = data
@@ -659,28 +658,9 @@ class Game(arcade.Window):
         while True:
             try:
                 data_dict = self.client.receiveMessage()
-                if data_dict['header'] == 'retrieve_deck':
-                    self.client_cards = data_dict['response']['data']['deck']['cards']
-                    print(data_dict)
-                    self.flag_client_cards = True
-                elif data_dict['header'] == 'join_lobby':
-                    for opponent in data_dict['response']['data']['lobby']['players']:
-                        if opponent == self.client.client_name:
-                            continue
-                        elif opponent == self.p2.name:
-                            print(self.p2.name)
-                            continue
-                        elif opponent == self.p3.name:
-                            print(self.p3.name)
-                            continue
-                        elif self.p2.name == None:
-                            print("Oponent", opponent)
-                            self.p2.name = opponent
-                        elif self.p3 == None:
-                            print("Oponent", opponent)
-                            self.p3.name = opponent
-                        if data_dict['response']['data']['lobby']['players_count'] == 3:
-                            self.full_lobby = True
+                if data_dict['header'] == 'play_card':
+                    print(data_dict['response']['card'])
+                    self.render_opponent_card(data_dict['response']['card'])
             except Exception as e:
                 print(str(e))
                 break
