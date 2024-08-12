@@ -62,10 +62,10 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card_id'])
         elif header == 'choose_stat':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.chooseStat(self.client, body['stat'])
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':
