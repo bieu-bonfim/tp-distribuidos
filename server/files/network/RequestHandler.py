@@ -48,16 +48,16 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'leave_lobby':
             result = self.socket_server.lobbyManager.leaveLobby(self.client)
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'choose_deck':
             self.client.current_deck = body['deck_id']
             result = {'header': 'choose_deck', 'response': {'status': 'success', 'message': 'Baralho escolhido!'}}
         elif header == 'start_game':
-            result = self.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
+            result = self.socket_server.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
         elif header == 'play_card':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card_id'])
         elif header == 'choose_stat':
