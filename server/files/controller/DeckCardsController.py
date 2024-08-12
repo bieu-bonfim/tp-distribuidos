@@ -62,7 +62,10 @@ class DeckCardsController:
 
             if deckCardInDB == None:
                 deckCardToInsert = (deck_card[0], deck_card[1], 1)
-                self.insert(deckCardToInsert)
+                self.cursor.execute('''
+                    INSERT INTO deck_cards (deck_id, card_id, quantity) VALUES (?, ?, ?)
+                ''', deckCardToInsert)
+                self.conn.commit()
             else:
                 quantity = self.getQuantityCardByUser(deck_card[0], deck_card[1])
                 newQuantity = [q[0]for q in quantity][0] + 1
