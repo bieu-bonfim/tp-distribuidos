@@ -10,6 +10,7 @@ import time
 import client
 import json
 import main_menu
+import game_screen
 
 # Screen title and size
 SCREEN_WIDTH = 1412
@@ -58,7 +59,9 @@ class LobbyScreen(arcade.View):
 
 
     def on_click_ready_button(self, event):
-        print("ready")
+        data = {'header': 'start_game', 'request': {}}
+        self.client.sendMessage(data)
+
 
 
     def setup(self):
@@ -69,6 +72,7 @@ class LobbyScreen(arcade.View):
                 self.opponent1 = player
              elif self.opponent2 == "Aguardando...":
                 self.opponent2 = player
+        threading.Thread(target=self.receive_message).start()
         print(self.opponent1)
         print(self.opponent2)
 
@@ -96,23 +100,31 @@ class LobbyScreen(arcade.View):
             arcade.draw_text(text, x, y, text_color, font_size=14, anchor_x="center", anchor_y="center")
 
 
-    def receive_message(self, client_socket):
+    def receive_message(self):
         while True:
             try:
-                data = client_socket.recv(1024)
-                #print(f"DATA DATA - {data.decode()}")
-                data_dict = json.loads(data.decode("utf-8"))
+                data_dict = self.client.receiveMessage()
+
+                if data_dict['header'] == 'join_lobby' or data_dict['header'] == 'leave_lobby':
+                    if data_dict['response']['status'] == "success":     
+                        array_players = data_dict['response']['data']['lobby']['players']     
+                        
+                        for player in array_players:
+                            if player == self.client.client_name:
+                                continue
+                            elif self.opponent1 == "Aguardando...":
+                                self.opponent1 = player
+                            elif self.opponent2 == "Aguardando...":
+                                self.opponent2 = player
+                elif data_dict['header'] == 'start_game':
+                    print('vish...')
+                    menu = game_screen.Game(self.client)
+                    menu.setup()
+                    self.window.show_view(menu)
 
 
-                
-                if data_dict['header'] == 'login':
-                    if data_dict['response']['data'] != {}:
-                        data = data_dict['response']['data']
-                        self.client.client_id = data['user_id']
-                        self.client.client_name = data['username']
-                        self.client.client_email = data['email']
-                        self.valid_login = True
 
+    
                         
 
             except socket.error as e:

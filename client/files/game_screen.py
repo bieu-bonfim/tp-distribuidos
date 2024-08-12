@@ -129,20 +129,23 @@ class Player():
         self.mat = mat
 
 
-class MyGame(arcade.Window):
+class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self):
-        super().__init__(TOTAL_SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    def __init__(self, client):
+        super().__init__()
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
+        self.client = client
         self.reset_position = False
         self.selected_card = None
         self.piles = None
         self.hand_size = 0
         self.has_selected = False
+        self.client_cards = None
+        self.flag_client_cards = False
 
         self.text_log = "Initial Log\n"
         bg_text = arcade.load_texture("/home/sprites/button.png")
@@ -289,25 +292,17 @@ class MyGame(arcade.Window):
 
     
     def setup(self):
-        
-        #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
-        #thread_receive.start()
+        threading.Thread(target=self.receive_message).start()
+        time.sleep(2)
+        data = {'header': 'retrieve_deck', 'request': {}}
+        self.client.sendMessage(data)
+        draw_deck_cards = data
 
-        #data = {'header': 'player_connection','player_name_register': player_name}
-        #data_str = json.dumps(data)
-
-
-        #try:
-        #    s.sendall(bytes(data_str,encoding="utf-8"))
-        #except socket.error as e:
-        #    print(str(e))
-
-
+        while True:
+            if self.flag_client_cards:
+                break
 
         self.held_cards = []
-
-        # Original location of cards we are dragging with the mouse in case
-        # they have to go back.
         self.held_cards_original_position = []
 
         # ---  Create the mats the cards go on.
@@ -352,7 +347,7 @@ class MyGame(arcade.Window):
         self.card_list = arcade.SpriteList()
 
         # Create every card
-        for card_name in CARD_NAMES:
+        for card_name in self.client_cards:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, BOTTOM_Y
             self.card_list.append(card)
@@ -658,36 +653,18 @@ class MyGame(arcade.Window):
             print(str(e))
 
             
-    def receive_message(self, client_socket):
+    def receive_message(self):
         while True:
             try:
-
-                data = client_socket.recv(1024)
-                #print(f"DATA DATA - {data.decode()}")
-                data_dict = json.loads(data.decode("utf-8"))
-                
-                if 'player_name_register' in data_dict:
-                    if self.opponents[0].name == None:
-                        self.opponents[0].name = data_dict['player_name_register']
-                        print(self.opponents[0].name)
-
-                    else:
-                        self.opponents[1].name = data_dict['player_name_register']
-                        print(self.opponents[1].name)
-                            
-                if 'card' in data_dict:
-                    print(f"Received {data_dict['card']}")
-                    print(f"From player {data_dict['player_name']}")
-
-                    self.render_opponent_card(message=data_dict)
-            except socket.error as e:
+                data_dict = self.client.receiveMessage()
+                if data_dict['header'] == 'retrieve_deck':
+                    self.client_cards = data_dict['response']['data']['deck']['cards']
+                    print(data_dict)
+                    self.flag_client_cards = True
+            except Exception as e:
                 print(str(e))
                 break
 
-    def print_on_timer( ):
-        while True:
-            print( "Timer Test" )
-            time.sleep( 5 )
 
     def render_opponent_card(self, message):
         for opponent in self.opponents:
@@ -697,22 +674,3 @@ class MyGame(arcade.Window):
                 for card in self.card_list:
                     if card.name == message['card']:
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
-
-
-
-def main():
-    """ Main function """
-    
-    #port = int(input('Enter port: '))
-
-    #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #s.connect((host, port))
-
-
-    window = MyGame()
-    window.setup()
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()

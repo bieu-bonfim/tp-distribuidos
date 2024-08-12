@@ -11,6 +11,7 @@ import client
 import json
 import edit_deck
 import create_lobby
+import game_screen
 
 # Screen title and size
 SCREEN_WIDTH = 924
@@ -65,8 +66,9 @@ class MainMenu(arcade.View):
 
     def on_click_play(self, event):
         print("Create Lobby")
-        edit_window = create_lobby.CreateLobby(self.client)
-        self.window.show_view(edit_window)
+        game = game_screen.Game(self.client)
+        game.setup()
+        self.window.show_view(game)
 
     def on_click_edit(self, event):
         print("edit")

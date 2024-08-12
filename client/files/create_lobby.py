@@ -25,6 +25,8 @@ host = 'server'
 port = 8020
 s = None
 
+sem = threading.Semaphore()
+
 class TextBox:
     def __init__(self, x, y, width, height):
         self.x = x
@@ -97,23 +99,23 @@ class CreateLobby(arcade.View):
                 child=self.v_box)
         )
 
+        threading.Thread(target=self.receive_message).start()
+
+
 
     def on_click_voltar(self, event):
         menu = main_menu.MainMenu(self.client)
         self.window.show_view(menu)
 
     def on_click_create_lobby(self, event):
-        print("create lobby")
-
         data = {'header': 'create_lobby', 'request': {}}
-        threading.Thread(target=self.receive_message).start()
         time.sleep(1)
         self.client.sendMessage(data)
+        print("create lobby")
 
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
-        threading.Thread(target=self.receive_message).start()
         time.sleep(1)
         self.client.sendMessage(data)
         print(self.lobbyText.text)
@@ -147,6 +149,7 @@ class CreateLobby(arcade.View):
                 if data_dict['header'] == 'lobby_created':
                     if data_dict['response']['status'] == "success":
                         menu = lobby_screen.LobbyScreen(self.client, [])
+                        menu.setup()
                         self.window.show_view(menu)
                     
                 elif data_dict['header'] == 'join_lobby':
