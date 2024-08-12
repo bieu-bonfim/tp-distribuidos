@@ -29,7 +29,7 @@ class LobbyController:
         
     def startGame(self, index, conn):
         self.lobbies[index].status = 'playing'
-        self.lobbies[index].gameManager = GameManager(conn)
+        self.lobbies[index].gameManager = GameManager(self.lobbies[index], conn)
         return self.lobbies[index]
         
     def getAvailableLobbies(self):
