@@ -6,6 +6,7 @@ import time
 import client
 import json
 from arcade.gui import UIManager
+from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
 
 host = 'server'
 port = 8020
@@ -143,7 +144,14 @@ class MyGame(arcade.Window):
         self.hand_size = 0
         self.has_selected = False
 
-
+        self.text_log = "Initial Log\n"
+        bg_text = arcade.load_texture("/home/sprites/button.png")
+        
+        # Create the UITextArea with initial text
+        self.text_area = UITextArea(x=650, y=320, width=300, height=150, text=self.text_log)
+        self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
+                                            tex=bg_text, padding=(20, 20, 20, 20))
+        self.manager.add(self.text_area_pane)
 
 
 
@@ -248,8 +256,18 @@ class MyGame(arcade.Window):
 
 
     def on_click_tipo(self, event):
+        self.text_log += "bap\n"
+        print(self.text_log)
         print("tipo")
+        inverted = self.revert_line_order(self.text_log)
+        self.text_area.text = inverted
 
+    def revert_line_order(self, input_string):
+        lines = input_string.splitlines()
+        reversed_lines = lines[::-1]
+        result = '\n'.join(reversed_lines)
+        return result
+    
     def on_click_tamanho(self, event):
         print("tamanho")
 
@@ -304,7 +322,7 @@ class MyGame(arcade.Window):
 
         # Create the mats for the bottom face down and face up piles
         pile = arcade.Sprite("/home/sprites/hand.png", scale=0.2)
-        pile.position = (START_X+ 510), BOTTOM_Y
+        pile.position = (START_X+ 630), BOTTOM_Y
         self.pile_mat_list.append(pile)
 
         #pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.DARK_OLIVE_GREEN)
@@ -371,8 +389,8 @@ class MyGame(arcade.Window):
         size = len(self.piles[pile_index])
         print("size:", size)
         for card in self.piles[pile_index]:
-            card.position = ((START_X+ 510) + 120 * (count)), BOTTOM_Y
-            print("VALUE: ", (START_X+ 510) + 120 * (count))
+            card.position = ((START_X+ 630) + 120 * (count)), BOTTOM_Y
+            print("VALUE: ", (START_X+ 630) + 120 * (count))
             count += 1
         if size > 1: 
             for card in self.piles[pile_index]:
@@ -383,7 +401,7 @@ class MyGame(arcade.Window):
         if size == 1:
             print(size)
             for card in self.piles[pile_index]:
-                card.position = (START_X+ 510), BOTTOM_Y     
+                card.position = (START_X+ 630), BOTTOM_Y     
         if size == 2:
             count = 0
             #for card in self.piles[pile_index]:
