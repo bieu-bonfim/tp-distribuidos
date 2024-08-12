@@ -17,7 +17,7 @@ class LobbyManager:
                     'lobby': {
                         'index': lobby.index,
                         'name': lobby.name,
-                        'players': len(lobby.players),
+                        'players_count': len(lobby.players),
                         'status': lobby.status,
                         'players': [player.username for player in lobby.players]
                     } 
@@ -107,8 +107,9 @@ class LobbyManager:
                     'lobby': {
                         'index': lobby.index,
                         'name': lobby.name,
-                        'players': len(lobby.players),
-                        'status': lobby.status
+                        'player_count': len(lobby.players),
+                        'status': lobby.status,
+                        'players': [player.username for player in lobby.players]
                     }
                 }
             }
@@ -137,8 +138,9 @@ class LobbyManager:
                     'lobby': {
                         'index': lobby.index,
                         'name': lobby.name,
-                        'players': len(lobby.players),
-                        'status': lobby.status
+                        'player_count': len(lobby.players),
+                        'status': lobby.status,
+                        'players': [player.username for player in lobby.players]
                     }
                 }
             }

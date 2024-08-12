@@ -5,3 +5,4 @@ class Client():
         self.player = player 
         self.in_lobby = False
         self.current_lobby = None
+        self.username = None

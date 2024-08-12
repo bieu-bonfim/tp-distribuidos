@@ -37,6 +37,7 @@ class RequestHandler:
         
         if header == 'login':
             result = self.authManager.login(body['username'], body['password'])
+            self.client.username = body['username']
         elif header == 'logout':
             result = self.authManager.logout(body['username'])
         elif header == 'register':
@@ -47,8 +48,10 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
         elif header == 'leave_lobby':
             result = self.socket_server.lobbyManager.leaveLobby(self.client)
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
         elif header == 'choose_deck':
             self.client.current_deck = body['deck_id']
             result = {'header': 'choose_deck', 'response': {'status': 'success', 'message': 'Baralho escolhido!'}}

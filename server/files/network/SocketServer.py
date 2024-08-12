@@ -2,7 +2,7 @@ import socket
 import threading
 import json
 import time as t
-from network.client import Client
+from network.Client import Client
 from network.RequestHandler import RequestHandler
 from app.LobbyManager import LobbyManager
 
