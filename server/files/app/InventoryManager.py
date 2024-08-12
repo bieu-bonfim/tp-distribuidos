@@ -18,10 +18,10 @@ class InventoryManager:
     for deck in all_decks:
       deck_cards = self.deckCardsController.getCardByDeck(deck[0])
       for card in deck_cards:
-        deck_card_obj.append(card[1])
+        for i in range(card[11]):
+          deck_card_obj.append(card[1])
       decks_obj.append({"deck_id": deck[0], "cards": deck_card_obj})
       deck_card_obj = []
-      
     
     return {
       'header': 'show_user_inventory',

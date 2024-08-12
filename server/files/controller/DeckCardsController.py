@@ -18,7 +18,7 @@ class DeckCardsController:
         return rows
 
     def getCardByDeck(self, deckId):
-        self.cursor.execute('SELECT c.* FROM deck_cards dc INNER JOIN card c on dc.card_id = c.card_id WHERE deck_id = ?', (deckId,))
+        self.cursor.execute('SELECT c.*, dc.quantity FROM deck_cards dc INNER JOIN card c on dc.card_id = c.card_id WHERE deck_id = ?', (deckId,))
         rows = self.cursor.fetchall()
         self.conn.commit()
         return rows
