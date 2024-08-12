@@ -115,6 +115,7 @@ class EditDeck(arcade.View):
         self.deck3_id = None
         self.is_loaded = False
         self.selected_deck_id = None
+        self.lock = threading.Lock()
 
 
     def setup(self):
@@ -131,14 +132,16 @@ class EditDeck(arcade.View):
         receiving_thread = threading.Thread(target=self.receive_message)
         receiving_thread.start()
 
+        time.sleep(1)
+
         self.client.sendMessage(data)
         
         while True:
-            time.sleep(1)
-            sem.acquire()
-            if self.is_loaded:
-                break        
-            sem.release()
+            with self.lock:    
+                if self.is_loaded:
+                    break        
+                time.sleep(0.1)
+            
         # --------------------------
         print(self.cards_array)
         self.held_cards = []
@@ -468,7 +471,7 @@ class EditDeck(arcade.View):
         try:
             data_dict = self.client.receiveMessage()
             print(data_dict)
-            sem.acquire()
+            
             self.cards_array = data_dict['response']['data']['cards']
             count = 0
             for deck in data_dict['response']['data']['decks']:
@@ -482,9 +485,10 @@ class EditDeck(arcade.View):
                     self.deck3_cards = deck
                     print(self.deck3_cards)
                 count += 1
-
-            self.is_loaded = True
-            sem.release()
+                
+            with self.lock:
+                self.is_loaded = True
+            
                 
         except Exception as e:
             print(str(e))
