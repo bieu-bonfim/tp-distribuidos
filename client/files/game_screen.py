@@ -7,6 +7,7 @@ import client
 import json
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
+from client import Client
 
 host = 'server'
 port = 8020
@@ -47,7 +48,6 @@ SHOWCASE_MAT_HEIGHT = int(SHOWCASE_HEIGHT * MAT_PERCENT_OVERSIZE)
 SHOWCASE_MAT_WIDTH = int(SHOWCASE_WIDTH * MAT_PERCENT_OVERSIZE)
 
 TOTAL_SCREEN_WIDTH = SCREEN_WIDTH + SHOWCASE_MAT_WIDTH + (BASE_MARGIN*2)
-print("Total width: ", TOTAL_SCREEN_WIDTH)
 
 # How much space do we leave as a gap between the mats?
 # Done as a percent of the mat size.
@@ -129,11 +129,11 @@ class Player():
         self.mat = mat
 
 
-class Game(arcade.View):
+class Game(arcade.Window):
     """ Main application class. """
 
     def __init__(self, client):
-        super().__init__()
+        super().__init__(TOTAL_SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
@@ -146,7 +146,7 @@ class Game(arcade.View):
         self.has_selected = False
         self.client_cards = None
         self.flag_client_cards = False
-
+        self.full_lobby = False
         self.text_log = "Que comece o jogo...\n"
         bg_text = arcade.load_texture("/home/sprites/button.png")
         
@@ -292,18 +292,18 @@ class Game(arcade.View):
 
     
     def setup(self):
-        threading.Thread(target=self.receive_message).start()
-        time.sleep(2)
-        data = {'header': 'retrieve_deck', 'request': {}}
-        self.client.sendMessage(data)
-        draw_deck_cards = data
+        #threading.Thread(target=self.receive_message).start()
+        #time.sleep(2)
+        #data = {'header': 'retrieve_deck', 'request': {}}
+        #self.client.sendMessage(data)
+        #draw_deck_cards = data
 
-        while True:
-            if self.flag_client_cards:
-                break
+        #while True:
+        #    if self.flag_client_cards:
+        #        break
 
-        data = {'header': 'join_lobby', 'request': {'index': 0}}
-        self.client.sendMessage(data)  
+        #data = {'header': 'join_lobby', 'request': {'index': 0}}
+        #self.client.sendMessage(data)
 
         self.held_cards = []
         self.held_cards_original_position = []
@@ -350,7 +350,7 @@ class Game(arcade.View):
         self.card_list = arcade.SpriteList()
 
         # Create every card
-        for card_name in self.client_cards:
+        for card_name in CARD_NAMES:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, BOTTOM_Y
             self.card_list.append(card)
@@ -669,13 +669,19 @@ class Game(arcade.View):
                         if opponent == self.client.client_name:
                             continue
                         elif opponent == self.p2.name:
+                            print(self.p2.name)
                             continue
                         elif opponent == self.p3.name:
+                            print(self.p3.name)
                             continue
-                        elif self.p2 == None:
+                        elif self.p2.name == None:
+                            print("Oponent", opponent)
                             self.p2.name = opponent
                         elif self.p3 == None:
+                            print("Oponent", opponent)
                             self.p3.name = opponent
+                        if data_dict['response']['data']['lobby']['players_count'] == 3:
+                            self.full_lobby = True
             except Exception as e:
                 print(str(e))
                 break
@@ -689,3 +695,22 @@ class Game(arcade.View):
                 for card in self.card_list:
                     if card.name == message['card']:
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
+
+
+def main():
+
+    client = Client()
+    threading.Thread(target=client.startClient).start()
+    data = {'header': 'join_lobby', 'request': {'index': 0}}
+    client.sendMessage(data)
+    
+    data = {'header': 'join_lobby', 'request': {'index': 0}}
+    client.sendMessage(data)
+    """ Main function """
+    window = Game(client)
+    window.setup()
+    arcade.run()
+
+
+if __name__ == "__main__":
+    main()
