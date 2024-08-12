@@ -302,6 +302,9 @@ class Game(arcade.View):
             if self.flag_client_cards:
                 break
 
+        data = {'header': 'join_lobby', 'request': {'index': 0}}
+        self.client.sendMessage(data)  
+
         self.held_cards = []
         self.held_cards_original_position = []
 
@@ -661,6 +664,18 @@ class Game(arcade.View):
                     self.client_cards = data_dict['response']['data']['deck']['cards']
                     print(data_dict)
                     self.flag_client_cards = True
+                elif data_dict['header'] == 'join_lobby':
+                    for opponent in data_dict['response']['data']['lobby']['players']:
+                        if opponent == self.client.client_name:
+                            continue
+                        elif opponent == self.p2.name:
+                            continue
+                        elif opponent == self.p3.name:
+                            continue
+                        elif self.p2 == None:
+                            self.p2.name = opponent
+                        elif self.p3 == None:
+                            self.p3.name = opponent
             except Exception as e:
                 print(str(e))
                 break

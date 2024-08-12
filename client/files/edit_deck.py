@@ -137,10 +137,9 @@ class EditDeck(arcade.View):
         self.client.sendMessage(data)
         
         while True:
-            with self.lock:    
-                if self.is_loaded:
-                    break        
-                time.sleep(0.1)
+            if self.is_loaded:
+                break        
+            time.sleep(2)
             
         # --------------------------
         print(self.cards_array)
@@ -486,7 +485,7 @@ class EditDeck(arcade.View):
                     print(self.deck3_cards)
                 count += 1
                 
-            with self.lock:
+                
                 self.is_loaded = True
             
                 
