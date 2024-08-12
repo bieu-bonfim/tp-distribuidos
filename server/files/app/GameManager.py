@@ -9,7 +9,7 @@ class GameManager:
         self.lobby = lobby
         self.round = 1
         self.round_attribute = ''
-        self.round_cards = [3]
+        self.round_cards = [None, None, None]
         self.current_player = 0
         
     def playCard(self, player, card):
@@ -17,8 +17,8 @@ class GameManager:
             if self.lobby.players[i].username == player.username:
                 self.round_cards[i] = card
         if self.round_cards.count(3) == 0:
-            threading.Thread(target=self.resolveRound).start()
-            
+            # threading.Thread(target=self.resolveRound).start()
+            pass
         return {
             'header': 'play_card',
             'response': {
@@ -44,18 +44,18 @@ class GameManager:
             }
         }
         
-    def resolveRound(self):
-        max_value = 0
-        winner = ''
-        for i in range(len(self.lobby.players)):
-            card = self.lobby.players[i].deck[self.round_cards[i]]
-            if card[self.round_attribute] > max_value:
-                max_value = card[self.round_attribute]
-                winner = self.lobby.players[i].username
-        self.current_player = self.lobby.players.index(winner)
-        return {
-            'header': 'resolve_round',
-            'response': {
-                'winner': winner
-            }
-        }
+    # def resolveRound(self):
+    #     max_value = 0
+    #     winner = ''
+    #     for i in range(len(self.lobby.players)):
+    #         card = self.lobby.players[i].deck[self.round_cards[i]]
+    #         if card[self.round_attribute] > max_value:
+    #             max_value = card[self.round_attribute]
+    #             winner = self.lobby.players[i].username
+    #     self.current_player = self.lobby.players.index(winner)
+    #     return {
+    #         'header': 'resolve_round',
+    #         'response': {
+    #             'winner': winner
+    #         }
+    #     }

@@ -50,23 +50,23 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'leave_lobby':
-            result = self.socket_server.lobbyManager.leaveLobby(self.client)
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
+            result, result_lobby = self.socket_server.lobbyManager.leaveLobby(self.client)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result_lobby)
         elif header == 'choose_deck':
             self.client.current_deck = body['deck_id']
             result = {'header': 'choose_deck', 'response': {'status': 'success', 'message': 'Baralho escolhido!'}}
         elif header == 'start_game':
             result = self.socket_server.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo iniciado!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'play_card':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['name'])
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, result)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'choose_stat':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.chooseStat(self.client, body['stat'])
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'choose_stat', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'start_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'end_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':

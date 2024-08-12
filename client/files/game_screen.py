@@ -658,9 +658,17 @@ class Game(arcade.Window):
         while True:
             try:
                 data_dict = self.client.receiveMessage()
-                if data_dict['header'] == 'play_card':
-                    print(data_dict['response']['card'])
-                    self.render_opponent_card(data_dict['response']['card'])
+                print(data_dict)
+                if data_dict['header'] == 'start_game':
+                    for player in data_dict['response']['data']['players']:
+                        if player == self.client.client_name:
+                            print(player)
+                            continue
+                        elif self.opponents[0].name != None:
+                            self.opponents[0].name = player
+                            print(self.opponents[0].name)
+                        else:
+                            self.opponents[1].name = player
             except Exception as e:
                 print(str(e))
                 break
@@ -707,7 +715,7 @@ def fabricateGame(client):
         data_str = json.dumps(msgs[i])
         try:
             client.s.send(bytes(data_str, encoding="utf-8"))
-            time.sleep(1)
+            time.sleep(3)
         except socket.error as e:
             print(str(e))
             client.s.close()
@@ -715,10 +723,12 @@ def fabricateGame(client):
 def receiveAnswer(client):
     while True:
         try:
-            time.sleep(0.1)
             data = client.s.recv(1024)
             data_dict = json.loads(data.decode("utf-8"))
             print(data_dict)
+            if data_dict['header'] == 'start_game':
+                for player in data_dict['response']['data']['players']:
+                    print("test")
         except socket.error as e:
             print(str(e))
             break
@@ -727,12 +737,15 @@ def main():
 
     client = Client()
     client.startClient()
+    window = Game(client)
+    window.setup()
+    time.sleep(6)
     threading.Thread(target=receiveAnswer, args=(client,)).start()
     
     fabricateGame(client)
     
-    window = Game(client)
-    window.setup()
+
+
     arcade.run()
 
 

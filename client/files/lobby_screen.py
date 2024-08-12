@@ -10,6 +10,7 @@ import time
 import client
 import json
 import main_menu
+import create_lobby
 import game_screen
 
 # Screen title and size
@@ -33,11 +34,13 @@ class LobbyScreen(arcade.View):
         super().__init__()
         self.client = client
         self.manager = arcade.gui.UIManager()
+        self.data_dict = None
         self.manager.enable()
         self.active = False
         self.players_on_lobby = players_on_lobby
         self.opponent1 = "Aguardando..."
         self.opponent2 = "Aguardando..."
+        self.back_to_creation = False
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -45,6 +48,10 @@ class LobbyScreen(arcade.View):
         ready_button = arcade.gui.UIFlatButton(text="Iniciar Jogo", width=200)
         self.v_box.add(ready_button.with_space_around(bottom=20))
         ready_button.on_click = self.on_click_ready_button
+
+        voltar_button = arcade.gui.UIFlatButton(text="Voltar", width=200)
+        self.v_box.add(voltar_button.with_space_around(bottom=20))
+        voltar_button.on_click = self.on_click_voltar
 
         self.background = arcade.load_texture("/home/sprites/main_menu.png")
 
@@ -62,7 +69,10 @@ class LobbyScreen(arcade.View):
         data = {'header': 'start_game', 'request': {}}
         self.client.sendMessage(data)
 
-
+    def on_click_voltar(self, event):
+        data = {'header': 'leave_lobby', 'request': {}}
+        self.client.sendMessage(data)
+        threading.Thread(target=self.receive_message).start()   
 
     def setup(self):
         for player in self.players_on_lobby:
@@ -84,6 +94,11 @@ class LobbyScreen(arcade.View):
         self.manager.draw()
 
 
+        if self.back_to_creation:
+            create_lobby_window = create_lobby.CreateLobby(self.client)
+            create_lobby_window.reset()
+            self.window.show_view(create_lobby_window)
+
         rect_width = 280
         rect_height = 40
         margin = 5
@@ -103,12 +118,13 @@ class LobbyScreen(arcade.View):
     def receive_message(self):
         while True:
             try:
-                data_dict = self.client.receiveMessage()
+                self.data_dict = self.client.receiveMessage()
 
-                if data_dict['header'] == 'join_lobby' or data_dict['header'] == 'leave_lobby':
-                    if data_dict['response']['status'] == "success":     
-                        array_players = data_dict['response']['data']['lobby']['players']     
-                        
+                if self.data_dict['header'] == 'join_lobby' or self.data_dict['header'] == 'player_leave_lobby':
+                    if self.data_dict['response']['status'] == "success":     
+                        self.opponent1 = "Aguardando..."
+                        self.opponent2 = "Aguardando..."
+                        array_players = self.data_dict['response']['data']['lobby']['players']     
                         for player in array_players:
                             if player == self.client.client_name:
                                 continue
@@ -116,11 +132,13 @@ class LobbyScreen(arcade.View):
                                 self.opponent1 = player
                             elif self.opponent2 == "Aguardando...":
                                 self.opponent2 = player
-                elif data_dict['header'] == 'start_game':
-                    print('vish...')
-                    menu = game_screen.Game(self.client)
-                    menu.setup()
-                    self.window.show_view(menu)
+                if self.data_dict['header'] == 'leave_lobby':
+                    self.back_to_creation = True
+                # elif self.data_dict['header'] == 'start_game':
+                #     print('vish...')
+                #     menu = game_screen.Game(self.client)
+                #     menu.setup()
+                #     self.window.show_view(menu)
 
 
 

@@ -67,18 +67,18 @@ class MainMenu(arcade.View):
         )
 
     def on_click_play(self, event):
-        print("Create Lobby")
-        game = game_screen.Game(self.client)
-        game.setup()
-        self.window.show_view(game)
+        # print("Create Lobby")
+        # game = game_screen.Game(self.client)
+        # game.setup()
+        # self.window.show_view(game)
+        create_lobby_window = create_lobby.CreateLobby(self.client)
+        self.window.show_view(create_lobby_window)
 
     def on_click_edit(self, event):
-        print("edit")
         data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
         self.client.sendMessage(data)
         threading.Thread(target=self.receive_message).start()   
         
-    
     def on_click_shop(self, event):
         print("shop")
 

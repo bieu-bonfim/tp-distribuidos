@@ -25,7 +25,6 @@ host = 'server'
 port = 8020
 s = None
 
-sem = threading.Semaphore()
 
 class TextBox:
     def __init__(self, x, y, width, height):
@@ -61,7 +60,6 @@ class TextBox:
             self.active = False
 
 
-
 class CreateLobby(arcade.View):
     """ Main application class. """
 
@@ -72,6 +70,7 @@ class CreateLobby(arcade.View):
         self.manager.enable()
         self.lobbyText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-100, 250, 40) 
         self.active = False
+        self.go_to_lobby = False
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -101,6 +100,8 @@ class CreateLobby(arcade.View):
 
         threading.Thread(target=self.receive_message).start()
 
+    def reset(self):
+        self.go_to_lobby = False
 
 
     def on_click_voltar(self, event):
@@ -109,16 +110,13 @@ class CreateLobby(arcade.View):
 
     def on_click_create_lobby(self, event):
         data = {'header': 'create_lobby', 'request': {}}
-        time.sleep(1)
         self.client.sendMessage(data)
-        print("create lobby")
-
+        threading.Thread(target=self.receive_message).start()
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
-        time.sleep(1)
         self.client.sendMessage(data)
-        print(self.lobbyText.text)
+        threading.Thread(target=self.receive_message).start()
 
     def on_draw(self):
         """ Render the screen. """
@@ -127,6 +125,12 @@ class CreateLobby(arcade.View):
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
         self.lobbyText.draw()
+
+        if self.go_to_lobby == True:
+            lobby = lobby_screen.LobbyScreen(self.client, self.data_dict['response']['data']['lobby']['players'])
+            lobby.setup()
+            time.sleep(2)
+            self.window.show_view(lobby)
 
 
         #arcade.draw_rectangle_filled(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.WHITE)
@@ -142,26 +146,16 @@ class CreateLobby(arcade.View):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
     def receive_message(self):
-            try:
-                data_dict = self.client.receiveMessage()
-                print("DATA DATA - ", data_dict)
-
-                if data_dict['header'] == 'lobby_created':
-                    if data_dict['response']['status'] == "success":
-                        menu = lobby_screen.LobbyScreen(self.client, [])
-                        menu.setup()
-                        self.window.show_view(menu)
-                    
-                elif data_dict['header'] == 'join_lobby':
-                    if data_dict['response']['status'] == "success":     
-                        array_players = data_dict['response']['data']['lobby']['players']     
-                        print(array_players)
-                        menu = lobby_screen.LobbyScreen(self.client, array_players)
-                        menu.setup()
-                        self.window.show_view(menu)
-
-            except socket.error as e:
-                print(str(e))
+        try:
+            self.data_dict = self.client.receiveMessage()
+            
+            if self.data_dict['header'] == 'lobby_created':
+                self.go_to_lobby = True
+            elif self.data_dict['header'] == 'join_lobby':
+                self.go_to_lobby = True     
+                
+        except Exception as e:
+            print(str(e))
 
 
 

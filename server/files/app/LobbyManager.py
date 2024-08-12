@@ -163,6 +163,21 @@ class LobbyManager:
                     }
                 }
             }
+        },{
+            'header': 'player_leave_lobby',
+            'response': {
+                'status': 'success',
+                'message': 'Saiu da sala com sucesso',
+                'data': {
+                    'lobby': {
+                        'index': lobby.index,
+                        'name': lobby.name,
+                        'player_count': len(lobby.players),
+                        'status': lobby.status,
+                        'players': [player.username for player in lobby.players]
+                    }
+                }
+            }
         }
         
     def startGame(self, index, conn):
@@ -195,13 +210,7 @@ class LobbyManager:
                 'status': 'success',
                 'message': 'Jogo iniciado',
                 'data': {
-                    'lobby': {
-                        'index': lobby.index,
-                        'name': lobby.name,
-                        'player_count': len(lobby.players),
-                        'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
-                    }
+                    'players': [player.username for player in lobby.players]
                 }
             }
         }
