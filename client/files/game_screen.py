@@ -694,13 +694,13 @@ def fabricateGame(client):
     elif player == '3':
         nome="thui"
         senha="thui123"
-        msg4 = {'header': 'start_game', 'request': {}}
         total=4
         pass
     
     msg1 = {'header': 'login', 'request': {'username': nome, 'password': senha}}
     msg2 = {'header': 'choose_deck', 'request': {'deck_id': deck}}
     msg3 = {'header': 'join_lobby', 'request': {'index': lobby}}
+    msg4 = {'header': 'start_game', 'request': {}}
     msgs=[msg1, msg2, msg3, msg4]
     
     for i in range(total):

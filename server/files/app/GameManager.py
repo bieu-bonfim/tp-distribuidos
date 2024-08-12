@@ -17,7 +17,7 @@ class GameManager:
             if self.lobby.players[i].username == player.username:
                 self.round_cards[i] = card
         if self.round_cards.count(3) == 0:
-            pass
+            threading.Thread(target=self.resolveRound).start()
             
         return {
             'header': 'play_card',
