@@ -680,6 +680,7 @@ def fabricateGame(client):
     player = input("insira o numero do jogador: ")
     deck = 1
     lobby = 0
+    total=3
     nome = ''
     senha = ''
     if player == '1':
@@ -693,27 +694,20 @@ def fabricateGame(client):
     elif player == '3':
         nome="thui"
         senha="thui123"
+        msg4 = {'header': 'start_game', 'request': {}}
+        total=4
         pass
     
     msg1 = {'header': 'login', 'request': {'username': nome, 'password': senha}}
     msg2 = {'header': 'choose_deck', 'request': {'deck_id': deck}}
     msg3 = {'header': 'join_lobby', 'request': {'index': lobby}}
-    msgs=[msg1, msg2, msg3]
+    msgs=[msg1, msg2, msg3, msg4]
     
-    for i in range(3):
+    for i in range(total):
         data_str = json.dumps(msgs[i])
         try:
-            client.s.sendall(bytes(data_str, encoding="utf-8"))
-            time.sleep(3)
-        except socket.error as e:
-            print(str(e))
-            client.s.close()
-
-    if player=='3':
-        msg4 = {'header': 'start_game', 'request': {}}
-        data_str = json.dumps(msg4)
-        try:
-            client.s.sendall(bytes(data_str, encoding="utf-8"))
+            client.s.send(bytes(data_str, encoding="utf-8"))
+            time.sleep(1)
         except socket.error as e:
             print(str(e))
             client.s.close()
