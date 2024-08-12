@@ -35,7 +35,7 @@ class SocketServer():
             
     def serverStop(self):
         for client in self.clients:
-            client.conn.sendall(bytes(json.dumps({'header': 'Server stopped'}), encoding="utf-8"))
+            client.conn.send(bytes(json.dumps({'header': 'Server stopped'}), encoding="utf-8"))
             client.conn.close()
         self.socketServer.shutdown(socket.SHUT_RDWR)
         self.socketServer.close()
@@ -52,13 +52,13 @@ class SocketServer():
         try:
             for client in self.clients:
                 if client.conn != sender:
-                    client.conn.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+                    client.conn.send(bytes(json.dumps(data_dict), encoding="utf-8"))
         except socket.error as e:
             print(str(e))
             
     def sendMessage(self, receiver, data_dict):
         try:
-            receiver.sendall(bytes(json.dumps(data_dict), encoding="utf-8"))
+            receiver.send(bytes(json.dumps(data_dict), encoding="utf-8"))
         except socket.error as e:
             print(str(e))
             

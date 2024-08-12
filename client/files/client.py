@@ -21,7 +21,7 @@ class Client():
         print(f"Sending message: {data}")
         try:
             data_str = json.dumps(data)
-            self.s.sendall(bytes(data_str, encoding="utf-8"))
+            self.s.send(bytes(data_str, encoding="utf-8"))
         except socket.error as e:
             print(str(e))
             self.s.close()
