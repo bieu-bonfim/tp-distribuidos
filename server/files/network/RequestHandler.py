@@ -48,7 +48,7 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
             result = self.socket_server.lobbyManager.joinLobby(self.client, int(body['index']))
-            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'leave_lobby':
             result = self.socket_server.lobbyManager.leaveLobby(self.client)
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)

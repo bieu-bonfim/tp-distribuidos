@@ -70,3 +70,8 @@ class SocketServer():
     def broadcastMessageToLobby(self, index, data_dict):
         for player in self.lobbyManager.lobbyController.getLobby(int(index)).players:
             self.sendMessage(player.conn, data_dict)
+            
+    def broadcastMessageToLobbyOthers(self, sender, index, data_dict):
+        for player in self.lobbyManager.lobbyController.getLobby(int(index)).players:
+            if player.conn != sender:
+                self.sendMessage(player.conn, data_dict)
