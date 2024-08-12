@@ -19,7 +19,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'players': len(lobby.players),
                         'status': lobby.status,
-                        'players': lobby.players
+                        'players': [player.username for player in lobby.players]
                     } 
                 }
             }
@@ -175,11 +175,11 @@ class LobbyManager:
                 'message': 'Jogo iniciado',
                 'data': {
                     'lobby': {
-                        'index': lobby[index].index,
-                        'name': lobby[index].name,
-                        'player_count': len(lobby[index].players),
-                        'status': lobby[index].status,
-                        'players': lobby[index].players
+                        'index': lobby.index,
+                        'name': lobby.name,
+                        'player_count': len(lobby.players),
+                        'status': lobby.status,
+                        'players': [player.username for player in lobby.players]
                     }
                 }
             }
