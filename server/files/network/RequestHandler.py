@@ -17,7 +17,6 @@ class RequestHandler:
     def handleRequest(self):
         while True:
             try:    
-                t.sleep(3)
                 data = self.client.conn.recv(1024).decode("utf-8")
                 request = json.loads(data)
                 self.socket_server.db_semaphore.acquire()
