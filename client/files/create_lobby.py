@@ -98,8 +98,6 @@ class CreateLobby(arcade.View):
                 child=self.v_box)
         )
 
-        threading.Thread(target=self.receive_message).start()
-
     def reset(self):
         self.go_to_lobby = False
 
@@ -111,12 +109,12 @@ class CreateLobby(arcade.View):
     def on_click_create_lobby(self, event):
         data = {'header': 'create_lobby', 'request': {}}
         self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()
+        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
         self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()
+        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
 
     def on_draw(self):
         """ Render the screen. """
@@ -127,6 +125,7 @@ class CreateLobby(arcade.View):
         self.lobbyText.draw()
 
         if self.go_to_lobby == True:
+            print(self.data_dict['response']['data']['lobby']['players'])
             lobby = lobby_screen.LobbyScreen(self.client, self.data_dict['response']['data']['lobby']['players'])
             lobby.setup()
             time.sleep(2)
@@ -145,17 +144,26 @@ class CreateLobby(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
-    def receive_message(self):
-        try:
-            self.data_dict = self.client.receiveMessage()
-            
-            if self.data_dict['header'] == 'lobby_created':
-                self.go_to_lobby = True
-            elif self.data_dict['header'] == 'join_lobby':
-                self.go_to_lobby = True     
+    def receive_message(self, socket):
+        while True:
+            print('waiting for message')
+            try:
+                self.data_dict = socket.recv(1024)
+                self.data_dict = json.loads(self.data_dict.decode("utf-8"))
+
+                print(self.data_dict)
                 
-        except Exception as e:
-            print(str(e))
+                if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
+                    print('lobby created')
+                    self.go_to_lobby = True
+                    #data = {}
+                elif self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
+                    print('lobby joined')
+                    self.go_to_lobby = True     
+                    
+            except Exception as e:
+                print(str(e))
+                break
 
 
 

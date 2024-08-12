@@ -75,4 +75,5 @@ class RequestHandler:
         elif header == 'retrieve_deck':
             result = self.deckManager.retrieveDeck(self.client.current_deck)
         
+        print("sending ", result)
         return result

@@ -71,8 +71,8 @@ class LobbyScreen(arcade.View):
 
     def on_click_voltar(self, event):
         data = {'header': 'leave_lobby', 'request': {}}
-        self.client.sendMessage(data)
         threading.Thread(target=self.receive_message).start()   
+        self.client.sendMessage(data)
 
     def setup(self):
         for player in self.players_on_lobby:
@@ -116,9 +116,11 @@ class LobbyScreen(arcade.View):
 
 
     def receive_message(self):
+        print('waiting for message')
         while True:
             try:
                 self.data_dict = self.client.receiveMessage()
+                print(self.data_dict)
 
                 if self.data_dict['header'] == 'join_lobby' or self.data_dict['header'] == 'player_leave_lobby':
                     if self.data_dict['response']['status'] == "success":     
@@ -139,11 +141,6 @@ class LobbyScreen(arcade.View):
                 #     menu = game_screen.Game(self.client)
                 #     menu.setup()
                 #     self.window.show_view(menu)
-
-
-
-    
-                        
 
             except socket.error as e:
                 print(str(e))
