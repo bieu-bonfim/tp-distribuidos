@@ -10,13 +10,13 @@ from arcade.gui import UIManager
 host = 'server'
 port = 8020
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((host, port))
+# = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s.connect((host, port))
 
-player_name = input()
-ready = input("pronto?")
+#player_name = input()
+#ready = input("pronto?")
 
-time.sleep(5)
+#time.sleep(5)
 
 
 
@@ -59,9 +59,9 @@ BOTTOM_Y = MAT_HEIGHT / 2 + BASE_MARGIN
 START_X = MAT_WIDTH / 2 + BASE_MARGIN
 # Card constants
 
-CARD_NAMES = ["bigfoot", "chupacabra", "mothman", "ness", "ufo", "anunnaki", "ashtasheran", "bloop", "fairy", "gnome", 
-              "greys", "kraken", "mapinguari", "megalodon", "nightcrawler", "poltergeist", "reptilian", "siren", 
-              "skinwalker", "slenderman", "thunderbird", "vampire", "varginha", "wendigo", "werewolf", "witch", "yeti"]
+CARD_NAMES = ["Alien grey", "Anunnaki", "Ashtar Sheran", "Bruxa", "Chupacabra", "Et de Varginha", "Fada", "Fresno Nightcrawler", "Gnomo", "Kraken", 
+              "Lobisomem", "Mapinguari", "Megalodon", "Monstro do Lago Ness", "Mothman", "O Bloop", "Passaro Trovao", 
+              "Pe Grande", "Poltergeist", "Reptlianos", "Sereia", "Skin Walker", "Slenderman", "UFO", "Vampiro", "Wendigo", "Yeti"]
 
 # The Y of the top row (4 piles)
 TOP_Y = SCREEN_HEIGHT - (MAT_HEIGHT / 2) - BASE_MARGIN
@@ -202,7 +202,7 @@ class MyGame(arcade.Window):
         self.opponents.append(self.p2)
         self.opponents.append(self.p3)
 
-        self.p1.name = player_name
+        self.p1.name = "test"
 
        # self.p2_mat = None
        # self.p2_card = None
@@ -272,17 +272,17 @@ class MyGame(arcade.Window):
     
     def setup(self):
         
-        thread_receive = threading.Thread(target=self.receive_message, args=(s,))
-        thread_receive.start()
+        #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
+        #thread_receive.start()
 
-        data = {'header': 'player_connection','player_name_register': player_name}
-        data_str = json.dumps(data)
+        #data = {'header': 'player_connection','player_name_register': player_name}
+        #data_str = json.dumps(data)
 
 
-        try:
-            s.sendall(bytes(data_str,encoding="utf-8"))
-        except socket.error as e:
-            print(str(e))
+        #try:
+        #    s.sendall(bytes(data_str,encoding="utf-8"))
+        #except socket.error as e:
+        #    print(str(e))
 
 
 
