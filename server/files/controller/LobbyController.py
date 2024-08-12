@@ -13,6 +13,12 @@ class LobbyController:
         self.lobby_counter += 1
         return self.lobbies[self.lobby_counter - 1]
     
+    def createLobbyOnly(self):
+        lobby = Lobby(self.lobby_counter, f'Lobby {self.lobby_counter}', 'waiting')
+        self.lobbies.append(lobby)
+        self.lobby_counter += 1
+        return self.lobbies[self.lobby_counter - 1]
+    
     def addPlayer(self, index, client):
         self.lobbies[index].players.append(client)
         return self.lobbies[index]

@@ -44,6 +44,8 @@ class RequestHandler:
             result = self.authManager.register(body['username'], body['password'], body['email'])
         elif header == 'create_lobby':
             result = self.socket_server.lobbyManager.createLobby(self.client)
+        elif header == 'create_lobby_only':
+            result = self.socket_server.lobbyManager.createLobbyOnly()
         elif header == 'available_lobbies':
             result = self.socket_server.lobbyManager.getAvailableLobbies()
         elif header == 'join_lobby':
