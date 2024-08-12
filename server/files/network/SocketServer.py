@@ -22,6 +22,7 @@ class SocketServer():
         print('Server started!')
         shutdown_thread = threading.Thread(target=self.serverShutdown, daemon=True)
         shutdown_thread.start()
+        self.lobbyManager.createLobbyOnly()
         while True:
             conn, addr = self.socketServer.accept()
             client = Client(conn, addr, (len(self.clients) + 1))

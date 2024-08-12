@@ -80,24 +80,27 @@ class MatchController:
     ]
 
     def RoundResult(self, card1, card2, card3, attribute):
-        if attribute == 1:
-            self.getWinnerByType(card1, card2, card3)
+        if card1 == card2 and card1 == card3 and card2 == card3:
+            print("draw")
+            return "draw"
+        elif attribute == 1:
+            result = self.getWinnerByType(card1, card2, card3)
         elif attribute == 2:
-            self.getWinnerByFirstAppearance(card1, card2, card3)
+            result = self.getWinnerByFirstAppearance(card1, card2, card3)
         elif attribute == 3:
-            self.getWinnerByLevelOfFear(card1, card2, card3)
+            result = self.getWinnerByLevelOfFear(card1, card2, card3)
         elif attribute == 4:
-            self.getWinnerBySize(card1, card2, card3)
+            result = self.getWinnerBySize(card1, card2, card3)
         elif attribute == 5:
-            self.getWinnerByDanger(card1, card2, card3)
+            result = self.getWinnerByDanger(card1, card2, card3)
         elif attribute == 6:
-            self.getWinnerByRarity(card1, card2, card3)
-        
+            result = self.getWinnerByRarity(card1, card2, card3)
+        return result
 
-    def getWinnerByType(self, card1, card2, card3):
-        card1 = CardController.getByName(card1)
-        card2 = CardController.getByName(card2)
-        card3 = CardController.getByName(card3)
+    def getWinnerByType(cardName1, cardName2, cardName3):
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
         elements = [sub[2] for sub in cards]
@@ -107,15 +110,22 @@ class MatchController:
         print("vencedor: ", cards[winner])
         return cards[winner]
 
-    def getWinnerByFirstAppearance(self, card1, card2, card3):
-        card1 = CardController.getByName(card1)
-        card2 = CardController.getByName(card2)
-        card3 = CardController.getByName(card3)
+    def getWinnerByFirstAppearance(self, cardName1, cardName2, cardName3):
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3)
         cardList = [card1, card2, card3]
-
         cardListSorted = sorted(cardList, key=lambda item: item[3])
-        print("vencedor: ",cardListSorted[0])
-        return cardListSorted[0]
+        undraw = 0
+        for i in cardList:
+            if cardListSorted == i:
+                undraw = undraw + 1
+        if undraw == 1:
+            print("vencedor: ",cardListSorted[0])
+            return cardListSorted[0]
+        else:
+            print("Vamos para o desempate")
+            self.getWinnerByRarity(cardName1, cardName2, cardName3)
 
     def getWinnerByLevelOfFear(self, cardName1, cardName2, cardName3):
         card1 = CardController.getByName(cardName1)
@@ -125,42 +135,74 @@ class MatchController:
 
         elements = [sub[4] for sub in cards]
         indices = [self.fear.index(element) for element in elements]
-        winner = indices.index(max(indices))
+        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
+        undraw = 0 
+        for i in cards:
+            if indicesSorted == i:
+                undraw = undraw + 1
+        if undraw == 1:
+            winner = indices.index(max(indices))
+            print("vencedor: ", cards[winner])
+            return cards[winner]
+        else:
+            print("Vamos para o desempate")
+            self.getWinnerByDanger(cardName1, cardName2, cardName3)
 
-        print("vencedor: ", cards[winner])
-        return cards[winner]
-
-    def getWinnerBySize(self, card1, card2, card3):
-        card1 = CardController.getByName(card1)
-        card2 = CardController.getByName(card2)
-        card3 = CardController.getByName(card3)
+    def getWinnerBySize(self, cardName1, cardName2, cardName3):
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3)
         cardList = [card1, card2, card3]
         cardListSorted = sorted(cardList, key=lambda item: item[5], reverse=True)
-        print("vencedor: ",cardListSorted[0])
-        return cardListSorted[0]
+        undraw = 0
+        for i in cardList:
+            if cardListSorted == i:
+                undraw = undraw + 1
+        if undraw == 1:
+            print("vencedor: ",cardListSorted[0])
+            return cardListSorted[0]
+        else:
+            print("Vamos para o desempate")
+            self.getWinnerByLevelOfFear(cardName1, cardName2, cardName3)
 
-    def getWinnerByDanger(self, card1, card2, card3):
-        card1 = CardController.getByName(card1)
-        card2 = CardController.getByName(card2)
-        card3 = CardController.getByName(card3)
+    def getWinnerByDanger(self, cardName1, cardName2, cardName3):
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
         elements = [sub[6] for sub in cards]
         indices = [self.dangerous.index(element) for element in elements]
-        winner = indices.index(max(indices))
-        print("indices: ",indices)
-        print("vencedor: ", cards[winner])
-        return cards[winner]
+        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
+        undraw = 0 
+        for i in cards:
+            if indicesSorted == i:
+                undraw = undraw + 1
+        if undraw == 1:
+            winner = indices.index(max(indices))
+            print("vencedor: ", cards[winner])
+            return cards[winner]
+        else:
+            print("Vamos para o desempate")
+            self.getWinnerByFirstAppearance(cardName1, cardName2, cardName3)
 
-    def getWinnerByRarity(self, card1, card2, card3):
-        card1 = CardController.getByName(card1)
-        card2 = CardController.getByName(card2)
-        card3 = CardController.getByName(card3)
+    def getWinnerByRarity(self, cardName1, cardName2, cardName3):
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
         elements = [sub[7] for sub in cards]
         indices = [self.rare.index(element) for element in elements]
-        winner = indices.index(max(indices))
-
-        print("vencedor: ", cards[winner])
-        return cards[winner]
+        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
+        undraw = 0 
+        for i in cards:
+            if indicesSorted == i:
+                undraw = undraw + 1
+        if undraw == 1:
+            winner = indices.index(max(indices))
+            print("vencedor: ", cards[winner])
+            return cards[winner]
+        else:
+            print("Vamos para o desempate")
+            self.getWinnerByDanger(cardName1, cardName2, cardName3)

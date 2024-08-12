@@ -4,6 +4,25 @@ class LobbyManager:
     def __init__(self):
         self.lobbyController = LobbyController()
         
+    def createLobbyOnly(self):
+        lobby = self.lobbyController.createLobbyOnly()
+        return {
+            'header': 'lobby_created',
+            'response': {
+                'status': 'success',
+                'message': 'Sala criada com sucesso',
+                'data': {
+                    'lobby': {
+                        'index': lobby.index,
+                        'name': lobby.name,
+                        'players_count': len(lobby.players),
+                        'status': lobby.status,
+                        'players': [player.username for player in lobby.players]
+                    }
+                }
+            }
+        }
+        
     def createLobby(self, client):
         lobby = self.lobbyController.createLobby(client)
         client.in_lobby = True
