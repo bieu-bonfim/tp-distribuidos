@@ -28,13 +28,13 @@ s = None
 class LobbyScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client):
+    def __init__(self, client, players_on_lobby):
         super().__init__()
         self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.active = False
-
+        self.players_on_lobby = players_on_lobby
         self.opponent1 = "Aguardando..."
         self.opponent2 = "Aguardando..."
 
@@ -60,6 +60,18 @@ class LobbyScreen(arcade.View):
     def on_click_ready_button(self, event):
         print("ready")
 
+
+    def setup(self):
+        for player in self.players_on_lobby:
+             if player == self.client.client_name:
+                continue
+             elif self.opponent1 == "Aguardando...":
+                self.opponent1 = player
+             elif self.opponent2 == "Aguardando...":
+                self.opponent2 = player
+        print(self.opponent1)
+        print(self.opponent2)
+
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
@@ -83,11 +95,6 @@ class LobbyScreen(arcade.View):
             arcade.draw_rectangle_outline(x, y, rect_width, rect_height, arcade.color.ENGLISH_VIOLET)
             arcade.draw_text(text, x, y, text_color, font_size=14, anchor_x="center", anchor_y="center")
 
-    def on_key_press(self, symbol, modifiers):
-            self.lobbyText.on_key_press(symbol, modifiers)
-
-    def on_mouse_press(self, x, y, button, modifiers):
-            self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
     def receive_message(self, client_socket):
         while True:

@@ -106,10 +106,16 @@ class CreateLobby(arcade.View):
         print("create lobby")
 
         data = {'header': 'create_lobby', 'request': {}}
+        threading.Thread(target=self.receive_message).start()
+        time.sleep(1)
         self.client.sendMessage(data)
-        self.receive_message(self.client.s)
+
 
     def on_click_enter_lobby(self, event):
+        data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
+        threading.Thread(target=self.receive_message).start()
+        time.sleep(1)
+        self.client.sendMessage(data)
         print(self.lobbyText.text)
 
     def on_draw(self):
@@ -133,23 +139,26 @@ class CreateLobby(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
-    def receive_message(self, client_socket):
-        while True:
+    def receive_message(self):
             try:
-                data = client_socket.recv(1024)
-                #print(f"DATA DATA - {data.decode()}")
-                data_dict = json.loads(data.decode("utf-8"))
+                data_dict = self.client.receiveMessage()
                 print("DATA DATA - ", data_dict)
+
                 if data_dict['header'] == 'lobby_created':
                     if data_dict['response']['status'] == "success":
-                        menu = lobby_screen.LobbyScreen(self.client)
+                        menu = lobby_screen.LobbyScreen(self.client, [])
                         self.window.show_view(menu)
-
-                        
+                    
+                elif data_dict['header'] == 'join_lobby':
+                    if data_dict['response']['status'] == "success":     
+                        array_players = data_dict['response']['data']['lobby']['players']     
+                        print(array_players)
+                        menu = lobby_screen.LobbyScreen(self.client, array_players)
+                        menu.setup()
+                        self.window.show_view(menu)
 
             except socket.error as e:
                 print(str(e))
-                break
 
 
 
