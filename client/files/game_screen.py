@@ -716,7 +716,6 @@ def fabricateGame(client):
         pass
     
     msg1 = {'header': 'login', 'request': {'username': nome, 'password': senha}}
-    client.client_name = nome
     msg2 = {'header': 'choose_deck', 'request': {'deck_id': deck}}
     msg3 = {'header': 'join_lobby', 'request': {'index': lobby}}
     msgs=[msg1, msg2, msg3]
