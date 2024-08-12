@@ -84,30 +84,32 @@ class MatchController:
         "Segredo"
     ]
 
-    def RoundResult(self, card1, card2, card3, attribute):
-        if card1 == card2 and card1 == card3 and card2 == card3:
+    def RoundResult(self, cards, attribute):
+        if cards[0] == cards[1] and cards[0] == cards[2] and cards[1] == cards[2]:
             print("draw")
             return "draw"
-        elif card1 == card2:
-            print("Carta 3: ",card3)
-            result = self.cardController.getByName(card3)
-        elif card2 == card3:
-            result = self.cardController.getByName(card1)
-        elif card1 == card3:
-            result = self.cardController.getByName(card2)
+        elif cards[0] == cards[1]:
+            result = self.cardController.getByName(cards[2])
+        elif cards[1] == cards[2]:
+            result = self.cardController.getByName(cards[0])
+        elif cards[0] == cards[2]:
+            result = self.cardController.getByName(cards[1])
         elif attribute == 1:
-            result = self.getWinnerByType(card1, card2, card3)
+            result = self.getWinnerByType(cards[0], cards[1], cards[2])
         elif attribute == 2:
-            result = self.getWinnerByFirstAppearance(card1, card2, card3)
+            result = self.getWinnerByFirstAppearance(cards[0], cards[1], cards[2])
         elif attribute == 3:
-            result = self.getWinnerByLevelOfFear(card1, card2, card3)
+            result = self.getWinnerByLevelOfFear(cards[0], cards[1], cards[2])
         elif attribute == 4:
-            result = self.getWinnerBySize(card1, card2, card3)
+            result = self.getWinnerBySize(cards[0], cards[1], cards[2])
         elif attribute == 5:
-            result = self.getWinnerByDanger(card1, card2, card3)
+            result = self.getWinnerByDanger(cards[0], cards[1], cards[2])
         elif attribute == 6:
-            result = self.getWinnerByRarity(card1, card2, card3)
-        return result
+            result = self.getWinnerByRarity(cards[0], cards[1], cards[2])
+
+        indice = next((index for index, tupla in enumerate(cards) if result[1   ] in tupla), None)
+        
+        return indice+1, result
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
