@@ -116,7 +116,9 @@ class EditDeck(arcade.View):
         self.is_loaded = False
         self.selected_deck_id = None
         self.lock = threading.Lock()
+        receiving_thread = threading.Thread(target=self.receive_message)
 
+        receiving_thread.start()
 
     def setup(self):
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
@@ -129,12 +131,11 @@ class EditDeck(arcade.View):
         
         # --------------------------
         data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
-        receiving_thread = threading.Thread(target=self.receive_message)
-        receiving_thread.start()
 
         time.sleep(1)
 
-        self.client.sendMessage(data)
+        sending_thread = threading.Thread(target=self.client.sendMessage, args=(data,))
+        sending_thread.start()
         
         while True:
             with self.lock:    
@@ -281,7 +282,7 @@ class EditDeck(arcade.View):
                     "deck_id": self.selected_deck_id,
                     "cards": names
                     }
-                    }
+                }
             
             self.client.sendMessage(send_deck)
             print(send_deck)

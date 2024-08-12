@@ -1,6 +1,7 @@
 import socket
 import threading
 import json
+import time
 
 class Client():
     def __init__(self):
@@ -18,9 +19,8 @@ class Client():
         
     def sendMessage(self, data):
         print(f"Sending message: {data}")
-        data_str = json.dumps(data)
-    
         try:
+            data_str = json.dumps(data)
             self.s.sendall(bytes(data_str, encoding="utf-8"))
         except socket.error as e:
             print(str(e))
@@ -29,6 +29,7 @@ class Client():
     def receiveMessage(self):
         while True:
             try:
+                time.sleep(0.1)
                 data = self.s.recv(1024)
                 data_dict = json.loads(data.decode("utf-8"))
                 print(data_dict)
