@@ -22,7 +22,32 @@ class DeckCardsController:
         rows = self.cursor.fetchall()
         self.conn.commit()
         return rows
+    
+    def getByDeckCard(self, deckId, cardId):
+        self.cursor.execute('SELECT * FROM deck_cards WHERE deck_id = ? AND card_id = ?', (deckId, cardId))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows
 
+    def getQuantityCardByDeck(self, deckId, cardId):
+        self.cursor.execute('SELECT dc.quantity FROM deck_cards dc WHERE deck_id = ? and card_id = ?', (deckId, cardId))
+        rows = self.cursor.fetchall()
+        self.conn.commit()
+        return rows
+    
+    def updateQuantityCardDeck(self, deckCard):
+        try:
+            self.cursor.execute('''
+            UPDATE deck_cards
+            SET quantity = ?
+            WHERE user_id = ? and card_id = ?
+            ''', (deckCard))
+            self.conn.commit()
+            return True
+        except Exception as e:
+            print('Não foi possível inserir o deck: ',e)
+            return False
+        
     def insert(self, deck_card):
         try:
             user_id = self.deckController.getUserByDeck(deck_card[0])[0]
@@ -32,13 +57,18 @@ class DeckCardsController:
             print(f'User cards {userCards}')
             card = self.cardController.getById(deck_card[1])
             print(f'Card {card}')
-            if card[0] in userCards:
-                self.cursor.execute('''
-                    INSERT INTO deck_cards (deck_id, card_id, quantity) VALUES (?, ?, ?)
-                ''', deck_card)
-                self.conn.commit()
-            else: 
-                print("usuario nao tem a carta")
+            
+            deckCardInDB = self.getByDeckCard(deck_card[0], deck_card[1])
+
+            if deckCardInDB == None:
+                deckCardToInsert = (deck_card[0], deck_card[1], 1)
+                self.insert(deckCardToInsert)
+            else:
+                quantity = self.getQuantityCardByUser(deck_card[0], deck_card[1])
+                newQuantity = [q[0]for q in quantity][0] + 1
+                deckCardToUpdate = (deck_card[0], deck_card[1], newQuantity)
+                self.updateQuantityCardDeck(deckCardToUpdate)
+
         except Exception as e:
             print('Não foi possível inserir o deck: ',e)
             
