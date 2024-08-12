@@ -132,6 +132,7 @@ class EditDeck(arcade.View):
         receiving_thread.start()
 
         # AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        
         time.sleep(1)
         self.client.sendMessage(data)
         
