@@ -708,6 +708,15 @@ def fabricateGame(client):
         except socket.error as e:
             print(str(e))
             client.s.close()
+
+    if player==3:
+        msg4 = {'header': 'start_game', 'request': {}}
+        data_str = json.dumps(msg4)
+        try:
+            client.s.sendall(bytes(data_str, encoding="utf-8"))
+        except socket.error as e:
+            print(str(e))
+            client.s.close()
             
 def receiveAnswer(client):
     while True:
