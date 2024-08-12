@@ -286,6 +286,8 @@ class EditDeck(arcade.View):
 
     def on_click_escolher(self, event):
         self.client.client_deck = self.selected_deck_id
+        data = {'header': 'choose_deck', 'request': {'deck_id': self.selected_deck_id}}
+        self.client.sendMessage(data)
         print("Escolher")
 
     def on_click_deck1(self, event):
