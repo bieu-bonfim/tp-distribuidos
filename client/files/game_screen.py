@@ -729,7 +729,7 @@ def fabricateGame(client):
             print(str(e))
             client.s.close()
 
-    if player==3:
+    if player=='3':
         msg4 = {'header': 'start_game', 'request': {}}
         data_str = json.dumps(msg4)
         try:

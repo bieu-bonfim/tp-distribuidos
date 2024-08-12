@@ -7,7 +7,9 @@ class GameManager:
         self.cursor = conn.cursor()
         self.lobby = lobby
         self.round = 1
-        self.current_player = randint(0, 3)
+        self.round_attribute = ''
+        self.round_cards = []
+        self.current_player = 0
         
     def playCard(self, player, card):
         return {
