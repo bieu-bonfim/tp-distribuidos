@@ -59,7 +59,7 @@ BOTTOM_Y = MAT_HEIGHT / 2 + BASE_MARGIN
 START_X = MAT_WIDTH / 2 + BASE_MARGIN
 # Card constants
 
-CARD_NAMES = ["Alien grey", "Anunnaki", "Ashtar Sheran", "Bruxa", "Chupacabra", "Et de Varginha", "Fada", "Fresno Nightcrawler", "Gnomo", "Kraken", 
+CARD_NAMES = ["Alien grey", "Anunnaki", "Ashtar Sheran", "Bruxa", "Chupacabra", "ET de Varginha", "Fada", "Fresno Nightcrawler", "Gnomo", "Kraken", 
               "Lobisomem", "Mapinguari", "Megalodon", "Monstro do Lago Ness", "Mothman", "O Bloop", "Passaro Trovao", 
               "Pe Grande", "Poltergeist", "Reptlianos", "Sereia", "Skin Walker", "Slenderman", "UFO", "Vampiro", "Wendigo", "Yeti"]
 
