@@ -27,13 +27,10 @@ class Client():
             self.s.close()
         
     def receiveMessage(self):
-        while True:
-            try:
-                time.sleep(0.1)
-                data = self.s.recv(1024)
-                data_dict = json.loads(data.decode("utf-8"))
-                print(data_dict)
-                return data_dict
-            except socket.error as e:
-                print(str(e))
-                break
+        try:
+            data = self.s.recv(1024)
+            data_dict = json.loads(data.decode("utf-8"))
+            print(data_dict)
+            return data_dict
+        except socket.error as e:
+            print(str(e))
