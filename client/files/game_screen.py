@@ -147,7 +147,7 @@ class Game(arcade.View):
         self.client_cards = None
         self.flag_client_cards = False
 
-        self.text_log = "Initial Log\n"
+        self.text_log = "Que comece o jogo...\n"
         bg_text = arcade.load_texture("/home/sprites/button.png")
         
         # Create the UITextArea with initial text
