@@ -40,7 +40,7 @@ class DeckCardsController:
             self.cursor.execute('''
             UPDATE deck_cards
             SET quantity = ?
-            WHERE user_id = ? and card_id = ?
+            WHERE deck_id = ? and card_id = ?
             ''', (deckCard))
             self.conn.commit()
             return True
@@ -67,7 +67,7 @@ class DeckCardsController:
                 ''', deckCardToInsert)
                 self.conn.commit()
             else:
-                quantity = self.getQuantityCardByUser(deck_card[0], deck_card[1])
+                quantity = self.getQuantityCardByDeck(deck_card[0], deck_card[1])
                 newQuantity = [q[0]for q in quantity][0] + 1
                 deckCardToUpdate = (deck_card[0], deck_card[1], newQuantity)
                 self.updateQuantityCardDeck(deckCardToUpdate)
