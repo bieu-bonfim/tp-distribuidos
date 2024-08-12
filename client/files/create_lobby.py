@@ -10,6 +10,7 @@ import time
 import client
 import json
 import main_menu
+import lobby_screen
 
 # Screen title and size
 SCREEN_WIDTH = 1412
@@ -58,45 +59,8 @@ class TextBox:
             self.active = False
 
 
-class KeyBox:
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.text = ""
-        self.symbol = ""
-        self.active = False
 
-    def draw(self):
-        # Draw the text box
-        arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, arcade.color.EERIE_BLACK)
-        arcade.draw_rectangle_outline(self.x, self.y, self.width, self.height, arcade.color.ENGLISH_VIOLET)
-        
-        # Draw the text
-        arcade.draw_text(self.symbol, self.x - self.width//2 + 5, self.y, arcade.color.WHITE, 14, anchor_x="left", anchor_y="center")
-
-    def on_key_press(self, symbol, modifiers):
-        if self.active:
-            if symbol == arcade.key.BACKSPACE:
-                self.text = self.text[:-1]
-                self.symbol = self.symbol[:-1]
-            elif symbol == arcade.key.ENTER or symbol == arcade.key.RETURN:
-                self.active = False
-            else:
-                self.text += chr(symbol)
-                self.symbol += "*"
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        if (self.x - self.width // 2 < x < self.x + self.width // 2 and
-            self.y - self.height // 2 < y < self.y + self.height // 2):
-            self.active = True
-        else:
-            self.active = False
-
-
-
-class Login(arcade.View):
+class CreateLobby(arcade.View):
     """ Main application class. """
 
     def __init__(self, client):
@@ -104,21 +68,23 @@ class Login(arcade.View):
         self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        self.loginText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-120, 250, 40) 
-        self.loginKey = KeyBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-200, 250, 40) 
+        self.lobbyText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-100, 250, 40) 
         self.active = False
-        self.key_active = False
-        self.valid_login = False
-
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
 
-        login_button = arcade.gui.UIFlatButton(text="Login", width=200)
-        self.v_box.add(login_button.with_space_around(bottom=20))
-        login_button.on_click = self.on_click_login
+        enter_lobby_button = arcade.gui.UIFlatButton(text="Entrar em Sala", width=200)
+        self.v_box.add(enter_lobby_button.with_space_around(bottom=20))
+        enter_lobby_button.on_click = self.on_click_enter_lobby
 
+        create_lobby_button = arcade.gui.UIFlatButton(text="Criar Sala", width=200)
+        self.v_box.add(create_lobby_button.with_space_around(bottom=20))
+        create_lobby_button.on_click = self.on_click_create_lobby
 
+        voltar_button = arcade.gui.UIFlatButton(text="Voltar", width=200)
+        self.v_box.add(voltar_button.with_space_around(bottom=20))
+        voltar_button.on_click = self.on_click_voltar
 
         self.background = arcade.load_texture("/home/sprites/main_menu.png")
 
@@ -127,18 +93,24 @@ class Login(arcade.View):
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
                 anchor_y="center_y",
-                align_y=-300,
+                align_y=-250,
                 child=self.v_box)
         )
 
 
-    def on_click_login(self, event):
-        print(self.loginText.text)
-        print(self.loginKey.text)
-        data = {'header': 'login', 'request': {'username': self.loginText.text, 'password': self.loginKey.text}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+    def on_click_voltar(self, event):
+        menu = main_menu.MainMenu(self.client)
+        self.window.show_view(menu)
 
+    def on_click_create_lobby(self, event):
+        print("create lobby")
+
+        data = {'header': 'create_lobby', 'request': {}}
+        self.client.sendMessage(data)
+        self.receive_message(self.client.s)
+
+    def on_click_enter_lobby(self, event):
+        print(self.lobbyText.text)
 
     def on_draw(self):
         """ Render the screen. """
@@ -146,12 +118,7 @@ class Login(arcade.View):
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
-        self.loginText.draw()
-        self.loginKey.draw()
-
-        if self.valid_login:
-            menu_main = main_menu.MainMenu(self.client)
-            self.window.show_view(menu_main)
+        self.lobbyText.draw()
 
 
         #arcade.draw_rectangle_filled(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.WHITE)
@@ -161,12 +128,10 @@ class Login(arcade.View):
         #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
 
     def on_key_press(self, symbol, modifiers):
-            self.loginText.on_key_press(symbol, modifiers)
-            self.loginKey.on_key_press(symbol, modifiers)
+            self.lobbyText.on_key_press(symbol, modifiers)
 
     def on_mouse_press(self, x, y, button, modifiers):
-            self.loginText.on_mouse_press(x, y, button, modifiers)
-            self.loginKey.on_mouse_press(x, y, button, modifiers)
+            self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
     def receive_message(self, client_socket):
         while True:
@@ -174,16 +139,11 @@ class Login(arcade.View):
                 data = client_socket.recv(1024)
                 #print(f"DATA DATA - {data.decode()}")
                 data_dict = json.loads(data.decode("utf-8"))
-
-
-                
-                if data_dict['header'] == 'login':
-                    if data_dict['response']['data'] != {}:
-                        data = data_dict['response']['data']
-                        self.client.client_id = data['user_id']
-                        self.client.client_name = data['username']
-                        self.client.client_email = data['email']
-                        self.valid_login = True
+                print("DATA DATA - ", data_dict)
+                if data_dict['header'] == 'lobby_created':
+                    if data_dict['response']['status'] == "success":
+                        menu = lobby_screen.LobbyScreen(self.client)
+                        self.window.show_view(menu)
 
                         
 
