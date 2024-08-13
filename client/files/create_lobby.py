@@ -154,13 +154,11 @@ class CreateLobby(arcade.View):
             if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
                 print('lobby created')
                 self.go_to_lobby = True
-                data = {'header': 'ACK', 'request': {}}
-                self.client.sendMessage(data)
             if self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
                 print('lobby joined')
                 self.go_to_lobby = True     
-                data = {'header': 'ACK', 'request': {}}
-                self.client.sendMessage(data)
+            data = {'header': 'ACK', 'request': {}}
+            self.client.sendMessage(data)
                 
         except Exception as e:
             print(str(e))

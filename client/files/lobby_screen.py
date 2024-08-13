@@ -136,6 +136,8 @@ class LobbyScreen(arcade.View):
                                 self.opponent2 = player
                 if self.data_dict['header'] == 'leave_lobby':
                     self.back_to_creation = True
+                data = {'header': 'ACK', 'request': {}}
+                self.client.sendMessage(data)
                 # elif self.data_dict['header'] == 'start_game':
                 #     print('vish...')
                 #     menu = game_screen.Game(self.client)
