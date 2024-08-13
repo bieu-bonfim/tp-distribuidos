@@ -2,6 +2,7 @@ import json
 from app.AuthManager import AuthManager
 from app.InventoryManager import InventoryManager
 from app.DeckManager import DeckManager
+import threading
 import time as t
 import sqlite3
 
@@ -13,20 +14,39 @@ class RequestHandler:
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
+        self.ack = False
+
+    def keepSendingMessages(self, response):
+        while True:
+            t.sleep(1)
+            if self.ack:
+                self.ack = False
+                break
+            self.socket_server.sendMessage(self.client.conn, response)
 
     def handleRequest(self):
         while True:
             try:    
+                t.sleep(1)
                 data = self.client.conn.recv(1024).decode("utf-8")
                 request = json.loads(data)
-                # self.socket_server.db_semaphore.acquire()
+                self.socket_server.db_semaphore.acquire()
+                
+                if request['header'] == 'ACK':
+                    self.ack = True
+                    continue
+                    
                 response = self.handleRequestType(request)
-                self.socket_server.sendMessage(self.client.conn, response)
+                
+                threading.Thread(target=self.keepSendingMessages, args=(response,), daemon=True).start()
+                
+                    
+                # self.socket_server.sendMessage(self.client.conn, response)
             except Exception as e:
                 print(str(e))
                 break
-            # finally:
-            #     self.socket_server.db_semaphore.release()
+            finally:
+                self.socket_server.db_semaphore.release()
                 
     def handleRequestType(self, request):
         header = request['header']
