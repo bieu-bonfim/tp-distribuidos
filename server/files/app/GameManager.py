@@ -1,4 +1,5 @@
 from controller.UserController import UserController
+from controller.MatchController import MatchController
 from random import randint
 import threading
 
@@ -11,6 +12,7 @@ class GameManager:
         self.round_attribute = ''
         self.round_cards = [None, None, None]
         self.current_player = 0
+        self.matchController = MatchController(conn)
         
     def playCard(self, player, card):
         for i in range(len(self.lobby.players)):
@@ -44,9 +46,27 @@ class GameManager:
             }
         }
         
+
+    def resolveRound(self):
+        arrayWinners = []
+        contagem = {1: 0, 2: 0, 3: 0}
+        for i in range(1,8):
+            arrayWinners[i] = self.matchController.RoundResult(self.round_cards, self.round_attribute)[0]
+
+        for player in arrayWinners:
+            if player in contagem:
+                contagem[player] += 1
+
+            winner = max(contagem, key=contagem.get)
+        return {
+            'header': 'resolve_round',
+            'response': {
+                'winner': winner
+            }
+        }
+    
+
     # def resolveRound(self):
-    #     max_value = 0
-    #     winner = ''
     #     for i in range(len(self.lobby.players)):
     #         card = self.lobby.players[i].deck[self.round_cards[i]]
     #         if card[self.round_attribute] > max_value:
@@ -58,4 +78,4 @@ class GameManager:
     #         'response': {
     #             'winner': winner
     #         }
-    #     }
+    #     # }
