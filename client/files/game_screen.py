@@ -278,32 +278,32 @@ class Game(arcade.View):
         return result
     
     def on_click_tipo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'tipo'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Tipo'}}
         self.client.sendMessage(data)
         print("tipo")
     
     def on_click_tamanho(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'tamanho'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Tamanho'}}
         self.client.sendMessage(data)
         print("tamanho")
 
     def on_click_perigo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'perigo'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Perigo'}}
         self.client.sendMessage(data)
         print("perigo")
 
     def on_click_medo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'medo'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Medo'}}
         self.client.sendMessage(data)
         print("medo")
 
     def on_click_raridade(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'raridade'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Raridade'}}
         self.client.sendMessage(data)
         print("raridade")
 
     def on_click_avistamento(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'avistamento'}}
+        data = {'header': 'choose_stat', 'request': {'stat': 'Avistamento'}}
         self.client.sendMessage(data)
         print("avistamento")
 
@@ -508,14 +508,47 @@ class Game(arcade.View):
 
         if self.resolve_turn:
             if self.is_draw:
-                print('EMPARE')
+                print('EMPATE')
                 self.is_draw = False
-            if self.turn_winner == self.client.client_name:
-                print(' Ganhou ')
-                self.turn_winner = None
-            else:
-                print(" PERDEU ")
+                self.selected_card.faceDown()
+                self.selected_card = START_X, BOTTOM_Y
+                self.move_card_to_new_pile(self.selected_card, DRAW)
+                self.selected_card = None
+                for pos1 in range(len(self.card_list)):
+                    pos2 = random.randrange(len(self.card_list))
+                    self.card_list.swap(pos1, pos2)
+                self.has_put_play = False
 
+            elif self.turn_winner == self.client.client_name:
+                print(' Ganhou ')
+                for opponent in self.opponents:
+                    opponent.card.faceDown()
+                    opponent.card.position = START_X, BOTTOM_Y
+                    self.move_card_to_new_pile(opponent.card, DRAW)
+                    self.card_list.append(opponent.card)
+                    opponent.card = None
+                print(self.selected_card.name)
+                self.selected_card.faceDown()
+                self.selected_card.position = START_X, BOTTOM_Y
+                self.move_card_to_new_pile(self.selected_card, DRAW)
+                self.selected_card = None
+
+                self.turn_winner = None
+                self.has_put_play = False
+
+                for pos1 in range(len(self.card_list)):
+                    pos2 = random.randrange(len(self.card_list))
+                    self.card_list.swap(pos1, pos2)
+
+
+            else:
+                self.card_list.remove(self.selected_card)
+                for opponent in self.opponents:
+                    opponent.card = None
+                print(" PERDEU ")
+                self.has_put_play = False
+
+            self.resolve_turn = False
             self.resolve_turn = False
 
     def on_mouse_press(self, x, y, button, key_modifiers):
@@ -582,7 +615,7 @@ class Game(arcade.View):
 
                 self.reset_position = False
 
-            elif pile_index == PLAY and not self.have_put_play:
+            elif pile_index == PLAY:
                 self.have_put_play = True
                 self.held_cards[0].position = pile.position
                 for i, dropped_card in enumerate(self.held_cards):   
@@ -721,12 +754,13 @@ class Game(arcade.View):
                     print("----------- TURNING OVER CARDS ---------")
                     self.is_turn_over_time = True
                 if data_dict['header'] == 'resolve_round':
+                    print("------------- RESOLVING TURN ---------------")
                     if data_dict['response']['status'] == 'draw':
                         self.text_log += data_dict['response']['message'] + "\n"
                         self.has_new_log = True
                         self.is_draw = True
                         self.resolve_turn = True
-                    if data_dict['response']['stats'] == 'success':
+                    if data_dict['response']['status'] == 'success':
                         self.text_log += data_dict['response']['message'] + "\n"
                         self.has_new_log = True
                         self.turn_winner = data_dict['response']['winner']

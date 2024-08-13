@@ -237,14 +237,14 @@ class EditDeck(arcade.View):
         count = 0
         for card in self.piles[CARDS1]:
             if count < 20:
-                card.position = START_X, (TOP_Y_SHOWCASE + 100) - (30*count)
+                card.position = START_X + 20, (TOP_Y_SHOWCASE + 100) - (30*count)
                 count += 1
             else:
                 break
 
         count = 0
         for card in self.piles[CARDS2]:
-            card.position = START_X + MAT_WIDTH, (TOP_Y_SHOWCASE + 100) - (30*count)
+            card.position = START_X + MAT_WIDTH + 20, (TOP_Y_SHOWCASE + 100) - (30*count)
             count += 1
             
         self.selected_deck_id = self.deck1_id
@@ -300,7 +300,7 @@ class EditDeck(arcade.View):
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
-        self.pile_mat_list.draw()
+        #self.pile_mat_list.draw()
         self.card_list.draw()
         if self.choosed_deck == 1:
             self.deck_list = self.deck1
@@ -440,7 +440,7 @@ class EditDeck(arcade.View):
     def show_deck(self, pile_index):
         count = 0
         for card in self.piles[pile_index]:
-            card.position = START_X + (MAT_WIDTH*2.5) + 150, (TOP_Y_SHOWCASE + 100) - (30*count)
+            card.position = START_X + (MAT_WIDTH*2.5) + 160, (TOP_Y_SHOWCASE + 100) - (30*count)
             count += 1
 
         
