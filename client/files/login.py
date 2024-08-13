@@ -184,7 +184,8 @@ class Login(arcade.View):
                         self.client.client_name = data['username']
                         self.client.client_email = data['email']
                         self.valid_login = True
-
+                data = {'header': 'ACK', 'request': {}}
+                self.client.sendMessage(data)
                         
 
             except socket.error as e:

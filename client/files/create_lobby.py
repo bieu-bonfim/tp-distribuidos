@@ -109,12 +109,12 @@ class CreateLobby(arcade.View):
     def on_click_create_lobby(self, event):
         data = {'header': 'create_lobby', 'request': {}}
         self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+        threading.Thread(target=self.receive_message).start()
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
         self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
+        threading.Thread(target=self.receive_message).start()
 
     def on_draw(self):
         """ Render the screen. """
@@ -128,7 +128,6 @@ class CreateLobby(arcade.View):
             print(self.data_dict['response']['data']['lobby']['players'])
             lobby = lobby_screen.LobbyScreen(self.client, self.data_dict['response']['data']['lobby']['players'])
             lobby.setup()
-            time.sleep(2)
             self.window.show_view(lobby)
 
 
@@ -144,29 +143,28 @@ class CreateLobby(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
-    def receive_message(self, socket):
-        while True:
-            print('waiting for message')
-            try:
-                self.data_dict = socket.recv(1024)
-                self.data_dict = json.loads(self.data_dict.decode("utf-8"))
+    def receive_message(self):
+        print('waiting for message')
+        try:
+            self.data_dict = self.client.receiveMessage()
 
-                print(self.data_dict)
+
+            print("Data dict do criar lobby: ", self.data_dict)
+            
+            if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
+                print('lobby created')
+                self.go_to_lobby = True
+                data = {'header': 'ACK', 'request': {}}
+                self.client.sendMessage(data)
+            if self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
+                print('lobby joined')
+                self.go_to_lobby = True     
+                data = {'header': 'ACK', 'request': {}}
+                self.client.sendMessage(data)
                 
-                if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
-                    print('lobby created')
-                    self.go_to_lobby = True
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                elif self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
-                    print('lobby joined')
-                    self.go_to_lobby = True     
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    
-            except Exception as e:
-                print(str(e))
-                break
+        except Exception as e:
+            print(str(e))
+
 
 
 
