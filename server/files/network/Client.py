@@ -6,3 +6,4 @@ class Client():
         self.in_lobby = False
         self.current_lobby = None
         self.username = None
+        self.current_deck = 0

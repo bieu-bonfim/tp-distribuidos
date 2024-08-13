@@ -125,6 +125,7 @@ class MatchController:
         return result, winner
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):   
+        print('----------TIPO---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3) 
@@ -184,6 +185,7 @@ class MatchController:
         return cardWinner, playerWinner
 
     def getWinnerByFirstAppearance(self, cardName1, cardName2, cardName3):
+        print('----------AVISTAMENTO---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
@@ -201,9 +203,10 @@ class MatchController:
             return cards[index_of_min], index_of_min
         else:
             print("Vamos para o desempate")
-            self.getWinnerByRarity(cardName1, cardName2, cardName3)
+            return self.getWinnerByRarity(cardName1, cardName2, cardName3)
 
     def getWinnerByLevelOfFear(self, cardName1, cardName2, cardName3):
+        print('----------MEDO---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
@@ -223,9 +226,10 @@ class MatchController:
             return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
-            self.getWinnerByDanger(cardName1, cardName2, cardName3)
+            return self.getWinnerByDanger(cardName1, cardName2, cardName3)
 
     def getWinnerBySize(self, cardName1, cardName2, cardName3):
+        print('----------TAMANHO---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
@@ -240,9 +244,10 @@ class MatchController:
             return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
-            self.getWinnerByLevelOfFear(cardName1, cardName2, cardName3)
+            return self.getWinnerByLevelOfFear(cardName1, cardName2, cardName3)
 
     def getWinnerByDanger(self, cardName1, cardName2, cardName3):
+        print('----------PERIGO---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
@@ -265,6 +270,7 @@ class MatchController:
             self.getWinnerByFirstAppearance(cardName1, cardName2, cardName3)
 
     def getWinnerByRarity(self, cardName1, cardName2, cardName3):
+        print('----------RARIDADE---------')
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
@@ -284,4 +290,4 @@ class MatchController:
             return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
-            self.getWinnerByDanger(cardName1, cardName2, cardName3)
+            return self.getWinnerByDanger(cardName1, cardName2, cardName3)
