@@ -2,18 +2,18 @@ from datetime import datetime
 from controller.CardController import CardController
 from controller.DeckController import DeckController
 import sqlite3
-conn = sqlite3.connect('../database/cryptid.db')
-cursor = conn.cursor()
+
 class MatchController:
     def __init__(self, conn):
         self.conn = conn
         self.cursor = conn.cursor()
         self.cardController = CardController(conn)
+        self.deckController = DeckController(conn)
 
     def getAll(self):
         self.cursor.execute('SELECT * FROM match')
         rows = self.cursor.fetchall()
-        conn.commit()
+        self.conn.commit()
         
         return rows
 
@@ -21,17 +21,17 @@ class MatchController:
     def getById(self, matchId):
         self.cursor.execute('SELECT * FROM match WHERE match_id = ?', (matchId,))
         rows = self.cursor.fetchall()
-        conn.commit()
+        self.conn.commit()
         return rows
 
     def getByAmountWinsByDeck(self, deckId):
         self.cursor.execute('SELECT COUNT(*) FROM match WHERE winner_deck_id = ?', (deckId,))
         rows = self.cursor.fetchall()
-        conn.commit()
+        self.conn.commit()
         return rows
 
     def getAmountWinsByUser(self, userId):
-        userDecksList = DeckController.getDeckByUser(userId)
+        userDecksList = self.deckController.getDeckByUser(userId)
         userDecks = [decks[0]for decks in userDecksList]
         amount = 0
         for i in userDecks:
