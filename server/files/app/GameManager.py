@@ -137,13 +137,13 @@ class GameManager:
         
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
-        # winner_deck = self.lobby.players[winner].deck
-        # match_data = [winner]
-        # for i in range(len(self.lobby.players)):
-        #     if i != winner:
-        #         match_data.append(self.lobby.players[i].deck)
-        #         break
-        # self.matchController.insert(tuple(match_data))
+        winner_deck = self.lobby.decks[winner]
+        match_data = [winner_deck]
+        for i in range(len(self.lobby.players)):
+            if i != winner:
+                match_data.append(self.lobby.decks[i])
+                break
+        self.matchController.insert(tuple(match_data))
         return {
             'header': 'resolve_game',
             'response': {
