@@ -86,8 +86,7 @@ class MatchController:
 
     def RoundResult(self, cards, attribute):
         if cards[0] == cards[1] and cards[0] == cards[2] and cards[1] == cards[2]:
-            print("draw")
-            return "draw"
+            return 0,()
         elif cards[0] == cards[1]:
             result = self.cardController.getByName(cards[2])
         elif cards[1] == cards[2]:
