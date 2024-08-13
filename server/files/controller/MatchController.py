@@ -1,6 +1,6 @@
 from datetime import datetime
 from controller.CardController import CardController
-import DeckController
+from controller.DeckController import DeckController
 import sqlite3
 conn = sqlite3.connect('../database/cryptid.db')
 cursor = conn.cursor()
