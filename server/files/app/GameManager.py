@@ -20,7 +20,7 @@ class GameManager:
             # threading.Thread(target=self.resolveRound).start()
             pass
         return {
-            'header': 'play_card',
+            'header': 'played_card',
             'response': {
                 'player': player.username,
                 'card': card
