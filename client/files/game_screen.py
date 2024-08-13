@@ -145,7 +145,7 @@ class Game(arcade.View):
         self.flag_client_cards = False
         self.full_lobby = False
         self.text_log = "Boas vindas a Cryptids...\n"
-        bg_text = arcade.load_texture("/home/sprites/button.png")
+        bg_text = arcade.load_texture("/home/sprites/text_area.png")
         self.have_put_play = False
         self.is_turn_now = False
         self.turn_name = turn_order[0]
@@ -154,6 +154,12 @@ class Game(arcade.View):
         self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
                                             tex=bg_text, padding=(20, 20, 20, 20))
         self.manager.add(self.text_area_pane)
+
+        # winner logic -----------
+        self.is_draw = False
+        self.resolve_turn = False
+        self.turn_winner = None
+        # ----------------------
 
         self.has_new_log = False
 
@@ -500,6 +506,18 @@ class Game(arcade.View):
                 opponent.card.faceUp()
             self.is_turn_over_time = False
 
+        if self.resolve_turn:
+            if self.is_draw:
+                print('EMPARE')
+                self.is_draw = False
+            if self.turn_winner == self.client.client_name:
+                print(' Ganhou ')
+                self.turn_winner = None
+            else:
+                print(" PERDEU ")
+
+            self.resolve_turn = False
+
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
         self.has_interacted_card = True
@@ -702,6 +720,17 @@ class Game(arcade.View):
                 if data_dict['header'] == 'turn_over':
                     print("----------- TURNING OVER CARDS ---------")
                     self.is_turn_over_time = True
+                if data_dict['header'] == 'resolve_round':
+                    if data_dict['response']['status'] == 'draw':
+                        self.text_log += data_dict['response']['message'] + "\n"
+                        self.has_new_log = True
+                        self.is_draw = True
+                        self.resolve_turn = True
+                    if data_dict['response']['stats'] == 'success':
+                        self.text_log += data_dict['response']['message'] + "\n"
+                        self.has_new_log = True
+                        self.turn_winner = data_dict['response']['winner']
+                        self.resolve_turn = True
 
             except Exception as e:
                 print(str(e))

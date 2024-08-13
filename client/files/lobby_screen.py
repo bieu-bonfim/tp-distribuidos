@@ -57,7 +57,7 @@ class LobbyScreen(arcade.View):
         self.v_box.add(voltar_button.with_space_around(bottom=20))
         voltar_button.on_click = self.on_click_voltar
 
-        self.background = arcade.load_texture("/home/sprites/main_menu.png")
+        self.background = arcade.load_texture("/home/sprites/lobby_screen.png")
 
         # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
