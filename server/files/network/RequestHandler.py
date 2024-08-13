@@ -84,7 +84,7 @@ class RequestHandler:
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'choose_stat':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.chooseStat(self.client, body['stat'])
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'choose_stat', 'response': {'status': 'success', 'message': 'Carta enviada!'}})
+            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, result)
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
             self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'end_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
@@ -96,6 +96,6 @@ class RequestHandler:
             result = self.deckManager.editDeck(body['deck_id'], body['cards'])
         elif header == 'retrieve_deck':
             result = self.deckManager.retrieveDeck(self.client.current_deck)
-        
+            
         print("sending ", result)
         return result
