@@ -246,7 +246,7 @@ class Game(arcade.View):
     def on_click_confirmar(self, event):
         print("enviar carta")
         self.hand_size -= 1
-        data = {'header': 'play_card', 'request': {'card': self.selected_card}} 
+        data = {'header': 'play_card', 'request': {'card': self.selected_card.name}} 
         self.client.sendMessage(data)
         #if self.has_interacted_card and self.reset_position == False:
         #    self.has_selected = True
