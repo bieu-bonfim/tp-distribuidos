@@ -21,11 +21,23 @@ class GameManager:
         if self.round_cards.count(3) == 0:
             # threading.Thread(target=self.resolveRound).start()
             pass
+        if self.round_attribute == '':
+            return {
+                'header': 'played_card',
+                'response': {
+                    'status': 'error',
+                    'message': 'Atributo aind não escolhido'
+                }
+            }
         return {
             'header': 'played_card',
             'response': {
-                'player': player.username,
-                'card': card
+                'status': 'success',
+                'message': 'Atributo não escolhido',
+                'data': {
+                    'player': player.username,
+                    'card': card
+                }
             }
         }
         
