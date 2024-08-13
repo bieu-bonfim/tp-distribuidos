@@ -20,7 +20,7 @@ class GameManager:
                 'header': 'played_card',
                 'response': {
                     'status': 'error',
-                    'message': 'Atributo aind não escolhido'
+                    'message': 'Atributo ainda não escolhido'
                 }
             }
         for i in range(len(self.lobby.players)):
@@ -42,7 +42,7 @@ class GameManager:
             'header': 'played_card',
             'response': {
                 'status': 'success',
-                'message': 'Atributo não escolhido',
+                'message': 'Carta escolhida',
                 'data': {
                     'player': player.username,
                     'card': card
