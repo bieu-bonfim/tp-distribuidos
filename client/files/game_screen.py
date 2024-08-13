@@ -246,8 +246,9 @@ class Game(arcade.View):
     def on_click_confirmar(self, event):
         print("enviar carta")
         self.hand_size -= 1
-        data = {'header': 'play_card', 'request': {'card': self.selected_card}} 
+        data = {'header': 'play_card', 'request': {'card': self.selected_card.name}} 
         self.client.sendMessage(data)
+        self.add_log(f"Você escolheu {self.selected_card.name}...\n")
         #if self.has_interacted_card and self.reset_position == False:
         #    self.has_selected = True
         #    data = {'header': 'play_card', 'request': {'name': self.selected_card.name} }
@@ -256,13 +257,13 @@ class Game(arcade.View):
         #    self.has_sent_message = True 
         #    self.has_interacted_card = False
 
-
-    def on_click_tipo(self, event):
-        self.text_log += "bap\n"
-        print(self.text_log)
-        print("tipo")
+    def add_log(self, new_log):
+        self.text_log += new_log
         inverted = self.revert_line_order(self.text_log)
         self.text_area.text = inverted
+
+    def on_click_tipo(self, event):
+        print("tipo")
 
     def revert_line_order(self, input_string):
         lines = input_string.splitlines()
@@ -428,7 +429,6 @@ class Game(arcade.View):
             start_x= START_X -80,
             start_y= TOP_Y -100,
             color=arcade.color.WHITE,
-            font_name="Kenney Pixel Square",
             font_size=20,
             anchor_x="center",
             anchor_y="center"
@@ -444,7 +444,6 @@ class Game(arcade.View):
             start_x= (MIDDLE_SCREEN_X/2) - 140,
             start_y= (MIDDLE_SCREEN_Y + 340),
             color=arcade.color.WHITE,
-            font_name="Kenney Pixel Square",
             font_size=20,
             anchor_x="center",
             anchor_y="center")
@@ -534,7 +533,7 @@ class Game(arcade.View):
 
                 self.reset_position = False
 
-            elif pile_index == PLAY and not self.have_put_play and self.hand_size < 3:
+            elif pile_index == PLAY and not self.have_put_play:
                 self.have_put_play = True
                 self.held_cards[0].position = pile.position
                 for i, dropped_card in enumerate(self.held_cards):   
@@ -673,6 +672,6 @@ class Game(arcade.View):
             print(f"oponente name: {opponent.name}")
             print(card_name)
             if opponent.name == player_name:
-                for card in self.card_list:
-                    if card.name == card_name:
+                for card in CARD_NAMES:
+                    if card == card_name:
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
