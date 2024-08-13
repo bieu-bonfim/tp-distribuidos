@@ -82,9 +82,14 @@ class RequestHandler:
         elif header == 'play_card':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card'])
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
+            if result['response']['status'] == 'turn_over':
+                t.sleep(3)
+                turn_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.turnOver(self.client)
+                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, turn_over)
         elif header == 'choose_stat':
-            result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.chooseStat(self.client, body['stat'])
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, result)
+            result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.setAttribute(self.client, body['stat'])
+            if result['response']['status'] == 'success':
+                self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'end_game':
             result = self.gameManager.endGame(self.client.current_lobby)
             self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'end_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})

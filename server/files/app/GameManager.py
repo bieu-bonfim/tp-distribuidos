@@ -15,18 +15,27 @@ class GameManager:
         self.matchController = MatchController(conn)
         
     def playCard(self, player, card):
-        for i in range(len(self.lobby.players)):
-            if self.lobby.players[i].username == player.username:
-                self.round_cards[i] = card
-        if self.round_cards.count(3) == 0:
-            # threading.Thread(target=self.resolveRound).start()
-            pass
         if self.round_attribute == '':
             return {
                 'header': 'played_card',
                 'response': {
                     'status': 'error',
                     'message': 'Atributo aind não escolhido'
+                }
+            }
+        for i in range(len(self.lobby.players)):
+            if self.lobby.players[i].username == player.username:
+                self.round_cards[i] = card
+        if self.round_cards.count(None) == 0:
+            return {
+                'header': 'played_card',
+                'response': {
+                    'status': 'turn_over',
+                    'message': 'Cartas escolhidas',
+                    'data': {
+                        'player': player.username,
+                        'card': card
+                    }
                 }
             }
         return {
@@ -41,23 +50,37 @@ class GameManager:
             }
         }
         
-    def setAttribute(self, player, attribute):
-        if player.username != self.lobby.players[self.current_player].username:
-            return {
-                'header': 'set_attribute',
-                'response': {
-                    'status': 'error',
-                    'message': 'Não é a sua vez'
-                }
-            }
-        self.round_attribute = attribute
+    def turnOver(self):
         return {
-            'header': 'set_attribute',
+            'header': 'turn_over',
             'response': {
-                'attribute': attribute
+                'status': 'success',
+                'message': 'Cartas reveladas!'
             }
         }
+    
         
+    def setAttribute(self, player, stat):
+        if player.username != self.lobby.players[self.current_player].username:
+            return {
+                'header': 'choose_stat',
+                'response': {
+                    'status': 'error',
+                    'message': 'Não é a sua vez de escolher o atributo'
+                }
+            }
+        self.round_attribute = stat
+        return {
+            'header': 'choose_stat',
+            'response': {
+                'status': 'success',
+                'message': f'O atributo escolhido foi {stat}',
+                'data': {
+                    'stat': stat
+                }
+            }
+        }
+                
 
     def resolveRound(self):
         arrayWinners = []

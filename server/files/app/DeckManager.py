@@ -69,15 +69,3 @@ class DeckManager:
         }
       }
       
-  def chooseStat(self, stat):
-    self.round_attribute = stat
-    return {
-      'header': 'choose_stat',
-      'response': {
-        'status': 'success',
-        'message': f'O atributo escolhido foi {stat}',
-        'data': {
-          'stat': stat
-        }
-      }
-    }
