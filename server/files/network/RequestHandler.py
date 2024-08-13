@@ -20,8 +20,10 @@ class RequestHandler:
         while True:
             t.sleep(1)
             if self.ack:
+                print('------ Confirmado o ACK ------')
                 self.ack = False
                 break
+            print('------ Mensagem enviada novamente ------')
             self.socket_server.sendMessage(self.client.conn, response)
 
     def handleRequest(self):
@@ -33,6 +35,7 @@ class RequestHandler:
                 self.socket_server.db_semaphore.acquire()
                 
                 if request['header'] == 'ACK':
+                    print('------ Mensagem recebida ------')
                     self.ack = True
                     continue
                     
