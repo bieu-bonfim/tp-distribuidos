@@ -130,9 +130,9 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, op1, op2):
+    def __init__(self, client, op1, op2, turn_order):
         super().__init__()
-
+        self.turn_order = turn_order
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.client = client
@@ -147,7 +147,8 @@ class Game(arcade.View):
         self.text_log = "Boas vindas a Cryptids...\n"
         bg_text = arcade.load_texture("/home/sprites/button.png")
         self.have_put_play = False
-
+        self.is_turn_now = False
+        self.turn_name = turn_order[0]
         # Create the UITextArea with initial text
         self.text_area = UITextArea(x=650, y=320, width=300, height=150, text=self.text_log)
         self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
@@ -175,9 +176,9 @@ class Game(arcade.View):
         self.v_box.add(medo_button.with_space_around(bottom=15))
         medo_button.on_click = self.on_click_medo
 
-        avistamento_button = arcade.gui.UIFlatButton(text="Raridade", width=200, height = 30)
-        self.v_box.add(avistamento_button.with_space_around(bottom=15))
-        avistamento_button.on_click = self.on_click_avistamento
+        raridade = arcade.gui.UIFlatButton(text="Raridade", width=200, height = 30)
+        self.v_box.add(raridade.with_space_around(bottom=15))
+        raridade.on_click = self.on_click_raridade
         
         avistamento_button = arcade.gui.UIFlatButton(text="Avistamento", width=200, height = 30)
         self.v_box.add(avistamento_button.with_space_around(bottom=15))
@@ -262,8 +263,6 @@ class Game(arcade.View):
         inverted = self.revert_line_order(self.text_log)
         self.text_area.text = inverted
 
-    def on_click_tipo(self, event):
-        print("tipo")
 
     def revert_line_order(self, input_string):
         lines = input_string.splitlines()
@@ -271,19 +270,34 @@ class Game(arcade.View):
         result = '\n'.join(reversed_lines)
         return result
     
+    def on_click_tipo(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'tipo'}}
+        self.client.sendMessage(data)
+        print("tipo")
+    
     def on_click_tamanho(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'tamanho'}}
+        self.client.sendMessage(data)
         print("tamanho")
 
     def on_click_perigo(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'perigo'}}
+        self.client.sendMessage(data)
         print("perigo")
 
     def on_click_medo(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'medo'}}
+        self.client.sendMessage(data)
         print("medo")
 
-    def on_click_tamanho(self, event):
-        print("tamanho")
+    def on_click_raridade(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'raridade'}}
+        self.client.sendMessage(data)
+        print("raridade")
 
     def on_click_avistamento(self, event):
+        data = {'header': 'choose_stat', 'request': {'stat': 'avistamento'}}
+        self.client.sendMessage(data)
         print("avistamento")
 
 
@@ -293,7 +307,7 @@ class Game(arcade.View):
     
     def setup(self):
         threading.Thread(target=self.receive_message).start()
-
+        print("--------- ORDEM DO TURNO ------- ", self.turn_order)
         print(self.p2.name)
         print(self.p3.name)
 
@@ -357,6 +371,8 @@ class Game(arcade.View):
         for pos1 in range(len(self.card_list)):
             pos2 = random.randrange(len(self.card_list))
             self.card_list.swap(pos1, pos2)
+
+        self.add_log(f"O turno é de {self.turn_name}...")
 
     def get_pile_for_card(self, card):
         for index, pile in enumerate(self.piles):
@@ -662,6 +678,11 @@ class Game(arcade.View):
                     player_in_question = data_dict['response']['player']
                     card = data_dict['response']['card']
                     self.render_opponent_card(card, player_in_question)
+                if data_dict['header'] == 'choose_stat':
+                    self.add_log(data_dict['response']['message'])
+                if data_dict['header'] == 'turn_cards':
+                    for opponent in self.opponents:
+                        opponent.card.faceUp()
             except Exception as e:
                 print(str(e))
                 break
@@ -674,4 +695,6 @@ class Game(arcade.View):
             if opponent.name == player_name:
                 for card in CARD_NAMES:
                     if card == card_name:
-                        opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
+                        op_card = Card(card, CARD_SCALE)
+                        opponent.card = op_card
+
