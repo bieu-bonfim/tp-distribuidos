@@ -121,22 +121,20 @@ class Card(arcade.Sprite):
 
 class Player():
 
-    def __init__(self, id, name, card, mat):
-        self.id = id
+    def __init__(self, name, card, mat):
         self.name = name
         self.card = card
         self.mat = mat
 
 
-class Game(arcade.Window):
+class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client):
-        super().__init__(TOTAL_SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    def __init__(self, client, op1, op2):
+        super().__init__()
 
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-
         self.client = client
         self.reset_position = False
         self.selected_card = None
@@ -146,9 +144,10 @@ class Game(arcade.Window):
         self.client_cards = None
         self.flag_client_cards = False
         self.full_lobby = False
-        self.text_log = "Que comece o jogo...\n"
+        self.text_log = "Boas vindas a Cryptids...\n"
         bg_text = arcade.load_texture("/home/sprites/button.png")
-        
+        self.have_put_play = False
+
         # Create the UITextArea with initial text
         self.text_area = UITextArea(x=650, y=320, width=300, height=150, text=self.text_log)
         self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
@@ -205,9 +204,9 @@ class Game(arcade.Window):
         # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list = None
 
-        self.p1 = Player(None, None, None, None)
-        self.p2 = Player(None, None, None, None)
-        self.p3 = Player(None, None, None, None)
+        self.p1 = Player(name=self.client.client_name, card=None, mat=None)
+        self.p2 = Player(name=op1, card=None, mat=None)
+        self.p3 = Player(name=op2, card=None, mat=None)
 
         self.opponents.append(self.p2)
         self.opponents.append(self.p3)
@@ -247,13 +246,15 @@ class Game(arcade.Window):
     def on_click_confirmar(self, event):
         print("enviar carta")
         self.hand_size -= 1
-        if self.has_interacted_card and self.reset_position == False:
-            self.has_selected = True
-            data = {'header': 'play_card', 'request': {'name': self.selected_card.name} }
-            self.client.sendMessage(data)
-            #thread_receive.start()
-            self.has_sent_message = True 
-            self.has_interacted_card = False
+        data = {'header': 'play_card', 'request': {'card': self.selected_card}} 
+        self.client.sendMessage(data)
+        #if self.has_interacted_card and self.reset_position == False:
+        #    self.has_selected = True
+        #    data = {'header': 'play_card', 'request': {'name': self.selected_card.name} }
+        #    self.client.sendMessage(data)
+        #    #thread_receive.start()
+        #    self.has_sent_message = True 
+        #    self.has_interacted_card = False
 
 
     def on_click_tipo(self, event):
@@ -291,17 +292,9 @@ class Game(arcade.Window):
     
     def setup(self):
         threading.Thread(target=self.receive_message).start()
-        time.sleep(2)
-        #data = {'header': 'retrieve_deck', 'request': {}}
-        #self.client.sendMessage(data)
-        #draw_deck_cards = data
 
-        #while True:
-        #    if self.flag_client_cards:
-        #        break
-
-        #data = {'header': 'join_lobby', 'request': {'index': 0}}
-        #self.client.sendMessage(data)
+        print(self.p2.name)
+        print(self.p3.name)
 
         self.held_cards = []
         self.held_cards_original_position = []
@@ -348,7 +341,7 @@ class Game(arcade.Window):
         self.card_list = arcade.SpriteList()
 
         # Create every card
-        for card_name in CARD_NAMES:
+        for card_name in self.client.selected_deck_cards:
             card = Card(card_name, CARD_SCALE)
             card.position = START_X, BOTTOM_Y
             self.card_list.append(card)
@@ -434,7 +427,8 @@ class Game(arcade.Window):
             self.p1.name,
             start_x= START_X -80,
             start_y= TOP_Y -100,
-            color=arcade.color.BLACK,
+            color=arcade.color.WHITE,
+            font_name="Kenney Pixel Square",
             font_size=20,
             anchor_x="center",
             anchor_y="center"
@@ -445,29 +439,36 @@ class Game(arcade.Window):
             amplified_card.position = END_X, TOP_Y_SHOWCASE
             amplified_card.draw()
 
-        if self.p2.card != None and self.p2.name != None:
-            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
-            self.p2.card.draw()
-            arcade.draw_text(
+        arcade.draw_text(
             self.p2.name,
-            start_x= (MIDDLE_SCREEN_X/2),
-            start_y= (MIDDLE_SCREEN_Y + 300),
-            color=arcade.color.BLACK,
+            start_x= (MIDDLE_SCREEN_X/2) - 140,
+            start_y= (MIDDLE_SCREEN_Y + 340),
+            color=arcade.color.WHITE,
+            font_name="Kenney Pixel Square",
             font_size=20,
             anchor_x="center",
             anchor_y="center")
 
-        if self.p3.card != None and self.p3.name != None:
-            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
-            self.p3.card.draw()
-            arcade.draw_text(
+        arcade.draw_text(
             self.p3.name,
-            start_x= (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X,
-            start_y= (MIDDLE_SCREEN_Y + 300),
-            color=arcade.color.BLACK,
+            start_x= (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X + 140,
+            start_y= (MIDDLE_SCREEN_Y + 340),
+            color=arcade.color.WHITE,
             font_size=20,
             anchor_x="center",
             anchor_y="center")
+
+        if self.p2.card != None and self.p2.name != None:
+            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
+            self.p2.card.draw()
+
+
+            
+
+        if self.p3.card != None and self.p3.name != None:
+            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
+            self.p3.card.draw()
+
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -506,7 +507,6 @@ class Game(arcade.Window):
         if arcade.check_for_collision(self.held_cards[0], pile):
 
             pile_index = self.pile_mat_list.index(pile)
-            print(pile_index)
 
             if pile_index == self.get_pile_for_card(self.held_cards[0] or pile_index == DRAW):
                 self.reset_position = True
@@ -534,7 +534,8 @@ class Game(arcade.Window):
 
                 self.reset_position = False
 
-            elif pile_index == PLAY:
+            elif pile_index == PLAY and not self.have_put_play and self.hand_size < 3:
+                self.have_put_play = True
                 self.held_cards[0].position = pile.position
                 for i, dropped_card in enumerate(self.held_cards):   
                     dropped_card.faceUp()
@@ -658,17 +659,8 @@ class Game(arcade.Window):
         while True:
             try:
                 data_dict = self.client.receiveMessage()
-                print(data_dict)
-                if data_dict['header'] == 'start_game':
-                    for player in data_dict['response']['data']['players']:
-                        if player == self.client.client_name:
-                            print(player)
-                            continue
-                        elif self.opponents[0].name != None:
-                            self.opponents[0].name = player
-                            print(self.opponents[0].name)
-                        else:
-                            self.opponents[1].name = player
+                if data_dict['heder'] == 'played_card':
+                    print("bap")
             except Exception as e:
                 print(str(e))
                 break
@@ -682,73 +674,3 @@ class Game(arcade.Window):
                 for card in self.card_list:
                     if card.name == message['card']:
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
-
-
-def fabricateGame(client):
-    player = input("insira o numero do jogador: ")
-    deck = 1
-    lobby = 0
-    total=3
-    nome = ''
-    senha = ''
-    if player == '1':
-        nome="bija"
-        senha="bija123"
-        pass
-    elif player == '2':
-        nome="patras"
-        senha="patras123"
-        pass
-    elif player == '3':
-        nome="thui"
-        senha="thui123"
-        total=4
-        pass
-    
-    msg1 = {'header': 'login', 'request': {'username': nome, 'password': senha}}
-    msg2 = {'header': 'choose_deck', 'request': {'deck_id': deck}}
-    msg3 = {'header': 'join_lobby', 'request': {'index': lobby}}
-    msg4 = {'header': 'start_game', 'request': {}}
-    msgs=[msg1, msg2, msg3, msg4]
-    
-    for i in range(total):
-        data_str = json.dumps(msgs[i])
-        try:
-            client.s.send(bytes(data_str, encoding="utf-8"))
-            time.sleep(3)
-        except socket.error as e:
-            print(str(e))
-            client.s.close()
-            
-def receiveAnswer(client):
-    while True:
-        try:
-            data = client.s.recv(1024)
-            data_dict = json.loads(data.decode("utf-8"))
-            print(data_dict)
-            if data_dict['header'] == 'start_game':
-                for player in data_dict['response']['data']['players']:
-                    print("test")
-        except socket.error as e:
-            print(str(e))
-            break
-
-def main():
-
-    client = Client()
-    client.startClient()
-    window = Game(client)
-    window.setup()
-    time.sleep(6)
-    threading.Thread(target=receiveAnswer, args=(client,)).start()
-    
-    fabricateGame(client)
-    
-
-
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
-    

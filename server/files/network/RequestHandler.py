@@ -19,12 +19,13 @@ class RequestHandler:
     def keepSendingMessages(self, response):
         while True:
             t.sleep(1)
+            print('------ Mensagem enviada  ------')
+            self.socket_server.sendMessage(self.client.conn, response)
             if self.ack:
                 print('------ Confirmado o ACK ------')
                 self.ack = False
                 break
-            print('------ Mensagem enviada novamente ------')
-            self.socket_server.sendMessage(self.client.conn, response)
+            
 
     def handleRequest(self):
         while True:
@@ -42,9 +43,7 @@ class RequestHandler:
                 response = self.handleRequestType(request)
                 
                 threading.Thread(target=self.keepSendingMessages, args=(response,), daemon=True).start()
-                
                     
-                # self.socket_server.sendMessage(self.client.conn, response)
             except Exception as e:
                 print(str(e))
                 break
