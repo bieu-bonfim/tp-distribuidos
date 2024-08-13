@@ -14,6 +14,7 @@ class GameManager:
         self.winners = {0: 0, 1: 0, 2: 0}
         self.current_player = 0
         self.matchController = MatchController(conn)
+        self.max_rounds = 3
         
     def playCard(self, player, card):
         print('playing card')
@@ -122,7 +123,7 @@ class GameManager:
         self.round_attribute = ''
         self.round_cards = [None, None, None]
         self.round += 1
-        if self.round-1 == 8:
+        if self.round-1 == self.max_rounds:
             return {
                 'header': 'resolve_round',
                 'response': {

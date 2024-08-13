@@ -123,13 +123,15 @@ class MatchController:
         return result, winner
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):   
-        card1 = CardController.getByName(cardName1)
-        card2 = CardController.getByName(cardName2)
-        card3 = CardController.getByName(cardName3) 
+        card1 = self.cardController.getByName(cardName1)
+        card2 = self.cardController.getByName(cardName2)
+        card3 = self.cardController.getByName(cardName3) 
+        print('aqui 1')
         cardsType = [card1[2], card2[2], card3[2]]
         cardsList = [card1, card2, card3]
         monsterWin = ['Alien', 'Mitológico', 'Monstro']
         paranormalWin = ['Paranormal', 'Alien', 'Monstro']
+        print('aqui 2')
         if card1[2] == card2[2] == card3[2]:
             print("Empate")
             return (), 0
@@ -143,28 +145,33 @@ class MatchController:
             print("Carta3: ", card1)
             cardWinner = card1
         else:
+            print('aqui 3')
             if card2[2] in self.typeCard[card1[2]] and card3[2] in self.typeCard[card1[2]]:
                 print("Carta4: ", card1)
                 cardWinner = card1
+                print('aqui 4')
             elif card1[2] in self.typeCard[card2[2]] and card3[2] in self.typeCard[card2[2]]:
                 print("Carta5: ", card2)
                 cardWinner = card2
+                print('aqui 5')
             elif card1[2] in self.typeCard[card3[2]] and card2[2] in self.typeCard[card3[2]]:
                 print("Carta6: ", card3)
                 cardWinner = card3
-            
+                print('aqui 6')
             elif sorted(cardsType) == sorted(monsterWin):
                 for card in cardsList:
                     if card[2] == "Monstro":
                         winner = card
                         print("Winner: ", winner)
                 cardWinner = winner
+                print('aqui 7')
             elif sorted(cardsType) == sorted(paranormalWin):
                 for card in cardsList:
                     if card[2] == "Paranormal":
                         winner = card
                         print("Winner: ", winner)
                 cardWinner = winner
+                print('aqui 8')
 
         if cardWinner == card1:
             playerWinner = 0
