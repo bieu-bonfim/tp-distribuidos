@@ -96,10 +96,11 @@ class RequestHandler:
                 t.sleep(3)
                 
         elif header == 'choose_stat':
+            print('choosing stat')
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.setAttribute(self.client, body['stat'])
-            if result['response']['status'] == 'success':
-                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
-                return {'header': 'broadcast'}
+            # if result['response']['status'] == 'success':
+            #     self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
+            #     return {'header': 'broadcast'}
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':
