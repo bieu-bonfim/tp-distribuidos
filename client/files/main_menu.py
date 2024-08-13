@@ -128,6 +128,7 @@ class MainMenu(arcade.View):
             
             if self.data_dict['header'] == 'show_user_inventory':
                 self.go_to_edit = True            
-                
+                data = {'header': 'ACK', 'request': {}}
+                self.client.sendMessage(data)
         except Exception as e:
             print(str(e))
