@@ -148,6 +148,8 @@ class Game(arcade.View):
         bg_text = arcade.load_texture("/home/sprites/text_area.png")
         self.have_put_play = False
         self.is_turn_now = False
+        self.actual_turn = 1
+        self.select_name_turn = 0
         self.turn_name = turn_order[0]
         # Create the UITextArea with initial text
         self.text_area = UITextArea(x=650, y=320, width=300, height=150, text=self.text_log)
@@ -252,18 +254,14 @@ class Game(arcade.View):
         )
 
     def on_click_confirmar(self, event):
-        print("enviar carta")
-        self.hand_size -= 1
-        data = {'header': 'play_card', 'request': {'card': self.selected_card.name}} 
-        self.client.sendMessage(data)
-        self.add_log(f"Você escolheu {self.selected_card.name}...\n")
-        #if self.has_interacted_card and self.reset_position == False:
-        #    self.has_selected = True
-        #    data = {'header': 'play_card', 'request': {'name': self.selected_card.name} }
-        #    self.client.sendMessage(data)
-        #    #thread_receive.start()
-        #    self.has_sent_message = True 
-        #    self.has_interacted_card = False
+        if self.selected_card != None:
+            print("enviar carta")
+            self.hand_size -= 1
+            data = {'header': 'play_card', 'request': {'card': self.selected_card.name}} 
+            self.client.sendMessage(data)
+            self.add_log(f"Você escolheu {self.selected_card.name}...\n")
+        else:
+            print("Escolha uma carta")
 
     def add_log(self, new_log):
         self.text_log += new_log
@@ -445,7 +443,7 @@ class Game(arcade.View):
 
         arcade.draw_text(
             self.p1.name,
-            start_x= MIDDLE_SCREEN_X/2,
+            start_x= MIDDLE_SCREEN_X/2 + 30,
             start_y= MIDDLE_SCREEN_Y -200,
             color=arcade.color.WHITE,
             font_size=20,
@@ -454,11 +452,31 @@ class Game(arcade.View):
         )
 
         arcade.draw_text(
+            "Turno Atual: "+ str(self.actual_turn),
+            start_x= MIDDLE_SCREEN_X/2 + 70,
+            start_y= MIDDLE_SCREEN_Y -240,
+            color=arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
+        arcade.draw_text(
+            "Escolhendo agora: "+ str(self.turn_order[self.select_name_turn]),
+            start_x= MIDDLE_SCREEN_X/2 + 70,
+            start_y= MIDDLE_SCREEN_Y -270,
+            color=arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
+        arcade.draw_text(
             "Cartas no deck: "+ str(len(self.piles[DRAW])),
             start_x= START_X,
-            start_y= TOP_Y -350,
+            start_y= TOP_Y -370,
             color=arcade.color.WHITE,
-            font_size=10,
+            font_size=12,
             anchor_x="center",
             anchor_y="center"
         )
@@ -550,6 +568,13 @@ class Game(arcade.View):
 
             self.resolve_turn = False
             self.resolve_turn = False
+            self.actual_turn += 1
+            if self.select_name_turn < 3:
+                self.select_name_turn += 1
+                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+            else:
+                self.select_name_turn = 0
+                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -745,11 +770,14 @@ class Game(arcade.View):
                     card = data_dict['response']['data']['card']
                     self.render_opponent_card(card, player_in_question)
                 if data_dict['header'] == 'choose_stat':
+
                     print("STAT CHOOSED!")
                     print(data_dict['response']['message'])
                     self.text_log += data_dict['response']['message'] + "\n"
                     self.has_new_log = True
-                    print("chegou agui?")
+                    if data_dict['response']['status'] == 'error':
+                        data = {'header': 'ACK', 'request': {}}
+                        self.client.sendMessage(data)
                 if data_dict['header'] == 'turn_over':
                     print("----------- TURNING OVER CARDS ---------")
                     self.is_turn_over_time = True
@@ -768,7 +796,6 @@ class Game(arcade.View):
 
             except Exception as e:
                 print(str(e))
-                break
 
 
     def render_opponent_card(self, card_name, player_name):
