@@ -85,7 +85,7 @@ class RequestHandler:
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
             if result['response']['status'] == 'turn_over':
                 t.sleep(3)
-                turn_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.turnOver(self.client)
+                turn_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.turnOver()
                 self.socket_server.broadcastMessageToLobby(self.client.current_lobby, turn_over)
                 # t.sleep(3)
                 # resolve_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.resolveTurn(self.client)
@@ -110,5 +110,18 @@ class RequestHandler:
         elif header == 'retrieve_deck':
             result = self.deckManager.retrieveDeck(self.client.current_deck)
             
+        self.printGameState()
+            
         print("sending ", result)
         return result
+    
+    def printGameState(self):
+        print('------ Estado do jogo ------')
+        print('Client: ', self.client)
+        print('Current deck: ', self.client.current_deck)
+        print('Current lobby: ', self.client.current_lobby)
+        print('Current turn: ', self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.current_player)
+        print('Round: ', self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.round)
+        print('Round attribute: ', self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.round_attribute)
+        print('Round cards: ', self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.round_cards)
+        print('------ ------ ------ ------')
