@@ -76,3 +76,4 @@ class SocketServer():
         for player in self.lobbyManager.lobbyController.getLobby(int(index)).players:
             if player.conn != sender:
                 self.sendMessage(player.conn, data_dict)
+                
