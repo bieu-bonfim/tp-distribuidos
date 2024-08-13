@@ -42,7 +42,8 @@ class RequestHandler:
                     
                 response = self.handleRequestType(request)
                 
-                threading.Thread(target=self.keepSendingMessages, args=(response,), daemon=True).start()
+                if response['header'] != 'broadcast':
+                    threading.Thread(target=self.keepSendingMessages, args=(response,), daemon=True).start()
                     
             except Exception as e:
                 print(str(e))
@@ -86,13 +87,19 @@ class RequestHandler:
                 t.sleep(3)
                 turn_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.turnOver(self.client)
                 self.socket_server.broadcastMessageToLobby(self.client.current_lobby, turn_over)
+                t.sleep(3)
+                resolve_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.resolveTurn(self.client)
+                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, resolve_turn)
+                t.sleep(3)
+                next_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.nextTurn(self.client)
+                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, next_turn)
+                t.sleep(3)
+                
         elif header == 'choose_stat':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.setAttribute(self.client, body['stat'])
             if result['response']['status'] == 'success':
-                self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
-        elif header == 'end_game':
-            result = self.gameManager.endGame(self.client.current_lobby)
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.current_lobby, {'header': 'end_game', 'response': {'status': 'success', 'message': 'Jogo encerrado!'}})
+                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
+                return {'header': 'broadcast'}
         elif header == 'manage_inventory':
             result = self.inventoryManager.showUserInventory(body['user_id'])
         elif header == 'add_card_to_inventory':
