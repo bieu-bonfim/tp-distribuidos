@@ -16,6 +16,7 @@ class GameManager:
         self.matchController = MatchController(conn)
         
     def playCard(self, player, card):
+        print('playing card')
         if self.round_attribute == '':
             return {
                 'header': 'played_card',

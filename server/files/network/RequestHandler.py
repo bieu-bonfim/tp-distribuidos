@@ -81,6 +81,7 @@ class RequestHandler:
             result = self.socket_server.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'play_card':
+            print('playing card')
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card'])
             self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
             if result['response']['status'] == 'turn_over':
