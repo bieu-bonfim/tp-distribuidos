@@ -70,11 +70,12 @@ class GameManager:
                 }
             }
         self.round_attribute = stat
+        str_response = f'O atributo escolhido foi {stat}'
         return {
             'header': 'choose_stat',
             'response': {
                 'status': 'success',
-                'message': f'O atributo escolhido foi {stat}',
+                'message': str_response,
                 'data': {
                     'stat': stat
                 }
