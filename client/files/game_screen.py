@@ -157,7 +157,7 @@ class Game(arcade.View):
 
         self.has_new_log = False
 
-
+        self.is_turn_over_time = False
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
 
@@ -301,10 +301,6 @@ class Game(arcade.View):
         self.client.sendMessage(data)
         print("avistamento")
 
-
-
-
-
     
     def setup(self):
         threading.Thread(target=self.receive_message).start()
@@ -443,13 +439,24 @@ class Game(arcade.View):
 
         arcade.draw_text(
             self.p1.name,
-            start_x= START_X -80,
-            start_y= TOP_Y -100,
+            start_x= MIDDLE_SCREEN_X/2,
+            start_y= MIDDLE_SCREEN_Y -200,
             color=arcade.color.WHITE,
             font_size=20,
             anchor_x="center",
             anchor_y="center"
         )
+
+        arcade.draw_text(
+            "Cartas no deck: "+ str(len(self.piles[DRAW])),
+            start_x= START_X,
+            start_y= TOP_Y -350,
+            color=arcade.color.WHITE,
+            font_size=10,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
 
         if self.current_hovered_card:
             amplified_card = arcade.Sprite(self.current_hovered_card.image_file_name, SHOWCASE_CARD_SCALE)
@@ -474,14 +481,11 @@ class Game(arcade.View):
             anchor_x="center",
             anchor_y="center")
 
-        if self.p2.card != None and self.p2.name != None:
+        if self.p2.card != None:
             self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
             self.p2.card.draw()
 
-
-            
-
-        if self.p3.card != None and self.p3.name != None:
+        if self.p3.card != None:
             self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
             self.p3.card.draw()
 
@@ -490,6 +494,11 @@ class Game(arcade.View):
             inverted = self.revert_line_order(self.text_log)
             self.text_area.text = inverted
             self.has_new_log = False
+
+        if self.is_turn_over_time:
+            for opponent in self.opponents:
+                opponent.card.faceUp()
+            self.is_turn_over_time = False
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -681,18 +690,19 @@ class Game(arcade.View):
             try:
                 data_dict = self.client.receiveMessage()
                 if data_dict['header'] == 'played_card':
-                    player_in_question = data_dict['response']['player']
-                    card = data_dict['response']['card']
+                    player_in_question = data_dict['response']['data']['player']
+                    card = data_dict['response']['data']['card']
                     self.render_opponent_card(card, player_in_question)
                 if data_dict['header'] == 'choose_stat':
                     print("STAT CHOOSED!")
                     print(data_dict['response']['message'])
-                    self.text_log += data_dict['response']['message']
+                    self.text_log += data_dict['response']['message'] + "\n"
                     self.has_new_log = True
                     print("chegou agui?")
-                if data_dict['header'] == 'turn_cards':
-                    for opponent in self.opponents:
-                        opponent.card.faceUp()
+                if data_dict['header'] == 'turn_over':
+                    print("----------- TURNING OVER CARDS ---------")
+                    self.is_turn_over_time = True
+
             except Exception as e:
                 print(str(e))
                 break
@@ -705,7 +715,7 @@ class Game(arcade.View):
             if opponent.name == player_name:
                 for card in CARD_NAMES:
                     if card == card_name:
-                        opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
-                        #op_card = Card(card, CARD_SCALE)
-                        #opponent.card = op_card
+                        #opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
+                        op_card = Card(card, CARD_SCALE)
+                        opponent.card = op_card
 
