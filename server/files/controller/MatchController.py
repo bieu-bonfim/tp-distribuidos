@@ -46,14 +46,17 @@ class MatchController:
             self.cursor.execute('''
                 INSERT INTO match (winner_deck_id, player1_deck_id, player2_deck_id) VALUES (?, ?, ?)
             ''', match)
-            conn.commit()         
+            self.conn.commit()         
         except Exception as e:
             print('Não foi possível inserir a carta: ',e)
             
 
-    type = [
-        #todo
-    ]
+    typeCard = {
+        'Alien': ['Mitológico', 'Paranormal'],
+        'Mitológico': ['Paranormal', 'Monstro'],
+        'Monstro': ['Alien'],
+        'Paranormal': ['Monstro']
+        }
 
 
 
@@ -119,17 +122,57 @@ class MatchController:
         
         return result, winner
 
-    def getWinnerByType(self, cardName1, cardName2, cardName3):
-        card1 = self.cardController.getByName(cardName1)
-        card2 = self.cardController.getByName(cardName2)
-        card3 = self.cardController.getByName(cardName3)
-        cards = [card1, card2, card3]
+    def getWinnerByType(self, cardName1, cardName2, cardName3):   
+        card1 = CardController.getByName(cardName1)
+        card2 = CardController.getByName(cardName2)
+        card3 = CardController.getByName(cardName3) 
+        cardsType = [card1[2], card2[2], card3[2]]
+        cardsList = [card1, card2, card3]
+        monsterWin = ['Alien', 'Mitológico', 'Monstro']
+        paranormalWin = ['Paranormal', 'Alien', 'Monstro']
+        if card1[2] == card2[2] == card3[2]:
+            print("Empate")
+            return (), 0
+        elif card1[2] == card2[2]:
+            print("Carta1: ", card3)
+            cardWinner = card3
+        elif card1[2] == card3[2]:
+            print("Carta2: ", card2)
+            cardWinner = card2
+        elif card2[2] == card3[2]:
+            print("Carta3: ", card1)
+            cardWinner = card1
+        else:
+            if card2[2] in self.typeCard[card1[2]] and card3[2] in self.typeCard[card1[2]]:
+                print("Carta4: ", card1)
+                cardWinner = card1
+            elif card1[2] in self.typeCard[card2[2]] and card3[2] in self.typeCard[card2[2]]:
+                print("Carta5: ", card2)
+                cardWinner = card2
+            elif card1[2] in self.typeCard[card3[2]] and card2[2] in self.typeCard[card3[2]]:
+                print("Carta6: ", card3)
+                cardWinner = card3
+            
+            elif sorted(cardsType) == sorted(monsterWin):
+                for card in cardsList:
+                    if card[2] == "Monstro":
+                        winner = card
+                        print("Winner: ", winner)
+                cardWinner = winner
+            elif sorted(cardsType) == sorted(paranormalWin):
+                for card in cardsList:
+                    if card[2] == "Paranormal":
+                        winner = card
+                        print("Winner: ", winner)
+                cardWinner = winner
 
-        elements = [sub[2] for sub in cards]
-        indices = [type.index(element) for element in elements]
-        winner = indices.index(max(indices))
-
-        return cards[winner], winner
+        if cardWinner == card1:
+            playerWinner = 0
+        elif cardWinner == card2:
+            playerWinner = 1
+        elif cardWinner == card3:
+            playerWinner = 2
+        return cardWinner, playerWinner
 
     def getWinnerByFirstAppearance(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
@@ -218,7 +261,7 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
-        rarity_map = {level: i for i, level in enumerate(self.dangerous)}
+        rarity_map = {level: i for i, level in enumerate(self.rare)}
         
         max_rarity = max(cards, key=lambda x: rarity_map[x[7]])
         
