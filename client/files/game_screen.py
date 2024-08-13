@@ -7,6 +7,7 @@ import json
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
 from client import Client
+import win_screen
 
 host = 'server'
 port = 8020
@@ -161,6 +162,8 @@ class Game(arcade.View):
         self.is_draw = False
         self.resolve_turn = False
         self.turn_winner = None
+        self.end_game = False
+        self.winner_name = None
         # ----------------------
 
         self.has_new_log = False
@@ -576,6 +579,12 @@ class Game(arcade.View):
                 self.select_name_turn = 0
                 self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
 
+        if self.end_game:
+            win = win_screen.WInScreen(self.client, self.winner_name)
+            self.window.show_view(win)
+
+
+
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
         self.has_interacted_card = True
@@ -793,6 +802,11 @@ class Game(arcade.View):
                         self.has_new_log = True
                         self.turn_winner = data_dict['response']['winner']
                         self.resolve_turn = True
+                if data_dict['header'] == 'resolve_game':
+                    name_winner = data_dict['response']['winner']
+                    self.winner_name = name_winner
+                    self.end_game = True
+                    break
 
             except Exception as e:
                 print(str(e))
