@@ -117,6 +117,7 @@ class EditDeck(arcade.View):
         self.selected_deck_id = None
 
     def setup(self):
+        threading.Thread(target=self.receive_message).start()
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
         self.card_list = arcade.SpriteList()
@@ -456,10 +457,10 @@ class EditDeck(arcade.View):
     def receive_message(self):
         while True:
             try:
-                self.data_dict = self.client.receiveMessage()
-                print(self.data_dict)
+                data_dict = self.client.receiveMessage()
+                print(data_dict)
                 
-                if self.data_dict['header'] == 'choose_deck':
+                if data_dict['header'] == 'choose_deck':
                     data = {'header': 'ACK', 'request': {}}
                     self.client.sendMessage(data)          
                     break
