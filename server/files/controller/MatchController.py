@@ -85,6 +85,8 @@ class MatchController:
     ]
 
     def RoundResult(self, cards, attribute):
+        print(cards)
+        print(attribute)
         if cards[0] == cards[1] and cards[0] == cards[2] and cards[1] == cards[2]:
             return 0, -1
         elif cards[0] == cards[1]:
@@ -97,17 +99,22 @@ class MatchController:
             result = self.cardController.getByName(cards[1])
             winner = 1
         elif attribute == "Tipo":
+            print('tipo da carta')
             result, winner = self.getWinnerByType(cards[0], cards[1], cards[2])
         elif attribute == "Avistamento":
+            print('avistamento da carta')
             result, winner = self.getWinnerByFirstAppearance(cards[0], cards[1], cards[2])
         elif attribute == "Medo":
+            print('medo da carta')
             result, winner = self.getWinnerByLevelOfFear(cards[0], cards[1], cards[2])
         elif attribute == "Tamanho":
             print('tamanho da carta')
             result, winner = self.getWinnerBySize(cards[0], cards[1], cards[2])
         elif attribute == "Perigo":
+            print('perigo da carta')
             result, winner = self.getWinnerByDanger(cards[0], cards[1], cards[2])
         elif attribute == "Raridade":
+            print('raridade da carta')
             result, winner = self.getWinnerByRarity(cards[0], cards[1], cards[2])
         
         return result, winner
@@ -130,13 +137,16 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
         min_date = min(cards, key=lambda x: x[3])
+        print(min_date)
         
         index_of_min = cards.index(min_date)
+        print(index_of_min)
         
         occurencies = sum(1 for card in cards if card[3] == min_date[3])
+        print(occurencies)
         
         if occurencies == 1:
-            return cards[min_date], index_of_min
+            return cards[index_of_min], index_of_min
         else:
             print("Vamos para o desempate")
             self.getWinnerByRarity(cardName1, cardName2, cardName3)
