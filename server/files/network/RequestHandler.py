@@ -94,10 +94,13 @@ class RequestHandler:
                 # next_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.nextTurn(self.client)
                 # self.socket_server.broadcastMessageToLobby(self.client.current_lobby, next_turn)
                 # t.sleep(3)
+            self.printGameState()
                 
         elif header == 'choose_stat':
             print('choosing stat')
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.setAttribute(self.client, body['stat'])
+            self.printGameState()
+            
             if result['response']['status'] == 'success':
                 self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
                 return {'header': 'broadcast'}
@@ -110,7 +113,6 @@ class RequestHandler:
         elif header == 'retrieve_deck':
             result = self.deckManager.retrieveDeck(self.client.current_deck)
             
-        self.printGameState()
             
         print("sending ", result)
         return result
