@@ -12,6 +12,7 @@ class Client():
         self.client_name = None
         self.client_email = None
         self.client_deck = 0
+        self.selected_deck_cards = None
         
     def startClient(self):
         self.s.connect((self.host, self.port))
@@ -30,7 +31,6 @@ class Client():
         try:
             data = self.s.recv(1024)
             data_dict = json.loads(data.decode("utf-8"))
-            print(data_dict)
             return data_dict
         except socket.error as e:
             print(str(e))

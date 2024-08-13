@@ -98,9 +98,6 @@ class CreateLobby(arcade.View):
                 child=self.v_box)
         )
 
-    def reset(self):
-        self.go_to_lobby = False
-
 
     def on_click_voltar(self, event):
         menu = main_menu.MainMenu(self.client)
@@ -144,24 +141,30 @@ class CreateLobby(arcade.View):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
     def receive_message(self):
-        print('waiting for message')
-        try:
-            self.data_dict = self.client.receiveMessage()
+        while True:
+            print('waiting for message')
+            try:
+                self.data_dict = self.client.receiveMessage()
 
 
-            print("Data dict do criar lobby: ", self.data_dict)
-            
-            if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
-                print('lobby created')
-                self.go_to_lobby = True
-            if self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
-                print('lobby joined')
-                self.go_to_lobby = True     
-            data = {'header': 'ACK', 'request': {}}
-            self.client.sendMessage(data)
-                
-        except Exception as e:
-            print(str(e))
+                print(f"Create lobby got the message: { self.data_dict}")
+                print(f"----------------{self.data_dict['header']}---------------")
+
+                if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
+                    print('lobby created')
+                    self.go_to_lobby = True
+                    data = {'header': 'ACK', 'request': {}}
+                    self.client.sendMessage(data)
+                    break
+                if self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
+                    print('lobby joined')
+                    self.go_to_lobby = True     
+                    data = {'header': 'ACK', 'request': {}}
+                    self.client.sendMessage(data)
+                    break
+                    
+            except Exception as e:
+                print(str(e))
 
 
 

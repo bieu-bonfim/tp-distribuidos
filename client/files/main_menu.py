@@ -118,17 +118,18 @@ class MainMenu(arcade.View):
         if self.go_to_edit == True:
             edit_window = edit_deck.EditDeck(self.client, self.data_dict['response']['data'])
             edit_window.setup()
-            time.sleep(2)
             self.window.show_view(edit_window)
 
     def receive_message(self):
-        try:
-            self.data_dict = self.client.receiveMessage()
-            print(self.data_dict)
-            
-            if self.data_dict['header'] == 'show_user_inventory':
-                self.go_to_edit = True            
-                data = {'header': 'ACK', 'request': {}}
-                self.client.sendMessage(data)
-        except Exception as e:
-            print(str(e))
+        while True:
+            try:
+                self.data_dict = self.client.receiveMessage()
+                print(self.data_dict)
+                
+                if self.data_dict['header'] == 'show_user_inventory':
+                    data = {'header': 'ACK', 'request': {}}
+                    self.client.sendMessage(data)
+                    self.go_to_edit = True            
+                    break
+            except Exception as e:
+                print(str(e))
