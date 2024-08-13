@@ -67,10 +67,6 @@ class MainMenu(arcade.View):
         )
 
     def on_click_play(self, event):
-        # print("Create Lobby")
-        # game = game_screen.Game(self.client)
-        # game.setup()
-        # self.window.show_view(game)
         create_lobby_window = create_lobby.CreateLobby(self.client)
         self.window.show_view(create_lobby_window)
 
