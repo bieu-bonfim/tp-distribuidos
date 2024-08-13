@@ -68,7 +68,7 @@ class MatchController:
 
     dangerous = [
         "Inofensivo",
-        "Fique atento",
+        "Fique Atento",
         "Periculoso",
         "Ameaçador",
         "Mortal",
@@ -86,13 +86,16 @@ class MatchController:
 
     def RoundResult(self, cards, attribute):
         if cards[0] == cards[1] and cards[0] == cards[2] and cards[1] == cards[2]:
-            return 0, ()
-        # elif cards[0] == cards[1]:
-        #     result = self.cardController.getByName(cards[2])
-        # elif cards[1] == cards[2]:
-        #     result = self.cardController.getByName(cards[0])
-        # elif cards[0] == cards[2]:
-        #     result = self.cardController.getByName(cards[1])
+            return 0, -1
+        elif cards[0] == cards[1]:
+            result = self.cardController.getByName(cards[2])
+            winner = 2
+        elif cards[1] == cards[2]:
+            result = self.cardController.getByName(cards[0])
+            winner = 0
+        elif cards[0] == cards[2]:
+            result = self.cardController.getByName(cards[1])
+            winner = 1
         elif attribute == "Tipo":
             result, winner = self.getWinnerByType(cards[0], cards[1], cards[2])
         elif attribute == "Avistamento":
@@ -107,7 +110,7 @@ class MatchController:
         elif attribute == "Raridade":
             result, winner = self.getWinnerByRarity(cards[0], cards[1], cards[2])
         
-        return result, winner+1
+        return result, winner
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
@@ -126,10 +129,14 @@ class MatchController:
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
-        index_of_min = min(cards, key=lambda x: x[3])
-        occurencies = cards.count(cards[index_of_min][3])
+        min_date = min(cards, key=lambda x: x[3])
+        
+        index_of_min = cards.index(min_date)
+        
+        occurencies = sum(1 for card in cards if card[3] == min_date[3])
+        
         if occurencies == 1:
-            return cards[index_of_min], index_of_min
+            return cards[min_date], index_of_min
         else:
             print("Vamos para o desempate")
             self.getWinnerByRarity(cardName1, cardName2, cardName3)
@@ -140,16 +147,18 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
-        elements = [sub[4] for sub in cards]
-        indices = [self.fear.index(element) for element in elements]
-        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
-        undraw = 0 
-        for i in cards:
-            if indicesSorted == i:
-                undraw = undraw + 1
-        if undraw == 1:
-            winner = indices.index(max(indices))
-            return cards[winner], winner
+        fear_map = {level: i for i, level in enumerate(self.fear)}
+        
+        max_fear = max(cards, key=lambda x: fear_map[x[4]])
+        
+        index_of_max = cards.index(max_fear)
+        
+        max_fear_level = fear_map[max_fear[4]]
+        
+        draw_count = sum(1 for card in cards if fear_map[card[4]] == max_fear_level)
+
+        if draw_count == 1:
+            return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
             self.getWinnerByDanger(cardName1, cardName2, cardName3)
@@ -159,15 +168,13 @@ class MatchController:
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
-        print(cards)
         max_size = max(cards, key=lambda x: x[5])
-        print(max_size)
+        
         index_of_max = cards.index(max_size)
-        occurencies = cards.count(cards[index_of_max])
-        print(occurencies)
+        
+        occurencies = sum(1 for card in cards if card[5] == max_size[5])
+        
         if occurencies == 1:
-            print("Vencedor: ", cards[index_of_max])
-            print("Vencedor: ", index_of_max)
             return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
@@ -179,18 +186,20 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
-        elements = [sub[6] for sub in cards]
-        indices = [self.dangerous.index(element) for element in elements]
-        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
-        undraw = 0 
-        for i in cards:
-            if indicesSorted == i:
-                undraw = undraw + 1
-        if undraw == 1:
-            winner = indices.index(max(indices))
-            return cards[winner], winner
+        danger_map = {level: i for i, level in enumerate(self.dangerous)}
+        
+        max_danger = max(cards, key=lambda x: danger_map[x[6]])
+        
+        index_of_max = cards.index(max_danger)
+        
+        max_danger_level = danger_map[max_danger[6]]
+        
+        draw_count = sum(1 for card in cards if danger_map[card[6]] == max_danger_level)
+
+        if draw_count == 1:
+            return cards[index_of_max], index_of_max
         else:
-            print("Vamos para o desempate")
+            print("Vamos para o desempate!")
             self.getWinnerByFirstAppearance(cardName1, cardName2, cardName3)
 
     def getWinnerByRarity(self, cardName1, cardName2, cardName3):
@@ -199,16 +208,18 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
-        elements = [sub[7] for sub in cards]
-        indices = [self.rare.index(element) for element in elements]
-        indicesSorted = sorted(indices, key=lambda item: item, reverse=True)
-        undraw = 0 
-        for i in cards:
-            if indicesSorted == i:
-                undraw = undraw + 1
-        if undraw == 1:
-            winner = indices.index(max(indices))
-            return cards[winner], winner
+        rarity_map = {level: i for i, level in enumerate(self.dangerous)}
+        
+        max_rarity = max(cards, key=lambda x: rarity_map[x[7]])
+        
+        index_of_max = cards.index(max_rarity)
+        
+        max_rarity_level = rarity_map[max_rarity[7]]
+        
+        draw_count = sum(1 for card in cards if rarity_map[card[7]] == max_rarity_level)
+
+        if draw_count == 1:
+            return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
             self.getWinnerByDanger(cardName1, cardName2, cardName3)

@@ -11,7 +11,7 @@ class GameManager:
         self.round = 1
         self.round_attribute = ''
         self.round_cards = [None, None, None]
-        self.winners = {1: 0, 2: 0, 3: 0}
+        self.winners = {0: 0, 1: 0, 2: 0}
         self.current_player = 0
         self.matchController = MatchController(conn)
         
@@ -88,38 +88,50 @@ class GameManager:
         winner = 0
         print('passo 1')
         card, winner  = self.matchController.RoundResult(self.round_cards, self.round_attribute)
-        print('passo 2')
-        print('winner', winner)
-        print('card', card)
-        self.winners[winner] += 1
+        if card == 0:
+            print('draw')
+            result = {
+                'header': 'resolve_round',
+                'response': {
+                    'status': 'draw',
+                    'message': 'Empate! Ninguém ganhou essa rodada',
+                }
+            }
+        else:
+            print('passo 2')
+            print('winner', winner)
+            print('card', card)
+            self.winners[winner] += 1
+            result = {
+                'header': 'resolve_round',
+                'response': {
+                    'status': 'success',
+                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
+                    'winner_index': winner,
+                    'winner': self.lobby.players[winner].username
+                }
+            }
         print('passo 3')
         print('winners', self.winners)
         self.current_player = (self.current_player + 1) % 3
         print('passo 4')
         print('current_player', self.current_player)
-        self.round += 1
         print('passo 5')
         print('round', self.round)
         self.round_attribute = ''
-        if self.round == 8:
+        self.round_cards = [None, None, None]
+        self.round += 1
+        if self.round-1 == 8:
             return {
                 'header': 'resolve_round',
                 'response': {
                     'status': 'game_over',
-                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner-1].username,
+                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner].username,
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner-1].username
+                    'winner': self.lobby.players[winner].username
                 }
             }
-        return {
-            'header': 'resolve_round',
-            'response': {
-                'status': 'success',
-                'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
-                'winner_index': winner,
-                'winner': self.lobby.players[winner].username
-            }
-        }
+        return result
         
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
