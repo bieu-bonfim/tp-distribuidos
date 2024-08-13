@@ -72,6 +72,7 @@ class MatchController:
     dangerous = [
         "Inofensivo",
         "Fique Atento",
+        "Fique atento",
         "Periculoso",
         "Ameaçador",
         "Mortal",
@@ -82,6 +83,7 @@ class MatchController:
         "Famoso",
         "Comum",
         "Pouco Falado",
+        "Pouco falado",
         "Desconhecido",
         "Obscuro",
         "Segredo"
