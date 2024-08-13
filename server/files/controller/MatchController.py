@@ -46,9 +46,12 @@ def insert(match):
         print('Não foi possível inserir a carta: ',e)
         
 
-type = [
-    #todo
-]
+type = {
+        'Alien': ['Mitológico', 'Paranormal'],
+        'Mitológico': ['Paranormal', 'Monstro'],
+        'Monstro': ['Alien'],
+        'Paranormal': ['Monstro']
+        }
 
 
 
@@ -94,18 +97,15 @@ def RoundResult(card1, card2, card3, attribute):
         getWinnerByRarity(card1, card2, card3)
     
 
-def getWinnerByType(card1, card2, card3):
-    card1 = CardController.getByName(card1)
-    card2 = CardController.getByName(card2)
-    card3 = CardController.getByName(card3)
-    cards = [card1, card2, card3]
-
-    elements = [sub[2] for sub in cards]
-    indices = [type.index(element) for element in elements]
-    winner = indices.index(max(indices))
-
-    print("vencedor: ", cards[winner])
-    return cards[winner]
+def getWinnerByType(self, cardName1, cardName2):   
+    card1 = CardController.getByName(cardName1)
+    card2 = CardController.getByName(cardName2)
+    if card1[2] == card2[2]:
+        return "Empate!"
+    elif card2[2] in self.type[card1[2]]:
+        return card1
+    elif card1[2] in self.type[card2[2]]:
+        return card2
 
 def getWinnerByFirstAppearance(card1, card2, card3):
     card1 = CardController.getByName(card1)
@@ -178,7 +178,7 @@ def main():
             print(match)
     elif escolha == 2:
         print("Escolha o atributo")
-        print("1) Type")
+        #print("1) Type")
         print("2) First Appearance")
         print("3) Level of fear")
         print("4) Size")
