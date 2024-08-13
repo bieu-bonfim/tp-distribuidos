@@ -158,6 +158,7 @@ class LobbyScreen(arcade.View):
                     data = {'header': 'ACK', 'request': {}}
                     self.client.sendMessage(data)
                     self.start_game = True
+                    break
                 elif self.data_dict['header'] == 'retrieve_deck':
                     self.own_deck = self.data_dict['response']['data']['deck']['cards']
                     data = {'header': 'ACK', 'request': {}}
