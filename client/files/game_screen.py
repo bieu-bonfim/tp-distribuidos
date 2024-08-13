@@ -659,18 +659,20 @@ class Game(arcade.View):
         while True:
             try:
                 data_dict = self.client.receiveMessage()
-                if data_dict['heder'] == 'played_card':
-                    print("bap")
+                if data_dict['header'] == 'played_card':
+                    player_in_question = data_dict['response']['player']
+                    card = data_dict['response']['card']
+                    self.render_opponent_card(card, player_in_question)
             except Exception as e:
                 print(str(e))
                 break
 
 
-    def render_opponent_card(self, message):
+    def render_opponent_card(self, card_name, player_name):
         for opponent in self.opponents:
             print(f"oponente name: {opponent.name}")
-            print(message['player_name'])
-            if opponent.name == message['player_name']:
+            print(card_name)
+            if opponent.name == player_name:
                 for card in self.card_list:
-                    if card.name == message['card']:
+                    if card.name == card_name:
                         opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
