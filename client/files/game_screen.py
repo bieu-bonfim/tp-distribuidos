@@ -155,6 +155,7 @@ class Game(arcade.View):
                                             tex=bg_text, padding=(20, 20, 20, 20))
         self.manager.add(self.text_area_pane)
 
+        self.has_new_log = False
 
 
         # Create a vertical BoxGroup to align buttons
@@ -212,7 +213,7 @@ class Game(arcade.View):
         self.opponents.append(self.p2)
         self.opponents.append(self.p3)
 
-        self.p1.name = "test"
+        self.p1.name = self.client.client_name
 
        # self.p2_mat = None
        # self.p2_card = None
@@ -372,7 +373,7 @@ class Game(arcade.View):
             pos2 = random.randrange(len(self.card_list))
             self.card_list.swap(pos1, pos2)
 
-        self.add_log(f"O turno é de {self.turn_name}...")
+        self.add_log(f"O turno é de {self.turn_name}...\n")
 
     def get_pile_for_card(self, card):
         for index, pile in enumerate(self.piles):
@@ -484,6 +485,11 @@ class Game(arcade.View):
             self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
             self.p3.card.draw()
 
+
+        if self.has_new_log:
+            inverted = self.revert_line_order(self.text_log)
+            self.text_area.text = inverted
+            self.has_new_log = False
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """ Called when the user presses a mouse button. """
@@ -680,8 +686,10 @@ class Game(arcade.View):
                     self.render_opponent_card(card, player_in_question)
                 if data_dict['header'] == 'choose_stat':
                     print("STAT CHOOSED!")
-                    str_log = data_dict['response']['message']
-                    self.add_log(str_log)
+                    print(data_dict['response']['message'])
+                    self.text_log += data_dict['response']['message']
+                    self.has_new_log = True
+                    print("chegou agui?")
                 if data_dict['header'] == 'turn_cards':
                     for opponent in self.opponents:
                         opponent.card.faceUp()
@@ -697,6 +705,7 @@ class Game(arcade.View):
             if opponent.name == player_name:
                 for card in CARD_NAMES:
                     if card == card_name:
-                        op_card = Card(card, CARD_SCALE)
-                        opponent.card = op_card
+                        opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
+                        #op_card = Card(card, CARD_SCALE)
+                        #opponent.card = op_card
 
