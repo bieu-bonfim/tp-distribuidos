@@ -218,7 +218,7 @@ class MatchController:
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
 
-        rarity_map = {level: i for i, level in enumerate(self.dangerous)}
+        rarity_map = {level: i for i, level in enumerate(self.rare)}
         
         max_rarity = max(cards, key=lambda x: rarity_map[x[7]])
         
