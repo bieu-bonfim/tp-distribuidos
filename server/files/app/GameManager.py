@@ -84,18 +84,31 @@ class GameManager:
         }
 
     def resolveRound(self):
-        winner, _  = self.matchController.RoundResult(self.round_cards, self.round_attribute)
+        print("resolvendo round")
+        winner = 0
+        print('passo 1')
+        card, winner  = self.matchController.RoundResult(self.round_cards, self.round_attribute)
+        print('passo 2')
+        print('winner', winner)
+        print('card', card)
         self.winners[winner] += 1
+        print('passo 3')
+        print('winners', self.winners)
         self.current_player = (self.current_player + 1) % 3
+        print('passo 4')
+        print('current_player', self.current_player)
         self.round += 1
+        print('passo 5')
+        print('round', self.round)
+        self.round_attribute = ''
         if self.round == 8:
             return {
                 'header': 'resolve_round',
                 'response': {
                     'status': 'game_over',
-                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
+                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner-1].username,
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner].username
+                    'winner': self.lobby.players[winner-1].username
                 }
             }
         return {

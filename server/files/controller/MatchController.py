@@ -86,27 +86,28 @@ class MatchController:
 
     def RoundResult(self, cards, attribute):
         if cards[0] == cards[1] and cards[0] == cards[2] and cards[1] == cards[2]:
-            return 0,()
-        elif cards[0] == cards[1]:
-            result = self.cardController.getByName(cards[2])
-        elif cards[1] == cards[2]:
-            result = self.cardController.getByName(cards[0])
-        elif cards[0] == cards[2]:
-            result = self.cardController.getByName(cards[1])
-        elif attribute == 1:
+            return 0, ()
+        # elif cards[0] == cards[1]:
+        #     result = self.cardController.getByName(cards[2])
+        # elif cards[1] == cards[2]:
+        #     result = self.cardController.getByName(cards[0])
+        # elif cards[0] == cards[2]:
+        #     result = self.cardController.getByName(cards[1])
+        elif attribute == "Tipo":
             result, winner = self.getWinnerByType(cards[0], cards[1], cards[2])
-        elif attribute == 2:
+        elif attribute == "Avistamento":
             result, winner = self.getWinnerByFirstAppearance(cards[0], cards[1], cards[2])
-        elif attribute == 3:
+        elif attribute == "Medo":
             result, winner = self.getWinnerByLevelOfFear(cards[0], cards[1], cards[2])
-        elif attribute == 4:
+        elif attribute == "Tamanho":
+            print('tamanho da carta')
             result, winner = self.getWinnerBySize(cards[0], cards[1], cards[2])
-        elif attribute == 5:
+        elif attribute == "Perigo":
             result, winner = self.getWinnerByDanger(cards[0], cards[1], cards[2])
-        elif attribute == 6:
+        elif attribute == "Raridade":
             result, winner = self.getWinnerByRarity(cards[0], cards[1], cards[2])
         
-        return winner+1, result
+        return result, winner+1
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
@@ -158,10 +159,16 @@ class MatchController:
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
         cards = [card1, card2, card3]
-        index_of_min = min(cards, key=lambda x: x[5])
-        occurencies = cards.count(cards[index_of_min][5])
+        print(cards)
+        max_size = max(cards, key=lambda x: x[5])
+        print(max_size)
+        index_of_max = cards.index(max_size)
+        occurencies = cards.count(cards[index_of_max])
+        print(occurencies)
         if occurencies == 1:
-            return cards[index_of_min], index_of_min
+            print("Vencedor: ", cards[index_of_max])
+            print("Vencedor: ", index_of_max)
+            return cards[index_of_max], index_of_max
         else:
             print("Vamos para o desempate")
             self.getWinnerByLevelOfFear(cardName1, cardName2, cardName3)

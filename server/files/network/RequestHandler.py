@@ -10,7 +10,7 @@ class RequestHandler:
     def __init__(self, client, socket_server):
         self.client = client
         self.socket_server = socket_server
-        self.db_conn = sqlite3.connect('database/cryptid.db')
+        self.db_conn = sqlite3.connect('database/cryptid.db', check_same_thread=False)
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
