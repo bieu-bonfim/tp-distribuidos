@@ -679,7 +679,9 @@ class Game(arcade.View):
                     card = data_dict['response']['card']
                     self.render_opponent_card(card, player_in_question)
                 if data_dict['header'] == 'choose_stat':
-                    self.add_log(data_dict['response']['message'])
+                    print("STAT CHOOSED!")
+                    str_log = data_dict['response']['message']
+                    self.add_log(str_log)
                 if data_dict['header'] == 'turn_cards':
                     for opponent in self.opponents:
                         opponent.card.faceUp()
