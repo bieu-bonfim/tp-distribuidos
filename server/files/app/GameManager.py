@@ -11,6 +11,7 @@ class GameManager:
         self.round = 1
         self.round_attribute = ''
         self.round_cards = [None, None, None]
+        self.winners = {1: 0, 2: 0, 3: 0}
         self.current_player = 0
         self.matchController = MatchController(conn)
         
@@ -81,23 +82,41 @@ class GameManager:
                 }
             }
         }
-                
 
     def resolveRound(self):
-        arrayWinners = []
-        contagem = {1: 0, 2: 0, 3: 0}
-        for i in range(1,8):
-            arrayWinners[i] = self.matchController.RoundResult(self.round_cards, self.round_attribute)[0]
-
-        for player in arrayWinners:
-            if player in contagem:
-                contagem[player] += 1
-
-            winner = max(contagem, key=contagem.get)
+        winner, _  = self.matchController.RoundResult(self.round_cards, self.round_attribute)
+        self.winners[winner] += 1
+        self.current_player = (self.current_player + 1) % 3
+        self.round += 1
+        if self.round == 8:
+            return {
+                'header': 'resolve_round',
+                'response': {
+                    'status': 'game_over',
+                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
+                    'winner_index': winner,
+                    'winner': self.lobby.players[winner].username
+                }
+            }
         return {
             'header': 'resolve_round',
             'response': {
-                'winner': winner
+                'status': 'success',
+                'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
+                'winner_index': winner,
+                'winner': self.lobby.players[winner].username
+            }
+        }
+        
+    def resolveGame(self):
+        winner = max(self.winners, key=self.winners.get)
+        return {
+            'header': 'resolve_game',
+            'response': {
+                'status': 'success',
+                'message': 'Jogo encerrado, o vencedor foi ' + self.lobby.players[winner].username,
+                'winner_index': winner,
+                'winner': self.lobby.players[winner].username
             }
         }
     

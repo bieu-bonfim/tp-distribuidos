@@ -94,21 +94,19 @@ class MatchController:
         elif cards[0] == cards[2]:
             result = self.cardController.getByName(cards[1])
         elif attribute == 1:
-            result = self.getWinnerByType(cards[0], cards[1], cards[2])
+            result, winner = self.getWinnerByType(cards[0], cards[1], cards[2])
         elif attribute == 2:
-            result = self.getWinnerByFirstAppearance(cards[0], cards[1], cards[2])
+            result, winner = self.getWinnerByFirstAppearance(cards[0], cards[1], cards[2])
         elif attribute == 3:
-            result = self.getWinnerByLevelOfFear(cards[0], cards[1], cards[2])
+            result, winner = self.getWinnerByLevelOfFear(cards[0], cards[1], cards[2])
         elif attribute == 4:
-            result = self.getWinnerBySize(cards[0], cards[1], cards[2])
+            result, winner = self.getWinnerBySize(cards[0], cards[1], cards[2])
         elif attribute == 5:
-            result = self.getWinnerByDanger(cards[0], cards[1], cards[2])
+            result, winner = self.getWinnerByDanger(cards[0], cards[1], cards[2])
         elif attribute == 6:
-            result = self.getWinnerByRarity(cards[0], cards[1], cards[2])
-
-        indice = next((index for index, tupla in enumerate(cards) if result[1   ] in tupla), None)
+            result, winner = self.getWinnerByRarity(cards[0], cards[1], cards[2])
         
-        return indice+1, result
+        return winner+1, result
 
     def getWinnerByType(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
@@ -120,21 +118,17 @@ class MatchController:
         indices = [type.index(element) for element in elements]
         winner = indices.index(max(indices))
 
-        return cards[winner]
+        return cards[winner], winner
 
     def getWinnerByFirstAppearance(self, cardName1, cardName2, cardName3):
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
-        cardList = [card1, card2, card3]
-        cardListSorted = sorted(cardList, key=lambda item: item[3])
-        undraw = 0
-        for i in cardList:
-            if cardListSorted == i:
-                undraw = undraw + 1
-        if undraw == 1:
-            print("vencedor: ",cardListSorted[0])
-            return cardListSorted[0]
+        cards = [card1, card2, card3]
+        index_of_min = min(cards, key=lambda x: x[3])
+        occurencies = cards.count(cards[index_of_min][3])
+        if occurencies == 1:
+            return cards[index_of_min], index_of_min
         else:
             print("Vamos para o desempate")
             self.getWinnerByRarity(cardName1, cardName2, cardName3)
@@ -154,7 +148,7 @@ class MatchController:
                 undraw = undraw + 1
         if undraw == 1:
             winner = indices.index(max(indices))
-            return cards[winner]
+            return cards[winner], winner
         else:
             print("Vamos para o desempate")
             self.getWinnerByDanger(cardName1, cardName2, cardName3)
@@ -163,15 +157,11 @@ class MatchController:
         card1 = self.cardController.getByName(cardName1)
         card2 = self.cardController.getByName(cardName2)
         card3 = self.cardController.getByName(cardName3)
-        cardList = [card1, card2, card3]
-        cardListSorted = sorted(cardList, key=lambda item: item[5], reverse=True)
-        undraw = 0
-        for i in cardList:
-            if cardListSorted == i:
-                undraw = undraw + 1
-        if undraw == 1:
-            print("vencedor: ",cardListSorted[0])
-            return cardListSorted[0]
+        cards = [card1, card2, card3]
+        index_of_min = min(cards, key=lambda x: x[5])
+        occurencies = cards.count(cards[index_of_min][5])
+        if occurencies == 1:
+            return cards[index_of_min], index_of_min
         else:
             print("Vamos para o desempate")
             self.getWinnerByLevelOfFear(cardName1, cardName2, cardName3)
@@ -191,7 +181,7 @@ class MatchController:
                 undraw = undraw + 1
         if undraw == 1:
             winner = indices.index(max(indices))
-            return cards[winner]
+            return cards[winner], winner
         else:
             print("Vamos para o desempate")
             self.getWinnerByFirstAppearance(cardName1, cardName2, cardName3)
@@ -211,7 +201,7 @@ class MatchController:
                 undraw = undraw + 1
         if undraw == 1:
             winner = indices.index(max(indices))
-            return cards[winner]
+            return cards[winner], winner
         else:
             print("Vamos para o desempate")
             self.getWinnerByDanger(cardName1, cardName2, cardName3)

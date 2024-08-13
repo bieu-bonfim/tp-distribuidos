@@ -39,9 +39,6 @@ class Client():
             if message == 'start_game':
                 index = input('Enter index: ')
                 request = {'index': index}
-            if message == 'play_card':
-                index = input('Enter index: ')
-                request = {'index': index}
             if message == 'manage_inventory':
                 user_id = input('Enter id: ')
                 request = {'user_id': user_id}
@@ -57,6 +54,14 @@ class Client():
             if message == 'choose_deck':
                 deck_id = input('Enter deck id: ')
                 request = {'deck_id': deck_id}
+            if message == 'play_card':
+                card_name = input('Enter card name: ')
+                request = {'card': card_name}
+            if message == 'choose_stat':
+                stat = input('Enter stat: ')
+                request = {'stat': stat}
+            if message == 'ACK':
+                request = {}
                 
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
