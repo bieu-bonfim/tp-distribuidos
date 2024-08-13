@@ -1,6 +1,7 @@
 import socket
 import threading
 import json
+import time as t
 
 class Client():
     def __init__(self):
@@ -16,10 +17,81 @@ class Client():
         
     def sendMessage(self):
         while True:
+            ack = {'header': 'ACK', 'request': {}}
+            ack_str = json.dumps(ack)
             message = input('Enter message: ')
             print(f"Sending message: {message}")
             data = ''
             request = ''
+            if message == 'patras':
+                request = {'username': 'patras', 'password': 'patras123'}
+                data = {'header': 'login', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'deck_id': 1}
+                data = {'header': 'choose_deck', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'index': '0'}
+                data = {'header': 'join_lobby', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                continue
+            if message == 'thui':
+                request = {'username': 'thui', 'password': 'thui123'}
+                data = {'header': 'login', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'deck_id': 1}
+                data = {'header': 'choose_deck', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'index': '0'}
+                data = {'header': 'join_lobby', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                continue
+            if message == 'bija':
+                request = {'username': 'bija', 'password': 'bija123'}
+                data = {'header': 'login', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'deck_id': 1}
+                data = {'header': 'choose_deck', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                request = {'index': '0'}
+                data = {'header': 'join_lobby', 'request': request}
+                data_str = json.dumps(data)
+                self.s.sendall(bytes(data_str, encoding="utf-8"))
+                t.sleep(1)
+                self.s.sendall(bytes(ack_str, encoding="utf-8"))
+                t.sleep(1)
+                continue
             if message == 'login':
                 user = input('Enter username: ')
                 password = input('Enter password: ')
@@ -39,9 +111,6 @@ class Client():
             if message == 'start_game':
                 index = input('Enter index: ')
                 request = {'index': index}
-            if message == 'play_card':
-                index = input('Enter index: ')
-                request = {'index': index}
             if message == 'manage_inventory':
                 user_id = input('Enter id: ')
                 request = {'user_id': user_id}
@@ -57,6 +126,14 @@ class Client():
             if message == 'choose_deck':
                 deck_id = input('Enter deck id: ')
                 request = {'deck_id': deck_id}
+            if message == 'play_card':
+                card_name = input('Enter card name: ')
+                request = {'card': card_name}
+            if message == 'choose_stat':
+                stat = input('Enter stat: ')
+                request = {'stat': stat}
+            if message == 'ACK':
+                request = {}
                 
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)

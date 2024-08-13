@@ -10,7 +10,7 @@ class RequestHandler:
     def __init__(self, client, socket_server):
         self.client = client
         self.socket_server = socket_server
-        self.db_conn = sqlite3.connect('database/cryptid.db')
+        self.db_conn = sqlite3.connect('database/cryptid.db', check_same_thread=False)
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
@@ -82,19 +82,20 @@ class RequestHandler:
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
         elif header == 'play_card':
             result = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.playCard(self.client, body['card'])
-            self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)
+            self.socket_server.broadcastMessageToLobby(self.client.current_lobby, result)
             if result['response']['status'] == 'turn_over':
                 t.sleep(3)
                 turn_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.turnOver()
                 self.socket_server.broadcastMessageToLobby(self.client.current_lobby, turn_over)
-                # t.sleep(3)
-                # resolve_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.resolveTurn(self.client)
-                # self.socket_server.broadcastMessageToLobby(self.client.current_lobby, resolve_turn)
-                # t.sleep(3)
-                # next_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.nextTurn(self.client)
-                # self.socket_server.broadcastMessageToLobby(self.client.current_lobby, next_turn)
-                # t.sleep(3)
+                t.sleep(3)
+                resolve_turn = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.resolveRound()
+                self.socket_server.broadcastMessageToLobby(self.client.current_lobby, resolve_turn)
+                if resolve_turn['response']['status'] == 'game_over':
+                    t.sleep(3)
+                    game_over = self.socket_server.lobbyManager.lobbyController.lobbies[self.client.current_lobby].gameManager.resolveGame()
+                    self.socket_server.broadcastMessageToLobby(self.client.current_lobby, game_over)
             self.printGameState()
+            return {'header': 'broadcast'}
                 
         elif header == 'choose_stat':
             print('choosing stat')
