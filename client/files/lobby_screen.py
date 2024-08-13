@@ -44,6 +44,7 @@ class LobbyScreen(arcade.View):
         self.start_game = False
         self.own_deck = None
         self.deck_loaded = False
+        self.array_players = None
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -100,7 +101,7 @@ class LobbyScreen(arcade.View):
             #self.client.sendMessage(data)
             #if self.deck_loaded:
             print("---------- GAME STARTED ----------")
-            game = game_screen.Game(self.client, self.opponent1, self.opponent2)
+            game = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
             game.setup()
             self.window.show_view(game)
 
@@ -136,8 +137,8 @@ class LobbyScreen(arcade.View):
                     if self.data_dict['response']['status'] == "success":     
                         self.opponent1 = "Aguardando..."
                         self.opponent2 = "Aguardando..."
-                        array_players = self.data_dict['response']['data']['lobby']['players']     
-                        for player in array_players:
+                        self.array_players = self.data_dict['response']['data']['lobby']['players']     
+                        for player in self.array_players:
                             print(f"jogador entrou {player}")
                             if player == self.client.client_name:
                                 continue

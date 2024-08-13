@@ -453,7 +453,18 @@ class EditDeck(arcade.View):
         self.manager.disable()
         print("hide deck")
 
-
+    def receive_message(self):
+        while True:
+            try:
+                self.data_dict = self.client.receiveMessage()
+                print(self.data_dict)
+                
+                if self.data_dict['header'] == 'choose_deck':
+                    data = {'header': 'ACK', 'request': {}}
+                    self.client.sendMessage(data)          
+                    break
+            except Exception as e:
+                print(str(e))
                 
 
 
