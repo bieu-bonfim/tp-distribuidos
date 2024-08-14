@@ -122,7 +122,8 @@ class MainMenu(arcade.View):
             self.window.show_view(edit_window)
 
         if self.go_to_shop == True:
-            shop_window = edit_deck.EditDeck(self.client, self.player_coin)
+            shop_window = shop_screen.ShopScreen(self.client, self.player_coin)
+            shop_window.setup()
             self.window.show_view(shop_window)
          
 
@@ -141,5 +142,6 @@ class MainMenu(arcade.View):
                     self.player_coin = self.data_dict['response']['moedas']
                     data = {'header': 'ACK', 'request': {}}
                     self.client.sendMessage(data)
+                    self.go_to_shop = True
             except Exception as e:
                 print(str(e))
