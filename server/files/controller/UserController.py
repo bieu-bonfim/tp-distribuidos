@@ -39,19 +39,23 @@ class UserController:
         return rows[0]
     
     def getCreditByName(self, username):
+        print('entrou no getCreditByName')
         self.cursor.execute('SELECT user_id, moeda FROM user WHERE username = ?', (username,))
         rows = self.cursor.fetchone()
         self.conn.commit()
-        return rows[0]
+        print('rows: ', rows)
+        return rows
     
 
     def addCreditWin(self, username):
+        print('entrou no addCreditWin')
         userAndCredit = self.getCreditByName(username)
         novaMoeda = userAndCredit[1] + 10
         self.updateCredit(userAndCredit[0], novaMoeda)
         self.conn.commit()
 
     def updateCredit(self, userId, credit):
+        print('entrou no updateCredit')
         self.cursor.execute('''
         UPDATE user
         SET moeda = ?
