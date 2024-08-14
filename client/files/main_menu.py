@@ -33,6 +33,8 @@ class MainMenu(arcade.View):
         self.manager.enable()
         self.go_to_edit = False
         self.data_dict = None
+        self.go_to_shop = False
+        self.player_coin = None
 
 
         # Create a vertical BoxGroup to align buttons
@@ -77,8 +79,9 @@ class MainMenu(arcade.View):
         threading.Thread(target=self.receive_message).start()   
         
     def on_click_shop(self, event):
-        shop_window = shop_screen.ShopScreen(self.client, 50)
-        self.window.show_view(shop_window)
+        data = {'header': 'get_moedas', 'request': {'user_id': self.client.client_id}}
+        self.client.sendMessage(data)
+        threading.Thread(target=self.receive_message).start()   
 
     def on_hide_view(self):
         self.manager.disable()
@@ -118,6 +121,11 @@ class MainMenu(arcade.View):
             edit_window.setup()
             self.window.show_view(edit_window)
 
+        if self.go_to_shop == True:
+            shop_window = edit_deck.EditDeck(self.client, self.player_coin)
+            self.window.show_view(shop_window)
+         
+
     def receive_message(self):
         while True:
             try:
@@ -129,5 +137,9 @@ class MainMenu(arcade.View):
                     self.client.sendMessage(data)
                     self.go_to_edit = True            
                     break
+                if self.data_dict['header'] == 'get_moedas':
+                    self.player_coin = self.data_dict['response']['moedas']
+                    data = {'header': 'ACK', 'request': {}}
+                    self.client.sendMessage(data)
             except Exception as e:
                 print(str(e))

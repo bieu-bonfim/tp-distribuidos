@@ -59,6 +59,7 @@ class ShopScreen(arcade.View):
         )
 
     def on_click_comprar(self, event):
+
         print("comprar")
 
     def on_click_voltar(self, event):
