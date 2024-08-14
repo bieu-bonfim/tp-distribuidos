@@ -134,6 +134,10 @@ class Client():
                 request = {'stat': stat}
             if message == 'ACK':
                 request = {}
+            if message == 'get_moedas':
+                request = {}
+            if message == 'buy_booster':
+                request = {}
                 
             data = {'header': message, 'request': request}
             data_str = json.dumps(data)
