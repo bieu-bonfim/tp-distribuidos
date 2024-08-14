@@ -12,6 +12,7 @@ import json
 import edit_deck
 import create_lobby
 import game_screen
+import shop_screen
 
 # Screen title and size
 SCREEN_WIDTH = 924
@@ -76,7 +77,8 @@ class MainMenu(arcade.View):
         threading.Thread(target=self.receive_message).start()   
         
     def on_click_shop(self, event):
-        print("shop")
+        shop_window = shop_screen.ShopScreen(self.client, 50)
+        self.window.show_view(shop_window)
 
     def on_hide_view(self):
         self.manager.disable()
