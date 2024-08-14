@@ -138,17 +138,19 @@ class GameManager:
         
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
-        winner_deck = self.lobby.decks[winner]
-        match_data = [winner_deck]
-        for i in range(len(self.lobby.players)):
-            print(match_data)
-            if i != winner:
-                match_data.append(self.lobby.decks[i])
-                break
+
+        match_data = { 'winner_deck': self.lobby.players[winner].current_deck, 
+                        'other_deck1': self.lobby.players[(winner+1)%3].current_deck,
+                        'other_deck2': self.lobby.players[(winner+2)%3].current_deck, 
+                    }
+        
+        match_data = [match_data['winner_deck'], match_data['other_deck1'], match_data['other_deck2']]
+
         print("---------- Inserindo Partida no Banco ----------")
         self.matchController.insert(tuple(match_data))
         print("---------- Inserida ----------")
-        self.userController.addCreditWin(self.lobby.players[winner])
+        print(self.lobby.players[winner])
+        self.userController.addCreditWin(self.lobby.players[winner].username)
         return {
             'header': 'resolve_game',
             'response': {
