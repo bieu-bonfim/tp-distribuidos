@@ -1,6 +1,7 @@
 from controller.UserCardsController import UserCardsController
 from controller.DeckController import DeckController
 from controller.DeckCardsController import DeckCardsController
+from controller.UserController import UserController
 
 class InventoryManager:
   def __init__(self, conn):
@@ -8,6 +9,7 @@ class InventoryManager:
     self.userCardsController = UserCardsController(conn)
     self.deckController = DeckController(conn)
     self.deckCardsController = DeckCardsController(conn)
+    self.userController = UserController(conn)
     
   def showUserInventory(self, user_id):
     all_cards = self.userCardsController.getCardNameByUser(user_id)
@@ -52,3 +54,35 @@ class InventoryManager:
           'message': 'Erro ao adicionar carta ao inventário do usuário'
         }
       }
+      
+  def buyBooster(self, user):
+    moedas = self.userController.getCredit(user.id)
+    if moedas < 10:
+      return {
+        'header': 'buy_booster',
+        'response': {
+          'status': 'error',
+          'message': 'Créditos insuficientes'
+        }
+      }
+    self.userController.updateCredit(user.id, moedas-10)
+    new_cards = self.userCardsController.buyBooster(user.id)
+    return {
+      'header': 'buy_booster',
+      'response': {
+        'status': 'success',
+        'message': 'Booster comprado com sucesso',
+        'cards': new_cards
+      }
+    }
+    
+  def getMoedas(self, user):
+    moedas = self.userController.getCredit(user.id)
+    return {
+      'header': 'get_moedas',
+      'response': {
+        'status': 'success',
+        'message': 'Moedas do usuário',
+        'moedas': moedas
+      }
+    }

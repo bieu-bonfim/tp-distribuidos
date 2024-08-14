@@ -32,6 +32,20 @@ class UserController:
         self.conn.commit()
         return rows
 
+    def getCredit(self, userId):
+        self.cursor.execute('SELECT moeda FROM user WHERE user_id = ?', (userId,))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows[0]
+    
+    def updateCredit(self, userId, credit):
+        self.cursor.execute('''
+        UPDATE user
+        SET moeda = ?
+        WHERE user_id = ?
+        ''', (credit, userId))
+        self.conn.commit()
+
     def insert(self, user):
         try:
             username = user[0]

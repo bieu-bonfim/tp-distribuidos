@@ -5,6 +5,7 @@ class Lobby():
     self.index = index
     self.name = name
     self.players = list()
+    self.decks = list()
     self.max_players = 3
     self.status = status
     self.gameManager = None

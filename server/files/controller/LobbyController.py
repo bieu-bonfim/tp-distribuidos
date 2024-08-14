@@ -21,6 +21,7 @@ class LobbyController:
     
     def addPlayer(self, index, client):
         self.lobbies[index].players.append(client)
+        self.lobbies[index].decks.append(client.current_deck)
         return self.lobbies[index]
     
     def removePlayer(self, index, client): 

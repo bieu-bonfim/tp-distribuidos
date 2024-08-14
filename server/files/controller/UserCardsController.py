@@ -40,7 +40,9 @@ class UserCardsController:
         cardIdBooster = random.sample(range(1, 28), 3)
         userCardsTuple = self.getCardIdByUser(userId)
         idCardUser = [item[0] for item in userCardsTuple]
+        receivedCards = list()
         for cardId in cardIdBooster:
+            receivedCards.append(self.cardController.getNameById(cardId)[0])
             if cardId not in idCardUser:
                 userCard = (userId, cardId, 1)
                 self.insert(userCard)
@@ -51,6 +53,7 @@ class UserCardsController:
                 userCard = (userId, cardId, newQuantity)
                 self.updateQuantityCard(userCard)
                 print("Você já possuía esta carta, agora você tem ", newQuantity," ", self.cardController.getNameById(cardId))
+        return receivedCards
 
     def insert(self, user_card):
         try:

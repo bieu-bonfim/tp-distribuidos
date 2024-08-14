@@ -58,7 +58,7 @@ class RequestHandler:
         print(request)
         
         if header == 'login':
-            result = self.authManager.login(body['username'], body['password'])
+            result = self.authManager.login(body['username'], body['password'], self.client)
             self.client.username = body['username']
         elif header == 'logout':
             result = self.authManager.logout(body['username'])
@@ -114,6 +114,10 @@ class RequestHandler:
             result = self.deckManager.editDeck(body['deck_id'], body['cards'])
         elif header == 'retrieve_deck':
             result = self.deckManager.retrieveDeck(self.client.current_deck)
+        elif header == 'buy_booster':
+            result = self.inventoryManager.buyBooster(self.client)
+        elif header == 'get_moedas':
+            result = self.inventoryManager.getMoedas(self.client)
             
             
         print("sending ", result)
