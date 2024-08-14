@@ -38,7 +38,7 @@ START_X = MAT_WIDTH / 2 + BASE_MARGIN
 TOP_Y_SHOWCASE = SCREEN_HEIGHT - (SHOWCASE_MAT_HEIGHT / 2) - BASE_MARGIN
 END_X = SCREEN_WIDTH - (SHOWCASE_MAT_WIDTH/2) - BASE_MARGIN
 
-FACE_DOWN_IMAGE = "/home/cards/backcard.png"
+FACE_DOWN_IMAGE = "/home/cards/backcard.jpg"
 CARD_NAMES = ["bigfoot", "chupacabra", "mothman", "ness", "ufo", "anunnaki", "ashtasheran", "bloop", "fairy", "gnome", 
               "greys", "kraken", "mapinguari", "megalodon", "nightcrawler", "poltergeist", "reptilian", "siren", 
               "skinwalker", "slenderman", "thunderbird", "vampire", "varginha", "wendigo", "werewolf", "witch", "yeti"]
@@ -62,7 +62,7 @@ class Card(arcade.Sprite):
         self.name = name
 
         # Image to use for the sprite when face up
-        self.image_file_name = f"/home/cards/{name}.png"
+        self.image_file_name = f"/home/cards/{name}.jpg"
         self.is_face_up = False
 
         # Call the parent

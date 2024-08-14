@@ -79,7 +79,7 @@ MIDDLE_SCREEN_Y = SCREEN_HEIGHT / 2
 TOP_Y_SHOWCASE = SCREEN_HEIGHT - (SHOWCASE_MAT_HEIGHT / 2) - BASE_MARGIN
 END_X = TOTAL_SCREEN_WIDTH - (SHOWCASE_MAT_WIDTH/2) - BASE_MARGIN
 
-FACE_DOWN_IMAGE = "/home/cards/backcard.png"
+FACE_DOWN_IMAGE = "/home/cards/backcard.jpg"
 
 PILE_COUNT = 3
 DRAW = 0
@@ -96,7 +96,7 @@ class Card(arcade.Sprite):
         self.name = name
 
         # Image to use for the sprite when face up
-        self.image_file_name = f"/home/cards/{name}.png"
+        self.image_file_name = f"/home/cards/{name}.jpg"
         self.is_face_up = False
 
         # Call the parent

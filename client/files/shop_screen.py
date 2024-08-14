@@ -19,7 +19,7 @@ BASE_MARGIN = 30
 
 MIDDLE_X = SCREEN_WIDTH/2
 MIDDLE_Y = SCREEN_HEIGHT/2
-FACE_DOWN_IMAGE = "/home/cards/backcard.png"
+FACE_DOWN_IMAGE = "/home/cards/backcard.jpg"
 CARD_SCALE = 0.2
 
 host = 'server'
@@ -36,7 +36,7 @@ class Card(arcade.Sprite):
         self.name = name
 
         # Image to use for the sprite when face up
-        self.image_file_name = f"/home/cards/{name}.png"
+        self.image_file_name = f"/home/cards/{name}.jpg"
         self.is_face_up = False
 
         # Call the parent
