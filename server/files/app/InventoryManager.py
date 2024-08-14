@@ -75,3 +75,14 @@ class InventoryManager:
         'cards': new_cards
       }
     }
+    
+  def getMoedas(self, user):
+    moedas = self.userController.getCredit(user.id)
+    return {
+      'header': 'get_moedas',
+      'response': {
+        'status': 'success',
+        'message': 'Moedas do usuário',
+        'moedas': moedas
+      }
+    }

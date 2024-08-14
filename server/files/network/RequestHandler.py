@@ -116,6 +116,8 @@ class RequestHandler:
             result = self.deckManager.retrieveDeck(self.client.current_deck)
         elif header == 'buy_booster':
             result = self.inventoryManager.buyBooster(self.client)
+        elif header == 'get_moedas':
+            result = self.inventoryManager.getMoedas(self.client)
             
             
         print("sending ", result)
