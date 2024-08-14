@@ -580,7 +580,7 @@ class Game(arcade.View):
                 self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
 
         if self.end_game:
-            win = win_screen.WInScreen(self.client, self.winner_name)
+            win = win_screen.WinScreen(self.client, self.winner_name)
             self.window.show_view(win)
 
 
