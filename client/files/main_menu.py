@@ -143,5 +143,6 @@ class MainMenu(arcade.View):
                     data = {'header': 'ACK', 'request': {}}
                     self.client.sendMessage(data)
                     self.go_to_shop = True
+                    break
             except Exception as e:
                 print(str(e))

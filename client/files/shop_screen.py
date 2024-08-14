@@ -132,11 +132,11 @@ class ShopScreen(arcade.View):
                 if count ==3:
                     count = 0
                 card = Card(card_name, CARD_SCALE)
-                card.position = (MIDDLE_X) + (80*count), MIDDLE_Y
+                card.position = (MIDDLE_X - 140) + (140*count), MIDDLE_Y
                 self.card_list.append(card)
                 count += 1
-                #time.sleep(1)
                 card.faceUp()
+            self.coin  -= 10
         self.have_new_cards = False
 
 

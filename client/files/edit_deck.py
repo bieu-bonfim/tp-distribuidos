@@ -180,7 +180,7 @@ class EditDeck(arcade.View):
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
                 anchor_y="center_y",
-                align_x= 40,
+                align_x= 20,
                 align_y= -320,
                 child=self.deck_box)
         )
