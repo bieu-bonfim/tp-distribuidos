@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS user (
 	"username"	TEXT NOT NULL,
 	"email"	TEXT NOT NULL,
 	"password"	TEXT NOT NULL,
+    "moeda" TEXT NOT NULL,
 	"create_at"	TEXT NOT NULL,
 	"deleted_at"	TEXT,
 	PRIMARY KEY("user_id" AUTOINCREMENT)

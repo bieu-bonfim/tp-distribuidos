@@ -14,6 +14,7 @@ class GameManager:
         self.winners = {0: 0, 1: 0, 2: 0}
         self.current_player = 0
         self.matchController = MatchController(conn)
+        self.userController = UserController(conn)
         self.max_rounds = 3
         
     def playCard(self, player, card):
@@ -147,6 +148,7 @@ class GameManager:
         print("---------- Inserindo Partida no Banco ----------")
         self.matchController.insert(tuple(match_data))
         print("---------- Inserida ----------")
+        self.userController.addCreditWin(self.lobby.players[winner])
         return {
             'header': 'resolve_game',
             'response': {
