@@ -4,8 +4,9 @@ class AuthManager:
     def __init__(self, conn):
         self.userController = UserController(conn)
 
-    def login(self, username, password):
+    def login(self, username, password, client):
         result, user_id, username, email = self.userController.login(username, password)
+        client.id = user_id
         if result == False:
             return {'header': 'login', 'response': {'status': 'error', 'message': 'Usuário ou senha inválidos', 'data': {}}}
         return {

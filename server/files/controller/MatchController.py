@@ -48,7 +48,7 @@ class MatchController:
             ''', match)
             self.conn.commit()         
         except Exception as e:
-            print('Não foi possível inserir a carta: ',e)
+            print('Não foi possível inserir a partida: ',e)
             
 
     typeCard = {

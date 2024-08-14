@@ -7,3 +7,4 @@ class Client():
         self.current_lobby = None
         self.username = None
         self.current_deck = 0
+        self.id = None

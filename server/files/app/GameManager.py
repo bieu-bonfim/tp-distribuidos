@@ -123,7 +123,7 @@ class GameManager:
         self.round_attribute = ''
         self.round_cards = [None, None, None]
         self.round += 1
-        if self.round-1 == self.max_rounds:
+        if self.round-1 >= self.max_rounds:
             return {
                 'header': 'resolve_round',
                 'response': {
@@ -140,10 +140,13 @@ class GameManager:
         winner_deck = self.lobby.decks[winner]
         match_data = [winner_deck]
         for i in range(len(self.lobby.players)):
+            print(match_data)
             if i != winner:
                 match_data.append(self.lobby.decks[i])
                 break
+        print("---------- Inserindo Partida no Banco ----------")
         self.matchController.insert(tuple(match_data))
+        print("---------- Inserida ----------")
         return {
             'header': 'resolve_game',
             'response': {
