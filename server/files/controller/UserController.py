@@ -38,6 +38,19 @@ class UserController:
         self.conn.commit()
         return rows[0]
     
+    def getCreditByName(self, username):
+        self.cursor.execute('SELECT user_id, moeda FROM user WHERE username = ?', (username,))
+        rows = self.cursor.fetchone()
+        self.conn.commit()
+        return rows[0]
+    
+
+    def addCreditWin(self, username):
+        userAndCredit = self.getCreditByName(username)
+        novaMoeda = userAndCredit[1] + 10
+        self.updateCredit(userAndCredit[0], novaMoeda)
+        self.conn.commit()
+
     def updateCredit(self, userId, credit):
         self.cursor.execute('''
         UPDATE user
@@ -52,7 +65,7 @@ class UserController:
             existsUser = self.getByName(username)
             if existsUser == None :
                 self.cursor.execute('''
-                    INSERT INTO user (username, email, password, create_at) VALUES (?, ?, ?, ?)
+                    INSERT INTO user (username, email, password, moeda, create_at) VALUES (?, ?, ?, ?, ?)
                 ''', user)
                 userId = self.getIdByUsername(username)
                 deck1 = ("Sim", "Deck 1", userId[0])
