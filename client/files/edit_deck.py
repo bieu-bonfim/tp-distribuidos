@@ -256,28 +256,16 @@ class EditDeck(arcade.View):
             names = []
             for name in self.deck_list:
                 names.append(name.name)
-
-            send_deck = {
-                    "header": "edit_deck",
-                    "request": {
-                    "deck_id": self.selected_deck_id,
-                    "cards": names
-                    }
-                }
-            
-            self.client.sendMessage(send_deck)
-            print(send_deck)
+            self.game_server.save_deck(self.selected_deck_id, names)
             print("salvar")
 
     def on_click_escolher(self, event):
         self.client.client_deck = self.selected_deck_id
-        data = {'header': 'choose_deck', 'request': {'deck_id': self.selected_deck_id}}
-        self.client.sendMessage(data)
         cards_to_add = []
         for card in self.deck_list:
             cards_to_add.append(card.name)
         print("cartas escolhidas", cards_to_add)
-        self.client.selected_deck_cards = cards_to_add
+        self.game_server.choose_deck(self.client, self.selected_deck_id)
         print("Escolher")
 
     def on_click_deck1(self, event):

@@ -16,7 +16,7 @@ class ClientHandler:
         self.lobbyManager = LobbyManager()
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
-        self.gameManager = GameManager(self.db_conn)
+        #self.gameManager = GameManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
         self.sessions = {}
 
@@ -48,10 +48,17 @@ class ClientHandler:
         saved_deck_data = saved_deck["data"]
         saved_deck_result = saved_deck["status"]
         print(f"Choose deck result: {saved_deck_result}")
-        return saved_deck_data if saved_deck_result == "success" else 0
+        return True if saved_deck_result == "success" else 0
     
-    def start_game(self, index):
-        game = self.lobbyManager.startGame(index, self.db_conn)["response"]
+    def choose_deck(self, client, deck_id):
+        choosed_deck = self.deckManager.choose_deck(client, deck_id)["response"]
+        choosed_deck_data = choosed_deck["data"]
+        choosed_deck_result = choosed_deck["status"]
+        print(f"Choose deck result: {choosed_deck_result}")
+        return choosed_deck_data if choosed_deck_result == "success" else 0
+    
+    def start_game(self):#nao sei se o index tá certo
+        game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
         game_data = game["data"]
         game_result = game["status"]
         print(f"Start game result: {game_result}")
