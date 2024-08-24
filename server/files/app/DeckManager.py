@@ -37,7 +37,8 @@ class DeckManager:
       }
       
   def choose_deck(self, client, deck_id):
-    client.deck_id = deck_id
+    print(f"escolhendo deck {deck_id}")
+    client.set_current_deck(deck_id)
 
   
   

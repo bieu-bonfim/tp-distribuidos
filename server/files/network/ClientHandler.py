@@ -43,19 +43,15 @@ class ClientHandler:
         print(f"Inventory load result: {inventory_result}")
         return inventory_data if inventory_result == "success" else []
     
-    def save_deck(self, cards):
-        saved_deck = self.deckManager.editDeck(self.deck_id, cards)["response"]
-        saved_deck_data = saved_deck["data"]
+    def save_deck(self, deck_id, cards):
+        saved_deck = self.deckManager.editDeck(deck_id, cards)["response"]
         saved_deck_result = saved_deck["status"]
         print(f"Choose deck result: {saved_deck_result}")
         return True if saved_deck_result == "success" else 0
     
     def choose_deck(self, client, deck_id):
-        choosed_deck = self.deckManager.choose_deck(client, deck_id)["response"]
-        choosed_deck_data = choosed_deck["data"]
-        choosed_deck_result = choosed_deck["status"]
-        print(f"Choose deck result: {choosed_deck_result}")
-        return choosed_deck_data if choosed_deck_result == "success" else 0
+        self.deckManager.choose_deck(client, deck_id)
+        print('deck selecionado')
     
     def start_game(self):#nao sei se o index tá certo
         game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
