@@ -63,8 +63,9 @@ class Card(arcade.Sprite):
 class ShopScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, coin):
+    def __init__(self,game_server, client, coin):
         super().__init__()
+        self.game_server = game_server
         self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
@@ -100,13 +101,10 @@ class ShopScreen(arcade.View):
         self.card_list = arcade.SpriteList()
 
     def on_click_comprar(self, event):
-        data = {'header': 'buy_booster', 'request': {}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message()).start()
-        print("comprar")
+        print('a')
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.client)
+        menu = main_menu.MainMenu(self.game_server, self.client)
         self.window.show_view(menu)
 
     def on_draw(self):

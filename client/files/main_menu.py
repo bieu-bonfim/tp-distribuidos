@@ -36,6 +36,7 @@ class MainMenu(arcade.View):
         self.go_to_shop = False
         self.player_coin = None
         self.game_server = server
+        self.monetario = 0
 
 
         # Create a vertical BoxGroup to align buttons
@@ -80,9 +81,9 @@ class MainMenu(arcade.View):
         self.go_to_edit = True
         
     def on_click_shop(self, event):
-        data = {'header': 'get_moedas', 'request': {'user_id': self.client.client_id}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()   
+        self.monetario = self.client.get_moeda()
+        self.go_to_shop = True
+
 
     def on_hide_view(self):
         self.manager.disable()
@@ -123,7 +124,7 @@ class MainMenu(arcade.View):
             self.window.show_view(edit_window)
 
         if self.go_to_shop == True:
-            shop_window = shop_screen.ShopScreen(self.client, self.player_coin)
+            shop_window = shop_screen.ShopScreen(self.game_server, self.client, self.monetario)
             shop_window.setup()
             self.window.show_view(shop_window)
          

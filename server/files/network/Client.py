@@ -19,6 +19,7 @@ class Client():
         self.current_lobby = None
         self.current_deck = 0
         self.id = 0
+        self.moeda = 0
         pass
     
     @Pyro5.api.expose
@@ -42,5 +43,6 @@ class Client():
     def get_lobby(self):
         return self.current_lobby
     
+    @Pyro5.api.expose
     def get_moeda(self):
         return self.moeda
