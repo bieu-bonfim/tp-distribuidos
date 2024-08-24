@@ -23,5 +23,5 @@ class PyroServer:
         uri = daemon.register(self)
         ns.register("cryptids.server", uri)
 
-        print("Pyro5 Server started! Server is registered with URI:", uri)
+        print("Server Pyro iniciado.")
         daemon.requestLoop()
