@@ -133,10 +133,10 @@ class Login(arcade.View):
         ns = Pyro5.api.locate_ns(host='pyro-ns', port=8020)
         uri = ns.lookup("cryptids.server")
         server = Pyro5.api.Proxy(uri)
-        print(uri)
+        print(f"Server URI: {uri}")
         server.printBapp()
-        #if server.connect_client(self.loginText.text, self.loginKey.text):
-        #    self.valid_login = True
+        if server.connect_client(self.loginText.text, self.loginKey.text):
+            self.valid_login = True     
 
     def on_draw(self):
         """ Render the screen. """

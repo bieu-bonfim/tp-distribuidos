@@ -10,21 +10,19 @@ class PyroServer:
         self.db_conn = sqlite3.connect('database/cryptid.db', check_same_thread=False)
         self.clients = list()
 
-    def startServer(self, ns_host='cryptid_ns', ns_port=8020):
-        daemon = Pyro5.api.Daemon(host='0.0.0.0')
+    def startServer(self, ns_host, ns_port):
+        with Pyro5.api.Daemon(host='server') as daemon:
+            try:
+                ns = Pyro5.api.locate_ns(host=ns_host, port=ns_port)
+            except Pyro5.errors.NamingError as e:
+                print(f"Could not locate the NameServer: {e}")
+                return
 
-        try:
-            ns = Pyro5.api.locate_ns(host='pyro-ns', port=ns_port)
-        except Pyro5.errors.NamingError as e:
-            print(f"Could not locate the NameServer: {e}")
-            return
-
-        uri = daemon.register(self)
-        ns.register("cryptids.server", uri)
-
-        print(uri)
-        print("Server Pyro iniciado.")
-        daemon.requestLoop()
+            uri = daemon.register(self)
+            ns.register("cryptids.server", uri)
+            print(f"Server URI: {uri}")
+            print("Server Pyro iniciado.")
+            daemon.requestLoop()
         
     @Pyro5.api.expose
     def add_client(self, username, password):
@@ -33,7 +31,7 @@ class PyroServer:
             print(f"Client failed to connect.")
             return False
         if new_client not in self.clients:
-            self.clients.append()
+            self.clients.append(new_client)
             print(f"New client connecting")
             return True
         print(f"Client already connected")
