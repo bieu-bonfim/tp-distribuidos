@@ -1,5 +1,6 @@
-from network.GameMembrane import GameMembrane
+import Pyro5.api
 
+@Pyro5.api.expose
 class Client():
     def __init__(self, conn, address, player):
         self.conn = conn
@@ -9,14 +10,32 @@ class Client():
         self.current_lobby = None
         self.username = None
         self.current_deck = 0
-        self.id = None
+        self.id = 0
         
-    def __init__(self, lobbyManager, db_conn, username, password):
-        self.conn = None
-        self.address = None
+    def __init__(self, username):
+        self.username = username
         self.in_lobby = False
         self.current_lobby = None
-        self.username = username
+        self.username = None
         self.current_deck = 0
-        self.gameMembrane = GameMembrane(self, lobbyManager, db_conn)
-        self.id = self.gameMembrane.login(username, password)
+        self.id = 0
+        pass
+    
+    @Pyro5.api.expose
+    def bap(self):
+        print('bap')
+
+    def get_username(self):
+        return self.username
+    
+    def get_id(self):
+        return self.id
+    
+    def get_current_deck(self):
+        return self.current_deck
+    
+    def set_current_deck(self, deck):
+        self.current_deck = deck
+        
+    def get_lobby(self):
+        return self.current_lobby

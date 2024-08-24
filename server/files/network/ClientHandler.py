@@ -2,15 +2,19 @@ import Pyro5.api
 from app.LobbyManager import LobbyManager
 from app.AuthManager import AuthManager
 from app.InventoryManager import InventoryManager
+from network.Client import Client
 import sqlite3
+import Pyro5.api
 
 @Pyro5.api.expose
-class GameMembrane:
-    def __init__(self, lobbyManager, db_conn):
-        self.lobbyManager = lobbyManager
+class ClientHandler:
+    def __init__(self, db_conn, daemon):
         self.db_conn = db_conn
+        self.daemon = daemon
+        self.lobbyManager = LobbyManager()
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
+        self.sessions = {}
 
     def create_lobby(self, client):
         create = self.lobbyManager.createLobby(client)["response"]
@@ -56,9 +60,21 @@ class GameMembrane:
         print(f"Booster purchase result: {booster_result}")
         return booster_data if booster_result == "success" else 0
     
-    def login(self, username, password, client):
+    def login(self, username, password):
+        client = Client(username)
         login = self.authManager.login(username, password, client)["response"]
         user_data = login["data"]
         login_result = login["status"]
+        
         print(f"Login result: {login_result}")
-        return user_data["user_id"] if login_result == "success" else 0
+        
+        if login_result == "success":
+            session_id = self.daemon.register(client)
+            self.sessions[session_id] = client
+            return session_id
+            
+    @Pyro5.api.expose
+    def get_client(self, session_id):
+        client = self.sessions.get(session_id, None)
+        print(f"Client retrieved: {client}")
+        return client
