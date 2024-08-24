@@ -8,8 +8,11 @@ class AuthManager:
         self.userController = UserController(conn)
 
     def login(self, username, password, client):
-        result, user_id, username, email = self.userController.login(username, password)
+        result, user_id, username, email, moeda = self.userController.login(username, password)
         client.id = user_id
+        client.username = username
+        client.email = email
+        client.moeda = moeda
         if result == False:
             return {'header': 'login', 'response': {'status': 'error', 'message': 'Usuário ou senha inválidos', 'data': {}}}
         return {
@@ -21,6 +24,7 @@ class AuthManager:
                     'user_id': user_id,
                     'username': username,
                     'email': email,
+                    'moeda': moeda
                     }
                 }
             }

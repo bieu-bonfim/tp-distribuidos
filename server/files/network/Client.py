@@ -14,9 +14,9 @@ class Client():
         
     def __init__(self, username):
         self.username = username
+        self.email = None
         self.in_lobby = False
         self.current_lobby = None
-        self.username = None
         self.current_deck = 0
         self.id = 0
         pass
@@ -40,3 +40,6 @@ class Client():
         
     def get_lobby(self):
         return self.current_lobby
+    
+    def get_moeda(self):
+        return self.moeda

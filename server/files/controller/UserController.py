@@ -111,9 +111,9 @@ class UserController:
         try:
             user = self.getByName(username)
             if user != None and user[3] == password:
-                return True, user[0], user[1], user[2]  # user_id, username, email
+                return True, user[0], user[1], user[2], user[6]  # user_id, username, email
             else:
-                return False, 0, None, None
+                return False, 0, None, None, 0
         except Exception as e:
             self.conn.rollback()
 
