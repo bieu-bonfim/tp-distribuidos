@@ -72,8 +72,7 @@ class ClientHandler:
             session_id = self.daemon.register(client)
             self.sessions[session_id] = client
             return session_id
-            
-    @Pyro5.api.expose
+
     def get_client(self, session_id):
         client = self.sessions.get(session_id, None)
         print(f"Client retrieved: {client}")
