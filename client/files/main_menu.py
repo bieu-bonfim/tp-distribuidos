@@ -62,7 +62,6 @@ class MainMenu(arcade.View):
 
         self.background = arcade.load_texture("/home/sprites/main_menu.png")
 
-        # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
@@ -72,7 +71,7 @@ class MainMenu(arcade.View):
         )
 
     def on_click_play(self, event):
-        create_lobby_window = create_lobby.CreateLobby(self.client)
+        create_lobby_window = create_lobby.CreateLobby(self.game_server, self.client)
         self.window.show_view(create_lobby_window)
 
     def on_click_edit(self, event):
@@ -94,29 +93,12 @@ class MainMenu(arcade.View):
     def on_show_view(self):
         print("Menu principal iniciado")
 
-        #thread_receive = threading.Thread(target=self.receive_message, args=(s,))
-        #thread_receive.start()
-
-        #data = {'header': 'player_connection','player_name_register': player_name}
-        #data_str = json.dumps(data)
-
-        #try:
-        #    s.sendall(bytes(data_str,encoding="utf-8"))
-        #except socket.error as e:
-        #    print(str(e))
-
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
-
-        #arcade.draw_rectangle_filled(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.WHITE)
-        #arcade.draw_rectangle_outline(MIDDLE_X, (MIDDLE_Y+60), 140, 30, arcade.color.BLACK)
-        
-        # Draw the text
-        #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
 
         if self.go_to_edit == True:
             edit_window = edit_deck.EditDeck(client=self.client, data_chunk=self.data_dict, game_server=self.game_server)
@@ -127,24 +109,3 @@ class MainMenu(arcade.View):
             shop_window = shop_screen.ShopScreen(self.game_server, self.client, self.monetario)
             shop_window.setup()
             self.window.show_view(shop_window)
-         
-
-    def receive_message(self):
-        while True:
-            try:
-                self.data_dict = self.client.receiveMessage()
-                print(self.data_dict)
-                
-                if self.data_dict['header'] == 'show_user_inventory':
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    self.go_to_edit = True            
-                    break
-                if self.data_dict['header'] == 'get_moedas':
-                    self.player_coin = self.data_dict['response']['moedas']
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    self.go_to_shop = True
-                    break
-            except Exception as e:
-                print(str(e))

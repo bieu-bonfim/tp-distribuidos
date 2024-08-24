@@ -63,9 +63,10 @@ class TextBox:
 class CreateLobby(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client):
+    def __init__(self, game_server, client):
         super().__init__()
         self.client = client
+        self.game_server = game_server
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.lobbyText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-100, 250, 40) 
@@ -104,9 +105,7 @@ class CreateLobby(arcade.View):
         self.window.show_view(menu)
 
     def on_click_create_lobby(self, event):
-        data = {'header': 'create_lobby', 'request': {}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()
+        self.game_server.create_lobby(self.client)
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
