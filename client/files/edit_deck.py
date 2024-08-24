@@ -87,9 +87,10 @@ class Card(arcade.Sprite):
         return not self.is_face_up
 
 class EditDeck(arcade.View):
-    def __init__(self, client, data_chunk):
+    def __init__(self, game_server,client, data_chunk):
         super().__init__()
         self.data_chunk = data_chunk
+        self.game_server = game_server
         self.client = client
         self.pile_mat_list = None
         self.piles = None
@@ -117,7 +118,6 @@ class EditDeck(arcade.View):
         self.selected_deck_id = None
 
     def setup(self):
-        threading.Thread(target=self.receive_message).start()
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
         self.card_list = arcade.SpriteList()
@@ -453,19 +453,6 @@ class EditDeck(arcade.View):
     def on_hide_view(self):
         self.manager.disable()
         print("hide deck")
-
-    def receive_message(self):
-        while True:
-            try:
-                data_dict = self.client.receiveMessage()
-                print(data_dict)
-                
-                if data_dict['header'] == 'choose_deck':
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)          
-                    break
-            except Exception as e:
-                print(str(e))
                 
 
 

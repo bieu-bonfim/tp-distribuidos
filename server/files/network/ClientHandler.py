@@ -34,8 +34,10 @@ class ClientHandler:
         print(f"Lobby join result: {lobby_result}")
         return lobby_data["index"] if lobby_result == "success" else 0
     
+    @Pyro5.api.expose
     def load_inventory(self, client):
-        inventory = self.inventoryManager.showUserInventory(client.id)["response"]
+        print(f"Loading inventory...")
+        inventory = self.inventoryManager.showUserInventory(client.get_id())["response"]
         inventory_data = inventory["data"]
         inventory_result = inventory["status"]
         print(f"Inventory load result: {inventory_result}")
@@ -100,3 +102,6 @@ class ClientHandler:
         client = self.sessions.get(session_id, None)
         print(f"Client retrieved: {client}")
         return client
+    
+    def bap(self):
+        print('bap')

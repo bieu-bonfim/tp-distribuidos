@@ -28,6 +28,7 @@ class Client():
     def get_username(self):
         return self.username
     
+    @Pyro5.api.expose
     def get_id(self):
         return self.id
     
