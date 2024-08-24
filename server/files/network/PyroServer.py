@@ -20,8 +20,6 @@ class PyroServer:
 
             uri = daemon.register(self)
             ns.register("cryptids.server", uri)
-            print(f"Server URI: {uri}")
-            print("Server Pyro iniciado.")
             daemon.requestLoop()
         
     @Pyro5.api.expose
@@ -29,21 +27,12 @@ class PyroServer:
         new_client = Client(self.lobbyManager, self.db_conn, username, password)
         if new_client.id == 0:
             print(f"Client failed to connect.")
-            return False
         if new_client not in self.clients:
             self.clients.append(new_client)
-            print(f"New client connecting")
-            return True
         print(f"Client already connected")
-        return False
 
     @Pyro5.api.expose
     def connect_client(self, username, password):
         if self.add_client(username, password):
             print( f"Client connected successfully.")
             return True
-        print( f"Client failed to connect.")
-
-    @Pyro5.api.expose
-    def printBapp(self):
-        print("Bapp")
