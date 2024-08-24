@@ -29,10 +29,18 @@ class PyroServer:
             print(f"Client failed to connect.")
         if new_client not in self.clients:
             self.clients.append(new_client)
+            return new_client.id
         print(f"Client already connected")
 
     @Pyro5.api.expose
     def connect_client(self, username, password):
-        if self.add_client(username, password):
+        id =  self.add_client(username, password)
+        if id != 0:
             print( f"Client connected successfully.")
-            return True
+            return True, self.get_client(id)
+        
+    @Pyro5.api.expose
+    def get_client(self, client_id):
+        for client in self.clients:
+            if client.id == client_id:
+                return client
