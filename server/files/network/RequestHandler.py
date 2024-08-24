@@ -77,6 +77,7 @@ class RequestHandler:
         elif header == 'choose_deck':
             self.client.current_deck = body['deck_id']
             result = {'header': 'choose_deck', 'response': {'status': 'success', 'message': 'Baralho escolhido!'}}
+           
         elif header == 'start_game':
             result = self.socket_server.lobbyManager.startGame(self.client.current_lobby, self.db_conn)
             self.socket_server.broadcastMessageToLobbyOthers(self.client.conn, self.client.current_lobby, result)

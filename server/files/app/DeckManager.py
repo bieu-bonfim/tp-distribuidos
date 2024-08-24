@@ -36,6 +36,11 @@ class DeckManager:
         }
       }
       
+  def choose_deck(self, client, deck_id):
+    client.deck_id = deck_id
+
+  
+  
   def retrieveDeck(self, deck_id):
     print(deck_id)
     deck = self.deckController.getById(deck_id)

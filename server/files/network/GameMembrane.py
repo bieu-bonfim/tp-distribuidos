@@ -2,16 +2,20 @@ import Pyro5.api
 from app.LobbyManager import LobbyManager
 from app.AuthManager import AuthManager
 from app.InventoryManager import InventoryManager
+from app.GameManager import GameManager
+from app.DeckManager import DeckManager
 import sqlite3
 
 @Pyro5.api.expose
 class GameMembrane:
     def __init__(self, client, lobbyManager, db_conn):
         self.client = client
-        self.lobbyManager = lobbyManager
+        self.lobbyManager = LobbyManager(self.db_conn)
         self.db_conn = db_conn
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
+        self.gameManager = GameManager(self.db_conn)
+        self.deckManager = DeckManager(self.db_conn)
 
     def create_lobby(self):
         create = self.lobbyManager.createLobby(self.client)["response"]
@@ -35,20 +39,39 @@ class GameMembrane:
         return inventory_data if inventory_result == "success" else []
     
     def save_deck(self):
-        
-        pass
+        saved_deck = self.deckManager.editDeck(self.deck_id, self.cards)
+        saved_deck_data = saved_deck["data"]
+        saved_deck_result = saved_deck["status"]
+        print(f"Choose deck result: {saved_deck_result}")
+        return saved_deck_data if saved_deck_result == "success" else 0
     
     def choose_deck(self):
-        pass
+        choosed_deck = self.deckManager.choose_deck(self.client, self.deck_id)
+        choosed_deck_data = choosed_deck["data"]
+        choosed_deck_result = choosed_deck["status"]
+        print(f"Choose deck result: {choosed_deck_result}")
+        return choosed_deck_data if choosed_deck_result == "success" else 0
     
-    def start_game(self):
-        pass
+    def start_game(self):#nao sei se o index tá certo
+        game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
+        game_data = game["data"]
+        game_result = game["status"]
+        print(f"Start game result: {game_result}")
+        return game_data if game_result == "success" else 0
     
     def play_card(self):
-        pass
+        playCard = self.gameManager.playCard(self.client.id, self.cardName)["response"]
+        playCard_data = playCard["data"]
+        playCard_result = playCard["status"]
+        print(f"Start game result: {playCard_result}")
+        return playCard_data if playCard_result == "success" else 0
     
-    def choose_stat(self):
-        pass
+    def choose_stat(self):#nao sei se o stat ta certo
+        stat = self.gameManager.setAttribute(self.client.id, self.stat)["response"]
+        stat_data = stat["data"]
+        stat_result = stat["status"]
+        print(f"Choose stat result: {stat_result}")
+        return stat_data if stat_result == "success" else 0
     
     def buy_booster(self):
         booster = self.inventoryManager.buyBooster(self.client.id)["response"]
