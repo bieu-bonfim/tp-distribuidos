@@ -42,14 +42,14 @@ class ClientHandler:
         return inventory_data if inventory_result == "success" else []
     
     def save_deck(self):
-        saved_deck = self.deckManager.editDeck(self.deck_id, self.cards)
+        saved_deck = self.deckManager.editDeck(self.deck_id, self.cards)["response"]
         saved_deck_data = saved_deck["data"]
         saved_deck_result = saved_deck["status"]
         print(f"Choose deck result: {saved_deck_result}")
         return saved_deck_data if saved_deck_result == "success" else 0
     
     def choose_deck(self):
-        choosed_deck = self.deckManager.choose_deck(self.client, self.deck_id)
+        choosed_deck = self.deckManager.choose_deck(self.client, self.deck_id)["response"]
         choosed_deck_data = choosed_deck["data"]
         choosed_deck_result = choosed_deck["status"]
         print(f"Choose deck result: {choosed_deck_result}")
