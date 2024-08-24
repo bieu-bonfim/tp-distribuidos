@@ -135,7 +135,7 @@ class LobbyManager:
         }
         
     def leaveLobby(self, client):
-        if client.in_lobby == False:
+        if client.get_in_lobby() == False:
             return {
                 'header': 'leave_lobby',
                 'response': {
@@ -148,37 +148,7 @@ class LobbyManager:
             }
         lobby = self.lobbyController.removePlayer(client.get_current_lobby(), client)
         client.set_in_lobby(False)
-        return {
-            'header': 'leave_lobby',
-            'response': {
-                'status': 'success',
-                'message': 'Saiu da sala com sucesso',
-                'data': {
-                    'lobby': {
-                        'index': lobby.index,
-                        'name': lobby.name,
-                        'player_count': len(lobby.players),
-                        'status': lobby.status,
-                        'players': [player.get_username() for player in lobby.players]
-                    }
-                }
-            }
-        },{
-            'header': 'player_leave_lobby',
-            'response': {
-                'status': 'success',
-                'message': 'Saiu da sala com sucesso',
-                'data': {
-                    'lobby': {
-                        'index': lobby.index,
-                        'name': lobby.name,
-                        'player_count': len(lobby.players),
-                        'status': lobby.status,
-                        'players': [player.get_username() for player in lobby.players]
-                    }
-                }
-            }
-        }
+
         
     def startGame(self, index, conn):
         if self.lobbyController.lobbies[index].status == 'playing':

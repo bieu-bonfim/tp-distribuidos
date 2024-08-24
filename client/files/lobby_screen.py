@@ -76,8 +76,8 @@ class LobbyScreen(arcade.View):
         self.client.sendMessage(data)
 
     def on_click_voltar(self, event):
-        data = {'header': 'leave_lobby', 'request': {}} 
-        self.client.sendMessage(data)
+        self.game_server.leave_lobby(self.client)
+        self.back_to_creation = True
 
     def setup(self):
         for player in self.players_on_lobby:
@@ -104,7 +104,7 @@ class LobbyScreen(arcade.View):
             self.window.show_view(game)
 
         if self.back_to_creation:
-            create_lobby_window = create_lobby.CreateLobby(self.client)
+            create_lobby_window = create_lobby.CreateLobby(self.game_server, self.client)
             self.window.show_view(create_lobby_window)
 
         rect_width = 280

@@ -35,11 +35,7 @@ class ClientHandler:
         return lobby_data if lobby_result == "success" else 0
     
     def leave_lobby(self, client):
-        leave = self.lobbyManager.leaveLobby(client)["response"]
-        lobby_data = leave["data"]["lobby"]
-        lobby_result = leave["status"]
-        print(f"Lobby leave result: {lobby_result}")
-        return lobby_data if lobby_result == "success" else 0
+        self.lobbyManager.leaveLobby(client)
         
     @Pyro5.api.expose
     def load_inventory(self, client):
