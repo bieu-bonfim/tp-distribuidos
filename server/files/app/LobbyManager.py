@@ -146,8 +146,8 @@ class LobbyManager:
                     }
                 }
             }
-        lobby = self.lobbyController.removePlayer(client.current_lobby, client)
-        client.in_lobby = False
+        lobby = self.lobbyController.removePlayer(client.get_current_lobby(), client)
+        client.set_in_lobby(False)
         return {
             'header': 'leave_lobby',
             'response': {
