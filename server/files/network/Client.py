@@ -35,6 +35,7 @@ class Client():
     def get_current_deck(self):
         return self.current_deck
     
+    @Pyro5.api.expose
     def set_current_deck(self, deck):
         self.current_deck = deck
         

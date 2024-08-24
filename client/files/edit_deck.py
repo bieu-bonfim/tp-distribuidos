@@ -260,7 +260,6 @@ class EditDeck(arcade.View):
             print("salvar")
 
     def on_click_escolher(self, event):
-        self.client.client_deck = self.selected_deck_id
         cards_to_add = []
         for card in self.deck_list:
             cards_to_add.append(card.name)
@@ -281,7 +280,7 @@ class EditDeck(arcade.View):
         self.selected_deck_id = self.deck3_id
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.client)
+        menu = main_menu.MainMenu(self.game_server, self.client)
         self.window.show_view(menu)
 
     def on_draw(self):
