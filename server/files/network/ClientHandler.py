@@ -41,36 +41,29 @@ class ClientHandler:
         print(f"Inventory load result: {inventory_result}")
         return inventory_data if inventory_result == "success" else []
     
-    def save_deck(self):
-        saved_deck = self.deckManager.editDeck(self.deck_id, self.cards)["response"]
+    def save_deck(self, cards):
+        saved_deck = self.deckManager.editDeck(self.deck_id, cards)["response"]
         saved_deck_data = saved_deck["data"]
         saved_deck_result = saved_deck["status"]
         print(f"Choose deck result: {saved_deck_result}")
         return saved_deck_data if saved_deck_result == "success" else 0
     
-    def choose_deck(self):
-        choosed_deck = self.deckManager.choose_deck(self.client, self.deck_id)["response"]
-        choosed_deck_data = choosed_deck["data"]
-        choosed_deck_result = choosed_deck["status"]
-        print(f"Choose deck result: {choosed_deck_result}")
-        return choosed_deck_data if choosed_deck_result == "success" else 0
-    
-    def start_game(self):#nao sei se o index tá certo
-        game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
+    def start_game(self, index):
+        game = self.lobbyManager.startGame(index, self.db_conn)["response"]
         game_data = game["data"]
         game_result = game["status"]
         print(f"Start game result: {game_result}")
         return game_data if game_result == "success" else 0
     
-    def play_card(self):
-        playCard = self.gameManager.playCard(self.client.id, self.cardName)["response"]
+    def play_card(self, cardName):
+        playCard = self.gameManager.playCard(self.client.id, cardName)["response"]
         playCard_data = playCard["data"]
         playCard_result = playCard["status"]
         print(f"Start game result: {playCard_result}")
         return playCard_data if playCard_result == "success" else 0
     
-    def choose_stat(self):#nao sei se o stat ta certo
-        stat = self.gameManager.setAttribute(self.client.id, self.stat)["response"]
+    def choose_stat(self, stat):
+        stat = self.gameManager.setAttribute(self.client.id, stat)["response"]
         stat_data = stat["data"]
         stat_result = stat["status"]
         print(f"Choose stat result: {stat_result}")
