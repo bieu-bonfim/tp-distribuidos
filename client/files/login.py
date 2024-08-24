@@ -133,6 +133,8 @@ class Login(arcade.View):
         ns = Pyro5.api.locate_ns(host='pyro-ns', port=8020)
         uri = ns.lookup("cryptids.server")
         server = Pyro5.api.Proxy(uri)
+        print(uri)
+        server.printBapp()
         #if server.connect_client(self.loginText.text, self.loginKey.text):
         #    self.valid_login = True
 
@@ -188,7 +190,6 @@ class Login(arcade.View):
             except socket.error as e:
                 print(str(e))
                 break
-
 
 
 
