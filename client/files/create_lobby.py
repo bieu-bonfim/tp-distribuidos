@@ -72,6 +72,7 @@ class CreateLobby(arcade.View):
         self.lobbyText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-100, 250, 40) 
         self.active = False
         self.go_to_lobby = False
+        self.lobby_data = None
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -105,7 +106,8 @@ class CreateLobby(arcade.View):
         self.window.show_view(menu)
 
     def on_click_create_lobby(self, event):
-        self.game_server.create_lobby(self.client)
+        self.lobby_data = self.game_server.create_lobby(self.client)
+        self.go_to_lobby = True
 
     def on_click_enter_lobby(self, event):
         data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
@@ -122,7 +124,7 @@ class CreateLobby(arcade.View):
 
         if self.go_to_lobby == True:
             print(self.data_dict['response']['data']['lobby']['players'])
-            lobby = lobby_screen.LobbyScreen(self.client, self.data_dict['response']['data']['lobby']['players'])
+            lobby = lobby_screen.LobbyScreen(self.game_server, self.client, self.lobby_data['players'])
             lobby.setup()
             self.window.show_view(lobby)
 
