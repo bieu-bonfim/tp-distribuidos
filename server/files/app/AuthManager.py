@@ -1,5 +1,8 @@
 from controller.UserController import UserController
 from datetime import datetime
+import Pyro5.api
+
+@Pyro5.api.expose
 class AuthManager:
     def __init__(self, conn):
         self.userController = UserController(conn)

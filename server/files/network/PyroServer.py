@@ -1,13 +1,13 @@
 import Pyro5.api
 from app.LobbyManager import LobbyManager
 from network.Client import Client
-
+import sqlite3
 
 @Pyro5.api.expose
 class PyroServer:
     def __init__(self):
-        self.clients = list()
         self.lobbyManager = LobbyManager()
+        self.db_conn = sqlite3.connect('database/cryptid.db', check_same_thread=False)
         self.clients = list()
         print('Pyro5 Server iniciado!')
 
@@ -25,3 +25,21 @@ class PyroServer:
 
         print("Server Pyro iniciado.")
         daemon.requestLoop()
+        
+    def add_client(self, username, password):
+        new_client = Client(self.lobbyManager, self.db_conn, username, password)
+        if new_client.id == 0:
+            print(f"Client failed to connect.")
+            return False
+        if new_client not in self.clients:
+            self.clients.append()
+            print(f"New client connecting")
+            return True
+        print(f"Client already connected")
+        return False
+
+    def connect_client(self, username, password):
+        if self.add_client(username, password):
+            print( f"Client connected successfully.")
+            return True
+        print( f"Client failed to connect.")
