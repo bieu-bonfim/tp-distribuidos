@@ -26,7 +26,7 @@ MIDDLE_Y = SCREEN_HEIGHT/2
 class MainMenu(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client):
+    def __init__(self, server, client):
         super().__init__()
         self.client = client
         self.manager = arcade.gui.UIManager()
@@ -35,6 +35,7 @@ class MainMenu(arcade.View):
         self.data_dict = None
         self.go_to_shop = False
         self.player_coin = None
+        self.game_server = server
 
 
         # Create a vertical BoxGroup to align buttons

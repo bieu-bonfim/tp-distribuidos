@@ -105,6 +105,8 @@ class Login(arcade.View):
         self.key_active = False
         self.valid_login = False
 
+        self.client = None
+        self.game_server = None
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -131,11 +133,13 @@ class Login(arcade.View):
         print(self.loginText.text)
         print(self.loginKey.text)
         ns = Pyro5.api.locate_ns(host='pyro-ns', port=8020)
-        uri = ns.lookup("cryptids.server")
-        server = Pyro5.api.Proxy(uri)
+        uri = ns.lookup("cryptids.game")
+        self.game_server = Pyro5.api.Proxy(uri)
         print(f"Server URI: {uri}")
-        server.printBapp()
-        if server.connect_client(self.loginText.text, self.loginKey.text):
+        session_id = self.game_server.login(self.loginText.text, self.loginKey.text)
+        print(f"Session ID: {session_id}")
+        self.client = self.game_server.get_client(session_id)
+        if self.client.get_id() != 0:
             self.valid_login = True     
 
     def on_draw(self):
@@ -148,7 +152,8 @@ class Login(arcade.View):
         self.loginKey.draw()
 
         if self.valid_login:
-            menu_main = main_menu.MainMenu(self.client)
+            # print(self.client.client_name)
+            menu_main = main_menu.MainMenu(self.game_server, self.client)
             self.window.show_view(menu_main)
 
 
@@ -165,31 +170,5 @@ class Login(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.loginText.on_mouse_press(x, y, button, modifiers)
             self.loginKey.on_mouse_press(x, y, button, modifiers)
-
-    def receive_message(self, client_socket):
-        while True:
-            try:
-                data = client_socket.recv(1024)
-                #print(f"DATA DATA - {data.decode()}")
-                data_dict = json.loads(data.decode("utf-8"))
-
-
-                
-                if data_dict['header'] == 'login':
-                    if data_dict['response']['data'] != {}:
-                        data = data_dict['response']['data']
-                        self.client.client_id = data['user_id']
-                        self.client.client_name = data['username']
-                        self.client.client_email = data['email']
-                        self.valid_login = True
-                        data = {'header': 'ACK', 'request': {}}
-                        self.client.sendMessage(data)
-                        break
-                        
-
-            except socket.error as e:
-                print(str(e))
-                break
-
 
 
