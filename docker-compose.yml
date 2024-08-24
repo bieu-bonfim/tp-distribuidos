@@ -5,6 +5,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    command: ["python", "-m", "Pyro5.nameserver", "--host", "0.0.0.0", "--port", "8020"]
     working_dir: /home
     ports:
       - "8020:8020"
