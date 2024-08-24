@@ -1,14 +1,25 @@
+version: '3.8'
+
 services:
+  pyro-ns:
+    container_name: pyro-ns
+    build:
+      context: ./pyro
+      dockerfile: Dockerfile
+    working_dir: /home
+    ports:
+      - "8020:8020"
+    networks:
+      - main_network
 
   server:
     container_name: server
     build:
       context: ./server
       dockerfile: Dockerfile
-    command: ["python", "-m", "Pyro5.nameserver", "--host", "0.0.0.0", "--port", "8020"]
     working_dir: /home
-    ports:
-      - "8020:8020"
+    depends_on:
+      - pyro-ns
     networks:
       - main_network
     volumes:
@@ -25,9 +36,10 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
+    depends_on:
+      - pyro-ns
     networks:
       - main_network
-
 
   client-bija:
     container_name: bija
@@ -40,9 +52,10 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
+    depends_on:
+      - pyro-ns
     networks:
       - main_network
-
 
   client-patic:
     container_name: patic
@@ -55,9 +68,10 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     working_dir: /home
+    depends_on:
+      - pyro-ns
     networks:
       - main_network
-
 
 networks:
   main_network:

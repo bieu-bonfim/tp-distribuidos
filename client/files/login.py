@@ -10,6 +10,7 @@ import time
 import client
 import json
 import main_menu
+import Pyro5.api
 
 # Screen title and size
 SCREEN_WIDTH = 1412
@@ -19,11 +20,6 @@ BASE_MARGIN = 30
 
 MIDDLE_X = SCREEN_WIDTH/2
 MIDDLE_Y = SCREEN_HEIGHT/2
-
-host = 'server'
-port = 8020
-s = None
-
 class TextBox:
     def __init__(self, x, y, width, height):
         self.x = x
@@ -99,9 +95,8 @@ class KeyBox:
 class Login(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client):
+    def __init__(self):
         super().__init__()
-        self.client = client
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.loginText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-120, 250, 40) 
@@ -135,10 +130,14 @@ class Login(arcade.View):
     def on_click_login(self, event):
         print(self.loginText.text)
         print(self.loginKey.text)
-        data = {'header': 'login', 'request': {'username': self.loginText.text, 'password': self.loginKey.text}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message, args=(self.client.s,)).start()
-
+        ns = Pyro5.api.locate_ns(host='pyro-ns', port=8020)
+        print("bap 1")
+        uri = ns.lookup("cryptids.server")
+        print("bap 2")
+        server = Pyro5.api.Proxy(uri)
+        print("bap 3")
+        if server.connect_client(self.loginText.text, self.loginKey.text):
+            self.valid_login = True
 
     def on_draw(self):
         """ Render the screen. """

@@ -9,13 +9,12 @@ class PyroServer:
         self.lobbyManager = LobbyManager()
         self.db_conn = sqlite3.connect('database/cryptid.db', check_same_thread=False)
         self.clients = list()
-        print('Pyro5 Server iniciado!')
 
-    def startServer(self, ns_host='127.0.0.1', ns_port=8020):
+    def startServer(self, ns_host='cryptid_ns', ns_port=8020):
         daemon = Pyro5.api.Daemon()
 
         try:
-            ns = Pyro5.api.locate_ns(host=ns_host, port=ns_port)
+            ns = Pyro5.api.locate_ns(host='pyro-ns', port=ns_port)
         except Pyro5.errors.NamingError as e:
             print(f"Could not locate the NameServer: {e}")
             return
