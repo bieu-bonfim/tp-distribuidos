@@ -101,7 +101,12 @@ class ShopScreen(arcade.View):
         self.card_list = arcade.SpriteList()
 
     def on_click_comprar(self, event):
-        print('a')
+        if self.coin < 10:
+            print('Não há moedas suficientes')
+        else:
+            self.new_cards = self.game_server.buy_booster(self.client)
+            self.have_new_cards = True
+
 
     def on_click_voltar(self, event):
         menu = main_menu.MainMenu(self.game_server, self.client)

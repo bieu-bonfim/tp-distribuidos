@@ -56,7 +56,7 @@ class InventoryManager:
       }
       
   def buyBooster(self, user):
-    moedas = self.userController.getCredit(user.id)
+    moedas = self.userController.getCredit(user.get_id())
     if moedas < 10:
       return {
         'header': 'buy_booster',
@@ -65,9 +65,9 @@ class InventoryManager:
           'message': 'Créditos insuficientes'
         }
       }
-    self.userController.updateCredit(user.id, moedas-10)
-    user.moeda = moedas-10
-    new_cards = self.userCardsController.buyBooster(user.id)
+    self.userController.updateCredit(user.get_id(), moedas-10)
+    user.set_moeda(moedas-10)
+    new_cards = self.userCardsController.buyBooster(user.get_id())
     return {
       'header': 'buy_booster',
       'response': {

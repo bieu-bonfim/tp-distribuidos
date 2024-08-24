@@ -46,3 +46,6 @@ class Client():
     @Pyro5.api.expose
     def get_moeda(self):
         return self.moeda
+    
+    def set_moeda(self, moeda):
+        self.moeda = moeda
