@@ -81,16 +81,14 @@ class ClientHandler:
     def buy_booster(self, client):
         booster = self.inventoryManager.buyBooster(client.id)["response"]
         booster_result = booster["status"]
-        booster_data = booster["data"]
         print(f"Booster purchase result: {booster_result}")
-        return booster_data if booster_result == "success" else 0
+        return booster["cards"] if booster_result == "success" else 0
     
     def login(self, username, password):
         client = Client(username)
         login = self.authManager.login(username, password, client)["response"]
-        user_data = login["data"]
         login_result = login["status"]
-        
+
         print(f"Login result: {login_result}")
         
         if login_result == "success":
