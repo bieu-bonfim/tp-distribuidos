@@ -87,7 +87,6 @@ class LobbyScreen(arcade.View):
                 self.opponent1 = player
              elif self.opponent2 == "Aguardando...":
                 self.opponent2 = player
-        threading.Thread(target=self.receive_message).start()
         print(self.opponent1)
         print(self.opponent2)
 

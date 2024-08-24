@@ -17,7 +17,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'players_count': len(lobby.players),
                         'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
+                        'players': [player.get_username() for player in lobby.players]
                     }
                 }
             }
@@ -38,7 +38,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'players_count': len(lobby.players),
                         'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
+                        'players': [player.get_username() for player in lobby.players]
                     } 
                 }
             }
@@ -128,7 +128,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'player_count': len(lobby.players),
                         'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
+                        'players': [player.get_username() for player in lobby.players]
                     }
                 }
             }
@@ -159,7 +159,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'player_count': len(lobby.players),
                         'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
+                        'players': [player.get_username() for player in lobby.players]
                     }
                 }
             }
@@ -174,7 +174,7 @@ class LobbyManager:
                         'name': lobby.name,
                         'player_count': len(lobby.players),
                         'status': lobby.status,
-                        'players': [player.username for player in lobby.players]
+                        'players': [player.get_username() for player in lobby.players]
                     }
                 }
             }
@@ -210,7 +210,7 @@ class LobbyManager:
                 'status': 'success',
                 'message': 'Jogo iniciado',
                 'data': {
-                    'players': [player.username for player in lobby.players]
+                    'players': [player.get_username() for player in lobby.players]
                 }
             }
         }

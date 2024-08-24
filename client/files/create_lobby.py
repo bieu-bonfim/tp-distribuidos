@@ -102,7 +102,7 @@ class CreateLobby(arcade.View):
 
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.client)
+        menu = main_menu.MainMenu(self.game_server, self.client)
         self.window.show_view(menu)
 
     def on_click_create_lobby(self, event):
@@ -123,7 +123,6 @@ class CreateLobby(arcade.View):
         self.lobbyText.draw()
 
         if self.go_to_lobby == True:
-            print(self.data_dict['response']['data']['lobby']['players'])
             lobby = lobby_screen.LobbyScreen(self.game_server, self.client, self.lobby_data['players'])
             lobby.setup()
             self.window.show_view(lobby)
@@ -140,32 +139,6 @@ class CreateLobby(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
-
-    def receive_message(self):
-        while True:
-            print('waiting for message')
-            try:
-                self.data_dict = self.client.receiveMessage()
-
-
-                print(f"Create lobby got the message: { self.data_dict}")
-                print(f"----------------{self.data_dict['header']}---------------")
-
-                if self.data_dict['header'] == 'lobby_created' and self.data_dict['response']['status'] == 'success':
-                    print('lobby created')
-                    self.go_to_lobby = True
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    break
-                if self.data_dict['header'] == 'join_lobby' and self.data_dict['response']['status'] == 'success':
-                    print('lobby joined')
-                    self.go_to_lobby = True     
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    break
-                    
-            except Exception as e:
-                print(str(e))
 
 
 
