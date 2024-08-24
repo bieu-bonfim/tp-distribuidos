@@ -66,6 +66,7 @@ class InventoryManager:
         }
       }
     self.userController.updateCredit(user.id, moedas-10)
+    user.moeda = moedas-10
     new_cards = self.userCardsController.buyBooster(user.id)
     return {
       'header': 'buy_booster',

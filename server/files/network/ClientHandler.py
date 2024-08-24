@@ -75,7 +75,7 @@ class ClientHandler:
         return stat_data if stat_result == "success" else 0
     
     def buy_booster(self, client):
-        booster = self.inventoryManager.buyBooster(client.id)["response"]
+        booster = self.inventoryManager.buyBooster(client)["response"]
         booster_result = booster["status"]
         print(f"Booster purchase result: {booster_result}")
         return booster["cards"] if booster_result == "success" else 0
