@@ -25,8 +25,8 @@ class LobbyManager:
         
     def createLobby(self, client):
         lobby = self.lobbyController.createLobby(client)
-        client.in_lobby = True
-        client.current_lobby = lobby.index
+        client.set_in_lobby(True)
+        client.set_current_lobby(lobby.index)
         return {
             'header': 'lobby_created', 
             'response': {
@@ -92,7 +92,7 @@ class LobbyManager:
                     }
                 }
             }
-        if client in self.lobbyController.lobbies[index].players:
+        if client.get_current_lobby() == index:
             return {
                 'header': 'join_lobby',
                 'response': {
@@ -103,7 +103,7 @@ class LobbyManager:
                     }
                 }
             }
-        if client.in_lobby == True:
+        if client.get_in_lobby() == True:
             return {
                 'header': 'join_lobby',
                 'response': {
@@ -114,9 +114,9 @@ class LobbyManager:
                     }
                 }
             }
-        lobby = self.lobbyController.addPlayer(int(index), client)
-        client.in_lobby = True
-        client.current_lobby = index
+        lobby = self.lobbyController.addPlayer(int(index), client.get_username())
+        client.set_in_lobby(True)
+        client.set_current_lobby(index)
         return {
             'header': 'join_lobby',
             'response': {

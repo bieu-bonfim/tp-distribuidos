@@ -25,14 +25,14 @@ class ClientHandler:
         lobby_data = create["data"]["lobby"]
         lobby_result = create["status"]
         print(f"Lobby creation result: {lobby_result}")
-        return lobby_data["index"] if lobby_result == "success" else 0
+        return lobby_data if lobby_result == "success" else 0
     
     def join_lobby(self, lobby_id, client):
         join = self.lobbyManager.joinLobby(client, lobby_id)["response"]
         lobby_data = join["data"]["lobby"]
         lobby_result = join["status"]
         print(f"Lobby join result: {lobby_result}")
-        return lobby_data["index"] if lobby_result == "success" else 0
+        return lobby_data if lobby_result == "success" else 0
     
     @Pyro5.api.expose
     def load_inventory(self, client):

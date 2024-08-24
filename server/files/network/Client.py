@@ -49,3 +49,19 @@ class Client():
     
     def set_moeda(self, moeda):
         self.moeda = moeda
+        
+    @Pyro5.api.expose
+    def set_in_lobby(self, in_lobby):
+        self.in_lobby = in_lobby
+        
+    @Pyro5.api.expose
+    def set_current_lobby(self, lobby):
+        self.current_lobby = lobby
+        
+    @Pyro5.api.expose
+    def get_in_lobby(self):
+        return self.in_lobby
+    
+    @Pyro5.api.expose
+    def get_current_lobby(self):
+        return self.current_lobby
