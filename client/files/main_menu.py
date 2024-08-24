@@ -75,9 +75,9 @@ class MainMenu(arcade.View):
         self.window.show_view(create_lobby_window)
 
     def on_click_edit(self, event):
-        data = {'header': 'manage_inventory', 'request': {'user_id': self.client.client_id}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()   
+        self.game_server.bap()
+        self.data_dict = self.game_server.load_inventory(self.client)
+        self.go_to_edit = True
         
     def on_click_shop(self, event):
         data = {'header': 'get_moedas', 'request': {'user_id': self.client.client_id}}
@@ -118,7 +118,7 @@ class MainMenu(arcade.View):
         #arcade.draw_text(self.login, MIDDLE_X, MIDDLE_Y+60, arcade.color.BLACK, 14, anchor_x="left", anchor_y="center")
 
         if self.go_to_edit == True:
-            edit_window = edit_deck.EditDeck(self.client, self.data_dict['response']['data'])
+            edit_window = edit_deck.EditDeck(client=self.client, data_chunk=self.data_dict, game_server=self.game_server)
             edit_window.setup()
             self.window.show_view(edit_window)
 
