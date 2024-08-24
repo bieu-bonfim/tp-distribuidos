@@ -30,9 +30,11 @@ s = None
 class LobbyScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, players_on_lobby):
+    def __init__(self, game_server, client, players_on_lobby):
         super().__init__()
         self.client = client
+        self.game_server = game_server
+        self.player_name = self.client.get_username()
         self.manager = arcade.gui.UIManager()
         self.data_dict = None
         self.manager.enable()
@@ -79,7 +81,7 @@ class LobbyScreen(arcade.View):
 
     def setup(self):
         for player in self.players_on_lobby:
-             if player == self.client.client_name:
+             if player == self.player_name:
                 continue
              elif self.opponent1 == "Aguardando...":
                 self.opponent1 = player
@@ -97,9 +99,6 @@ class LobbyScreen(arcade.View):
         self.manager.draw()
 
         if self.start_game:
-            #data = { 'header': 'retrieve_deck', 'request': {} }
-            #self.client.sendMessage(data)
-            #if self.deck_loaded:
             print("---------- GAME STARTED ----------")
             game = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
             game.setup()
@@ -115,7 +114,7 @@ class LobbyScreen(arcade.View):
         text_color = arcade.color.WHITE
         rectangles = [
             (f"Oponente 1: {self.opponent1}", MIDDLE_X - rect_width - margin - (rect_width + margin) / 2, MIDDLE_Y - 100),
-            (f"{self.client.client_name}", MIDDLE_X, MIDDLE_Y - 100),
+            (f"{self.player_name}", MIDDLE_X, MIDDLE_Y - 100),
             (f"Oponente 2: {self.opponent2}", MIDDLE_X + rect_width + margin + (rect_width + margin) / 2, MIDDLE_Y - 100)
         ]
 

@@ -60,7 +60,7 @@ class ClientHandler:
         self.deckManager.choose_deck(client, deck_id)
         print('deck selecionado')
     
-    def start_game(self):#nao sei se o index tá certo
+    def start_game(self):
         game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
         game_data = game["data"]
         game_result = game["status"]
