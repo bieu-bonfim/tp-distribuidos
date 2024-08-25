@@ -78,8 +78,7 @@ class LobbyScreen(arcade.View):
     def on_click_voltar(self, event):
         self.game_server.leave_lobby(self.client)
         new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
-        if len(self.players_on_lobby) > 1:
-            self.players_on_lobby.remove(self.player_name)
+        self.players_on_lobby.remove(self.player_name)
         new_proxy.trigger_lobby_update(self.lobby_index, self.players_on_lobby)
         self.back_to_creation = True
 

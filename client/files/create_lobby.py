@@ -73,6 +73,8 @@ class CreateLobby(arcade.View):
         super().__init__()
         self.session = session
         self.game_server = Pyro5.api.Proxy(game_server._pyroUri)
+        print("GAME SERVER")
+        print(self.game_server)
         self.client = self.game_server.get_client(self.session)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
