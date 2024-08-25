@@ -93,7 +93,7 @@ class ClientHandler:
 
     def get_client(self, session_id):
         client = self.sessions.get(session_id, None)
-        print(f"Client retrieved: {client}")
+        #print(f"Client retrieved: {client}")
         return client
     
     def bap(self):
@@ -101,7 +101,7 @@ class ClientHandler:
         
     def register(self, client, client_uri, index):
         self.lobbyManager.register_client(client, Pyro5.api.Proxy(client_uri), index)
-        print(f"Client registered with URI: {client_uri}")
+        #print(f"Client registered with URI: {client_uri}")
 
         
     def trigger_lobby_event(self, index, message):

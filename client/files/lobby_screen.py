@@ -51,7 +51,6 @@ class LobbyScreen(arcade.View):
         self.array_players = None
         self.go_to_game = False
 
-        # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
 
         ready_button = arcade.gui.UIFlatButton(text="Iniciar Jogo", width=200)
@@ -63,8 +62,6 @@ class LobbyScreen(arcade.View):
         voltar_button.on_click = self.on_click_voltar
 
         self.background = arcade.load_texture("/home/sprites/lobby_screen.png")
-
-        # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
@@ -85,6 +82,10 @@ class LobbyScreen(arcade.View):
 
     def on_click_voltar(self, event):
         self.game_server.leave_lobby(self.client)
+        new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
+        if len(self.players_on_lobby) > 1:
+            self.players_on_lobby.remove(self.player_name)
+        new_proxy.trigger_lobby_update(self.lobby_index, self.players_on_lobby)
         # triggar outro lobby update com a nova lista de jogadores
         # a função leave_lobby retorna a lista de jogadores atualizada
         #---------------------------------------------------------------
