@@ -16,6 +16,7 @@ class GameManager:
         self.matchController = MatchController(conn)
         self.userController = UserController(conn)
         self.max_rounds = 3
+        self.winner_name = ""
         
     def playCard(self, player, card):
         print('playing card')
@@ -114,15 +115,13 @@ class GameManager:
                     'winner': self.lobby.player_names[winner]
                 }
             }
-        print('passo 3')
+        self.winner_name = self.lobby.player_names[winner]
         print('winners', self.winners)
         self.current_player = (self.current_player + 1) % 3
-        print('passo 4')
         print('current_player', self.current_player)
         print('passo 5')
         print('round', self.round)
         self.round_attribute = ''
-        self.round_cards = [None, None, None]
         self.round += 1
         if self.round-1 >= self.max_rounds:
             return {
@@ -135,13 +134,16 @@ class GameManager:
                 }
             }
         return result
+    
+    def clean_card_vector(self):
+        self.round_cards = [None, None, None]
         
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
 
-        match_data = { 'winner_deck': self.lobby.players[winner].get_current_deck(), 
-                        'other_deck1': self.lobby.players[(winner+1)%3].get_current_deck(),
-                        'other_deck2': self.lobby.players[(winner+2)%3].get_current_deck(), 
+        match_data = { 'winner_deck': self.lobby.deck[winner], 
+                        'other_deck1': self.lobby.deck[(winner+1)%3],
+                        'other_deck2': self.lobby.deck[(winner+2)%3], 
                     }
         
         match_data = [match_data['winner_deck'], match_data['other_deck1'], match_data['other_deck2']]

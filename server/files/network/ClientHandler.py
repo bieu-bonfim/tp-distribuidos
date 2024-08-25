@@ -162,3 +162,7 @@ class ClientHandler:
     def get_chosen_stat(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         return lobby.gameManager.round_attribute
+    
+    def clean_for_real(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        lobby.gameManager.clean_card_vector()
