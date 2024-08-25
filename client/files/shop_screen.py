@@ -63,10 +63,11 @@ class Card(arcade.Sprite):
 class ShopScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self,game_server, client, coin):
+    def __init__(self,game_server, session, coin):
         super().__init__()
         self.game_server = game_server
-        self.client = client
+        self.session_id = session
+        self.client = game_server.get_client(session)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.coin = coin
@@ -109,7 +110,7 @@ class ShopScreen(arcade.View):
 
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.game_server, self.client)
+        menu = main_menu.MainMenu(self.game_server, self.session_id)
         self.window.show_view(menu)
 
     def on_draw(self):

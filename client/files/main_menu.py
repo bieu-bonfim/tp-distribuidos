@@ -76,7 +76,6 @@ class MainMenu(arcade.View):
         self.window.show_view(create_lobby_window)
 
     def on_click_edit(self, event):
-        self.game_server.bap()
         self.data_dict = self.game_server.load_inventory(self.client)
         self.go_to_edit = True
         
@@ -102,11 +101,11 @@ class MainMenu(arcade.View):
         self.manager.draw()
 
         if self.go_to_edit == True:
-            edit_window = edit_deck.EditDeck(client=self.client, data_chunk=self.data_dict, game_server=self.game_server)
+            edit_window = edit_deck.EditDeck(data_chunk=self.data_dict, game_server=self.game_server, session=self.session)
             edit_window.setup()
             self.window.show_view(edit_window)
 
         if self.go_to_shop == True:
-            shop_window = shop_screen.ShopScreen(self.game_server, self.client, self.monetario)
+            shop_window = shop_screen.ShopScreen(self.game_server, self.session, self.monetario)
             shop_window.setup()
             self.window.show_view(shop_window)

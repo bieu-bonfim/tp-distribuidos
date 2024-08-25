@@ -87,11 +87,12 @@ class Card(arcade.Sprite):
         return not self.is_face_up
 
 class EditDeck(arcade.View):
-    def __init__(self, game_server,client, data_chunk):
+    def __init__(self, game_server, session, data_chunk):
         super().__init__()
         self.data_chunk = data_chunk
         self.game_server = game_server
-        self.client = client
+        self.session_id = session
+        self.client = game_server.get_client(session)
         self.pile_mat_list = None
         self.piles = None
         self.card_list = None
@@ -280,7 +281,7 @@ class EditDeck(arcade.View):
         self.selected_deck_id = self.deck3_id
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.game_server, self.client)
+        menu = main_menu.MainMenu(self.game_server, self.session_id)
         self.window.show_view(menu)
 
     def on_draw(self):

@@ -138,9 +138,9 @@ class Login(arcade.View):
         self.session_id = self.game_server.login(self.loginText.text, self.loginKey.text)
 
         client = self.game_server.get_client(self.session_id)
-
-        if client.get_id() != 0:
-            self.valid_login = True     
+        if client is not None:
+            if client.get_id() != 0:
+                self.valid_login = True     
 
     def on_draw(self):
         """ Render the screen. """
