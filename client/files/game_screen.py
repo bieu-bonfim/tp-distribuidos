@@ -159,7 +159,6 @@ class Game(arcade.View):
         self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
                                             tex=bg_text, padding=(20, 20, 20, 20))
         self.manager.add(self.text_area_pane)
-
         self.game_proxy = None
 
         # winner logic -----------
@@ -707,8 +706,10 @@ class Game(arcade.View):
                 self.render_opponent_card(played_cards[i], self.p2.name)
             if player_names[i] == self.p3.name:
                 self.render_opponent_card(played_cards[i], self.p3.name)
+
+        if played_cards.count(None) == 0:
+            self.is_turn_over_time = True
+            self.game_proxy.clean_for_real(self.client)
             
-
-
 
 
