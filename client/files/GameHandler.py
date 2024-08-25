@@ -4,7 +4,6 @@ import Pyro5.api
 class GameHandler():
     def __init__(self, lobby_screen):
         self.lobby_screen = lobby_screen
-        self.game_screen = None
 
     def bap(self):
         self.lobby_screen.bap()

@@ -51,6 +51,7 @@ class LobbyScreen(arcade.View):
         self.array_players = None
         self.go_to_game = False
         self.new_game_screen = None
+        self.player_deck_cards = None
 
         self.v_box = arcade.gui.UIBoxLayout()
 
@@ -71,17 +72,8 @@ class LobbyScreen(arcade.View):
                 child=self.v_box)
         )
 
-    def bap(self):
-        print("bap")
-
     def on_click_ready_button(self, event):
         self.game_server.trigger_lobby_start(self.lobby_index)
-        # essa função deve alterar o atributo screen do GameHanlder
-        # para isso, é necessário passar a tela como argumento na chamada
-        # da função do game_server, algo do tipo:
-        # self.trigger_lobby_game_start(self.lobby_index, ... ..., game_screen)
-        # isso, claro, após inicializar a game_screen
-        # em caso de dúvidas, consultar o arquivo create_lobby.py
 
     def on_click_voltar(self, event):
         self.game_server.leave_lobby(self.client)
@@ -89,11 +81,6 @@ class LobbyScreen(arcade.View):
         if len(self.players_on_lobby) > 1:
             self.players_on_lobby.remove(self.player_name)
         new_proxy.trigger_lobby_update(self.lobby_index, self.players_on_lobby)
-        # triggar outro lobby update com a nova lista de jogadores
-        # a função leave_lobby retorna a lista de jogadores atualizada
-        #---------------------------------------------------------------
-        # além disso, a lógica da função deve ser alterada para remover o 
-        # jogador da lista de jogadores, seu deck, e seu proxy
         self.back_to_creation = True
 
     def setup(self):
@@ -119,13 +106,15 @@ class LobbyScreen(arcade.View):
                 
     def start_game(self, players):
         self.array_players = players
+        new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
+        self.player_deck_cards = new_proxy.load_client_deck(self.client)
         self.go_to_game = True
         
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
         if self.go_to_game:
-            self.new_game_screen = game_screen.Game(self.session, self.opponent1, self.opponent2, self.array_players, self.game_server, self.lobby_index)
+            self.new_game_screen = game_screen.Game(self.session, self.opponent1, self.opponent2, self.array_players, self.game_server, self.lobby_index, self.player_deck_cards)
             self.new_game_screen.setup()
             self.window.show_view(self.new_game_screen)
         
