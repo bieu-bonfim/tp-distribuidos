@@ -4,18 +4,21 @@ import Pyro5.api
 class GameHandler():
     def __init__(self, screen):
         self.screen = screen
+        self.game_screen = None
     
     def bap():
         print("bap")
         
     @Pyro5.api.expose
     def receive_event(self, message):
-      print("bap")
-      print(f"Received event with message: {message}")
-      
+        print("bap")
+        print(f"Received event with message: {message}")
+
     @Pyro5.api.expose
     def update_players(self, players):
         self.screen.update_players(players)
         
-    # oi patrick e thulio, se tiver com muita dúvida me liga no zap, vo deixar
-    # meu celular no modo barulhos e de bateria cheia, se precisar
+    @Pyro5.api.expose
+    def start_game(self, players):
+        self.game_screen = self.screen.start_game(players)
+        self.screen.change_screen(self.game_screen)

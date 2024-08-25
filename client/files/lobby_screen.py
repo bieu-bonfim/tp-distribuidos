@@ -75,7 +75,9 @@ class LobbyScreen(arcade.View):
 
 
     def on_click_ready_button(self, event):
-        self.game_server.start_game(self.lobby_index, self.client)
+        if len(self.players_on_lobby) < 3:
+            return
+        self.game_server.trigger_lobby_start(self.lobby_index)
         # essa função deve alterar o atributo screen do GameHanlder
         # para isso, é necessário passar a tela como argumento na chamada
         # da função do game_server, algo do tipo:
@@ -112,6 +114,15 @@ class LobbyScreen(arcade.View):
                 self.opponent1 = player
             elif self.opponent2 == "Aguardando...":
                 self.opponent2 = player
+                
+    def start_game(self, players):
+        self.array_players = players
+        new_screen = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players, self.lobby_index, self.game_server, self.session)
+        return new_screen
+        
+    def change_screen(self, screen):
+        screen.setup()
+        self.window.show_view(screen)
         
     def on_draw(self):
         """ Render the screen. """
@@ -119,12 +130,6 @@ class LobbyScreen(arcade.View):
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
-
-        if self.start_game:
-            print("---------- GAME STARTED ----------")
-            game = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
-            game.setup()
-            self.window.show_view(game)
 
         if self.back_to_creation:
             create_lobby_window = create_lobby.CreateLobby(self.game_server, self.session)

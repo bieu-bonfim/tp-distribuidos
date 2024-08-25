@@ -131,7 +131,7 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, op1, op2, turn_order):
+    def __init__(self, client, op1, op2, turn_order, index, game_server, session):
         super().__init__()
         self.turn_order = turn_order
         self.manager = arcade.gui.UIManager()

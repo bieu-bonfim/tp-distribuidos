@@ -59,13 +59,6 @@ class ClientHandler:
         self.deckManager.choose_deck(client, deck_id)
         print('deck selecionado')
     
-    def start_game(self, index):
-        game = self.lobbyManager.startGame(index, self.db_conn)["response"]
-        game_data = game["data"]
-        game_result = game["status"]
-        print(f"Start game result: {game_result}")
-        return game_data if game_result == "success" else 0
-    
     def play_card(self, cardName):
         playCard = self.gameManager.playCard(self.client.id, cardName)["response"]
         playCard_data = playCard["data"]
@@ -125,3 +118,17 @@ class ClientHandler:
             if proxy is not None:
                 proxy = Pyro5.api.Proxy(proxy._pyroUri)
                 proxy.update_players(players)
+                
+    def trigger_lobby_start(self, index):
+        game = self.lobbyManager.startGame(index, self.db_conn)["response"]
+        game_data = game["data"]
+        game_result = game["status"]
+        if game_result == "success":
+            print(f"Start game result: {game_result}")
+            lobby = self.lobbyManager.lobbyController.getLobby(index)
+            print(f"players: {lobby.player_names}")
+            for proxy in lobby.proxies:
+                if proxy is not None:
+                    print(f"Starting game for {proxy}")
+                    proxy = Pyro5.api.Proxy(proxy._pyroUri)
+                    proxy.start_game(lobby.player_names)
