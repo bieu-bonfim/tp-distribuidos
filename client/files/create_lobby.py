@@ -71,7 +71,7 @@ class CreateLobby(arcade.View):
     def __init__(self, game_server, session):
         super().__init__()
         self.session = session
-        self.game_server = game_server
+        self.game_server = Pyro5.api.Proxy(game_server._pyroUri)
         self.client = self.game_server.get_client(self.session)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
@@ -79,7 +79,7 @@ class CreateLobby(arcade.View):
         self.active = False
         self.go_to_lobby = False
         self.lobby_data = None
-        self.gameHandler = GameHandler()
+        self.gameHandler = None
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -114,13 +114,27 @@ class CreateLobby(arcade.View):
 
     def on_click_create_lobby(self, event):
         self.lobby_data = self.game_server.create_lobby(self.client)
+        self.gameHandler = GameHandler(
+            lobby_screen.LobbyScreen(
+                self.game_server, 
+                self.session, 
+                self.lobby_data['players'], 
+                self.lobby_data['index'])
+            )
         self.register_connection(self.game_server, self.session, self.lobby_data['index'])
         self.go_to_lobby = True
 
     def on_click_enter_lobby(self, event):
-        data = {'header': 'join_lobby', 'request': {'index': self.lobbyText.text}}
-        self.client.sendMessage(data)
-        threading.Thread(target=self.receive_message).start()
+        self.lobby_data = self.game_server.join_lobby(int(self.lobbyText.text), self.client)
+        self.gameHandler = GameHandler(
+            lobby_screen.LobbyScreen(
+                self.game_server, 
+                self.session, 
+                self.lobby_data['players'], 
+                self.lobby_data['index'])
+            )
+        self.register_connection(self.game_server, self.session, self.lobby_data['index'])
+        self.go_to_lobby = True
 
     def on_draw(self):
         """ Render the screen. """
@@ -131,7 +145,7 @@ class CreateLobby(arcade.View):
         self.lobbyText.draw()
 
         if self.go_to_lobby == True:
-            lobby = lobby_screen.LobbyScreen(self.game_server, self.session, self.lobby_data['players'], self.lobby_data['index'])
+            lobby = self.gameHandler.screen
             lobby.setup()
             self.window.show_view(lobby)
 
@@ -157,10 +171,7 @@ class CreateLobby(arcade.View):
         print(f"Client {client.get_username()} registered with URI: {client_uri}")
         threading.Thread(target=daemon.requestLoop, daemon=True).start()
 
-    def trigger_other_client_event(server):
-        target_client = input("Enter the target client name: ")
-        message = input("Enter the message to send: ")
-        server.trigger_event(target_client, message)
+
 
 
 

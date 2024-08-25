@@ -22,6 +22,7 @@ class LobbyController:
     def addPlayer(self, index, client):
         self.lobbies[index].players.append(client)
         self.lobbies[index].decks.append(client.get_current_deck())
+        self.lobbies[index].player_names.append(client.get_username())
         self.lobbies[index].proxies.append("URI PROXY HERE")
         return self.lobbies[index]
     

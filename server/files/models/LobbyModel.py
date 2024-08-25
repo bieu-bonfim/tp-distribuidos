@@ -4,6 +4,7 @@ class Lobby():
   def __init__(self, index, name, status):
     self.index = index
     self.name = name
+    self.player_names = list()
     self.players = list()
     self.proxies = list()
     self.decks = list()

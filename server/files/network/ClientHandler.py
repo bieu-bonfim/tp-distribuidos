@@ -29,7 +29,9 @@ class ClientHandler:
         return lobby_data if lobby_result == "success" else 0
     
     def join_lobby(self, lobby_id, client):
+        print(f"Joining lobby {lobby_id}...")
         join = self.lobbyManager.joinLobby(client, lobby_id)["response"]
+        print(f"Join response: {join}")
         lobby_data = join["data"]["lobby"]
         lobby_result = join["status"]
         print(f"Lobby join result: {lobby_result}")
@@ -57,8 +59,8 @@ class ClientHandler:
         self.deckManager.choose_deck(client, deck_id)
         print('deck selecionado')
     
-    def start_game(self):
-        game = self.lobbyManager.startGame(self.index, self.db_conn)["response"]
+    def start_game(self, index):
+        game = self.lobbyManager.startGame(index, self.db_conn)["response"]
         game_data = game["data"]
         game_result = game["status"]
         print(f"Start game result: {game_result}")
@@ -111,9 +113,15 @@ class ClientHandler:
         
     def trigger_lobby_event(self, index, message):
         lobby = self.lobbyManager.lobbyController.getLobby(index)
-        print("bap")
         for proxy in lobby.proxies:
             if proxy is not None:
                 proxy = Pyro5.api.Proxy(proxy._pyroUri)
                 print(f"Sending message to {proxy}")
                 proxy.receive_event(message)
+                
+    def trigger_lobby_update(self, index, players):
+        lobby = self.lobbyManager.lobbyController.getLobby(index)
+        for proxy in lobby.proxies:
+            if proxy is not None:
+                proxy = Pyro5.api.Proxy(proxy._pyroUri)
+                proxy.update_players(players)

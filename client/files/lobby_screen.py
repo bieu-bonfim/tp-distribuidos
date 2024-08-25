@@ -75,31 +75,43 @@ class LobbyScreen(arcade.View):
 
 
     def on_click_ready_button(self, event):
-        data = {'header': 'start_game', 'request': {}}      
-        self.client.sendMessage(data)
+        self.game_server.start_game(self.lobby_index, self.client)
+        # essa função deve alterar o atributo screen do GameHanlder
+        # para isso, é necessário passar a tela como argumento na chamada
+        # da função do game_server, algo do tipo:
+        # self.trigger_lobby_game_start(self.lobby_index, ... ..., game_screen)
+        # isso, claro, após inicializar a game_screen
+        # em caso de dúvidas, consultar o arquivo create_lobby.py
 
     def on_click_voltar(self, event):
         self.game_server.leave_lobby(self.client)
+        # triggar outro lobby update com a nova lista de jogadores
+        # a função leave_lobby retorna a lista de jogadores atualizada
+        #---------------------------------------------------------------
+        # além disso, a lógica da função deve ser alterada para remover o 
+        # jogador da lista de jogadores, seu deck, e seu proxy
         self.back_to_creation = True
 
     def setup(self):
-        for player in self.players_on_lobby:
-             if player == self.player_name:
-                continue
-             elif self.opponent1 == "Aguardando...":
-                self.opponent1 = player
-             elif self.opponent2 == "Aguardando...":
-                self.opponent2 = player
-        print(self.opponent1)
-        print(self.opponent2)
-        
         new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
         try:
-            new_proxy.trigger_lobby_event(self.lobby_index, "bap")
+            new_proxy.trigger_lobby_update(self.lobby_index, self.players_on_lobby)
         except Pyro5.errors.CommunicationError as e:
             print(f"Error communicating with server: {e}")
         except Pyro5.errors.PyroError as e:
             print(f"Pyro Error: {e}")
+        
+    def update_players(self, players):
+        self.players_on_lobby = players
+        self.opponent1 = "Aguardando..."
+        self.opponent2 = "Aguardando..."
+        for player in self.players_on_lobby:
+            if player == self.player_name:
+                continue
+            elif self.opponent1 == "Aguardando...":
+                self.opponent1 = player
+            elif self.opponent2 == "Aguardando...":
+                self.opponent2 = player
         
     def on_draw(self):
         """ Render the screen. """
@@ -115,7 +127,7 @@ class LobbyScreen(arcade.View):
             self.window.show_view(game)
 
         if self.back_to_creation:
-            create_lobby_window = create_lobby.CreateLobby(self.game_server, self.client)
+            create_lobby_window = create_lobby.CreateLobby(self.game_server, self.session)
             self.window.show_view(create_lobby_window)
 
         rect_width = 280
@@ -134,50 +146,50 @@ class LobbyScreen(arcade.View):
             arcade.draw_text(text, x, y, text_color, font_size=14, anchor_x="center", anchor_y="center")
 
 
-    def receive_message(self):
-        print('waiting for message')
-        while True:
-            try:
-                self.data_dict = self.client.receiveMessage()
-                print(f"Lobby screen got the message: {self.data_dict}")
+    # def receive_message(self):
+    #     print('waiting for message')
+    #     while True:
+    #         try:
+    #             self.data_dict = self.client.receiveMessage()
+    #             print(f"Lobby screen got the message: {self.data_dict}")
 
-                if self.data_dict['header'] == 'join_lobby' or self.data_dict['header'] == 'player_leave_lobby':
-                    print(f"Joining lobby")
-                    if self.data_dict['response']['status'] == "success":     
-                        self.opponent1 = "Aguardando..."
-                        self.opponent2 = "Aguardando..."
-                        self.array_players = self.data_dict['response']['data']['lobby']['players']     
-                        for player in self.array_players:
-                            print(f"jogador entrou {player}")
-                            if player == self.client.client_name:
-                                continue
-                            elif self.opponent1 == "Aguardando...":
-                                self.opponent1 = player
-                            elif self.opponent2 == "Aguardando...":
-                                self.opponent2 = player
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                elif self.data_dict['header'] == 'leave_lobby':
-                    print(f"Leaving lobby")
-                    self.back_to_creation = True
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    break
-                elif self.data_dict['header'] == 'start_game':
-                    print('vish...')
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    self.start_game = True
-                    break
-                elif self.data_dict['header'] == 'retrieve_deck':
-                    self.own_deck = self.data_dict['response']['data']['deck']['cards']
-                    data = {'header': 'ACK', 'request': {}}
-                    self.client.sendMessage(data)
-                    self.deck_loaded = True
-                    break
+    #             if self.data_dict['header'] == 'join_lobby' or self.data_dict['header'] == 'player_leave_lobby':
+    #                 print(f"Joining lobby")
+    #                 if self.data_dict['response']['status'] == "success":     
+    #                     self.opponent1 = "Aguardando..."
+    #                     self.opponent2 = "Aguardando..."
+    #                     self.array_players = self.data_dict['response']['data']['lobby']['players']     
+    #                     for player in self.array_players:
+    #                         print(f"jogador entrou {player}")
+    #                         if player == self.client.client_name:
+    #                             continue
+    #                         elif self.opponent1 == "Aguardando...":
+    #                             self.opponent1 = player
+    #                         elif self.opponent2 == "Aguardando...":
+    #                             self.opponent2 = player
+    #                 data = {'header': 'ACK', 'request': {}}
+    #                 self.client.sendMessage(data)
+    #             elif self.data_dict['header'] == 'leave_lobby':
+    #                 print(f"Leaving lobby")
+    #                 self.back_to_creation = True
+    #                 data = {'header': 'ACK', 'request': {}}
+    #                 self.client.sendMessage(data)
+    #                 break
+    #             elif self.data_dict['header'] == 'start_game':
+    #                 print('vish...')
+    #                 data = {'header': 'ACK', 'request': {}}
+    #                 self.client.sendMessage(data)
+    #                 self.start_game = True
+    #                 break
+    #             elif self.data_dict['header'] == 'retrieve_deck':
+    #                 self.own_deck = self.data_dict['response']['data']['deck']['cards']
+    #                 data = {'header': 'ACK', 'request': {}}
+    #                 self.client.sendMessage(data)
+    #                 self.deck_loaded = True
+    #                 break
 
-            except Exception as e:
-                print(str(e))
+    #         except Exception as e:
+    #             print(str(e))
                 
 
 
