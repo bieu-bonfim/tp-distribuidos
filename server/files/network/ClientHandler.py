@@ -5,6 +5,7 @@ from app.InventoryManager import InventoryManager
 from network.Client import Client
 from app.GameManager import GameManager
 from app.DeckManager import DeckManager
+import time as t
 import sqlite3
 import Pyro5.api
 
@@ -130,8 +131,19 @@ class ClientHandler:
         
     def play_card(self, cardName, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        print(f"Playing card {cardName}...")
+        print(f"Current player: {client.get_username()}")
         playCard = lobby.gameManager.playCard(client, cardName)["response"]
-        return playCard["message"]        
+        print(f"Play card response: {playCard}")
+        print(lobby.gameManager.round_cards)
+        if (playCard["status"] == "turn_over"):
+            t.sleep(2)
+            round_result = lobby.gameManager.resolveRound()["response"]
+            if round_result["status"] == "game_over":
+                t.sleep(2)
+                game_result = lobby.gameManager.resolveGame()["response"]
+                return game_result["message"]
+        return playCard["message"]
     
     def choose_stat(self, stat, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
