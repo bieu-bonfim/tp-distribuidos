@@ -160,6 +160,8 @@ class Game(arcade.View):
                                             tex=bg_text, padding=(20, 20, 20, 20))
         self.manager.add(self.text_area_pane)
 
+        self.game_proxy = None
+
         # winner logic -----------
         self.is_draw = False
         self.resolve_turn = False
@@ -247,8 +249,7 @@ class Game(arcade.View):
         if self.selected_card != None:
             print("enviar carta")
             self.hand_size -= 1
-            data = {'header': 'play_card', 'request': {'card': self.selected_card.name}} 
-            self.client.sendMessage(data)
+            self.game_proxy.play_card(self.selected_card.name, self.client.get_username())
             self.add_log(f"Você escolheu {self.selected_card.name}...\n")
         else:
             print("Escolha uma carta")
@@ -351,6 +352,8 @@ class Game(arcade.View):
             pos2 = random.randrange(len(self.card_list))
             self.card_list.swap(pos1, pos2)
 
+        self.game_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
+
         self.add_log(f"O turno é de {self.turn_name}...\n")
 
     def get_pile_for_card(self, card):
@@ -399,6 +402,7 @@ class Game(arcade.View):
     def on_draw(self):
         self.clear()
         arcade.start_render()
+        self.game_logic()
 
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
@@ -698,4 +702,19 @@ class Game(arcade.View):
                         #opponent.card = arcade.Sprite(FACE_DOWN_IMAGE, CARD_SCALE)
                         op_card = Card(card, CARD_SCALE)
                         opponent.card = op_card
+
+
+    def game_logic(self):
+        player_names, played_cards  = self.game_proxy.get_played_cards(self.client)
+        for i in range(len(player_names)):
+            if player_names[i] == self.p1.name:
+                continue
+            if player_names[i] == self.p2.name:
+                self.render_opponent_card(played_cards[i], self.p2.name)
+            if player_names[i] == self.p3.name:
+                self.render_opponent_card(played_cards[i], self.p3.name)
+            
+
+
+
 
