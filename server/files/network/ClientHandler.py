@@ -129,17 +129,19 @@ class ClientHandler:
             return deck['data']['deck']['cards']
         
     def play_card(self, cardName, client):
-        playCard = self.gameManager.playCard(client, cardName)["response"]
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        playCard = lobby.gameManager.playCard(client, cardName)["response"]
         return playCard["message"]        
     
     def choose_stat(self, stat, client):
-        stat = self.gameManager.setAttribute(client, stat)["response"]
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        stat = lobby.gameManager.setAttribute(client, stat)["response"]
         return stat["message"]
         
     def get_played_cards(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         if lobby.gameManager.round_cards.count(None) == 0:
-            return lobby.gameManager.round_cards
+            pass
         return lobby.player_names, lobby.gameManager.round_cards
     
     def get_chosen_stat(self, client):
