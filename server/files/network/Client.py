@@ -20,6 +20,10 @@ class Client():
         self.current_deck = 0
         self.id = 0
         self.moeda = 0
+        self.changed_stat = False
+        self.stat = None
+        self.played_card = [None, None, None]
+        self.played_card_flag = False
         pass
     
     @Pyro5.api.expose
@@ -65,3 +69,19 @@ class Client():
     @Pyro5.api.expose
     def get_current_lobby(self):
         return self.current_lobby
+    
+    @Pyro5.api.expose
+    def set_changed_stat_flag(self, flag):
+        self.changed_stat = flag
+        
+    @Pyro5.api.expose
+    def set_stat(self, stat):
+        self.stat = stat
+        
+    @Pyro5.api.expose
+    def set_played_card_flag(self, flag):
+        self.played_card = flag
+        
+    @Pyro5.api.expose
+    def set_played_card(self, card, index):
+        self.played_card[index] = card

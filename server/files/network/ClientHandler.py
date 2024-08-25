@@ -16,7 +16,6 @@ class ClientHandler:
         self.lobbyManager = LobbyManager()
         self.authManager = AuthManager(self.db_conn)
         self.inventoryManager = InventoryManager(self.db_conn)
-        #self.gameManager = GameManager(self.db_conn)
         self.deckManager = DeckManager(self.db_conn)
         self.sessions = {}
 
@@ -59,20 +58,6 @@ class ClientHandler:
         self.deckManager.choose_deck(client, deck_id)
         print('deck selecionado')
     
-    def play_card(self, cardName):
-        playCard = self.gameManager.playCard(self.client.id, cardName)["response"]
-        playCard_data = playCard["data"]
-        playCard_result = playCard["status"]
-        print(f"Start game result: {playCard_result}")
-        return playCard_data if playCard_result == "success" else 0
-    
-    def choose_stat(self, stat):
-        stat = self.gameManager.setAttribute(self.client.id, stat)["response"]
-        stat_data = stat["data"]
-        stat_result = stat["status"]
-        print(f"Choose stat result: {stat_result}")
-        return stat_data if stat_result == "success" else 0
-    
     def buy_booster(self, client):
         booster = self.inventoryManager.buyBooster(client)["response"]
         booster_result = booster["status"]
@@ -95,9 +80,6 @@ class ClientHandler:
         client = self.sessions.get(session_id, None)
         #print(f"Client retrieved: {client}")
         return client
-    
-    def bap(self):
-        print('bap')
         
     def register(self, client, client_uri, index):
         self.lobbyManager.register_client(client, Pyro5.api.Proxy(client_uri), index)
@@ -145,3 +127,25 @@ class ClientHandler:
         deck = self.deckManager.retrieveDeck(client.get_current_deck())['response']
         if deck['status'] == 'success':
             return deck['data']['deck']['cards']
+        
+    def play_card(self, cardName, client):
+        playCard = self.gameManager.playCard(client, cardName)["response"]
+        playCard_data = playCard["data"]
+        playCard_result = playCard["status"]
+        print(f"Start game result: {playCard_result}")
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        
+    
+    def choose_stat(self, stat, client):
+        stat = self.gameManager.setAttribute(client, stat)["response"]
+        stat_data = stat["data"]
+        stat_result = stat["status"]
+        print(f"Choose stat result: {stat_result}")
+        
+    def get_played_cards(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        return lobby.player_names, lobby.game_manager.round_cards
+    
+    def get_chosen_stat(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        return lobby.game_manager.round_attribute
