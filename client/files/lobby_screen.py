@@ -86,8 +86,7 @@ class LobbyScreen(arcade.View):
     def on_click_voltar(self, event):
         self.game_server.leave_lobby(self.client)
         new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
-        if len(self.players_on_lobby) > 1:
-            self.players_on_lobby.remove(self.player_name)
+        self.players_on_lobby.remove(self.player_name)
         new_proxy.trigger_lobby_update(self.lobby_index, self.players_on_lobby)
         # triggar outro lobby update com a nova lista de jogadores
         # a função leave_lobby retorna a lista de jogadores atualizada
@@ -125,7 +124,8 @@ class LobbyScreen(arcade.View):
         """ Render the screen. """
         # Clear the screen
         if self.go_to_game:
-            self.new_game_screen = game_screen.Game(self.session, self.opponent1, self.opponent2, self.array_players, self.game_server, self.lobby_index)
+            self.new_game_screen = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
+            # self.game_server.change_to_game(self.lobby_index, self.client, self.new_game_screen)
             self.new_game_screen.setup()
             self.window.show_view(self.new_game_screen)
         

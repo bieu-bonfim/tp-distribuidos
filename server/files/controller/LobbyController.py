@@ -26,8 +26,10 @@ class LobbyController:
         self.lobbies[index].proxies.append("URI PROXY HERE")
         return self.lobbies[index]
     
-    def removePlayer(self, index, client): 
+    def removePlayer(self, index, client):
+        client_index = self.lobbies[index].player_names.index(client.get_username())
         self.lobbies[index].players.remove(client)
+        self.lobbies[index].player_names.remove(client.get_username())
         return self.lobbies[index]
         
     def startGame(self, index, conn):
