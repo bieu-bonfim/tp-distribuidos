@@ -166,3 +166,7 @@ class ClientHandler:
     def clean_for_real(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         lobby.gameManager.clean_card_vector()
+        
+    def is_turn_over(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        return lobby.turnOver 

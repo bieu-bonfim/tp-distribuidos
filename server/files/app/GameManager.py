@@ -17,6 +17,7 @@ class GameManager:
         self.userController = UserController(conn)
         self.max_rounds = 3
         self.winner_name = ""
+        self.isTurnOver = False
         
     def playCard(self, player, card):
         print('playing card')
@@ -133,9 +134,11 @@ class GameManager:
                     'winner': self.lobby.player_names[winner]
                 }
             }
+        self.isTurnOver = True
         return result
     
     def clean_card_vector(self):
+        self.isTurnOver = False
         self.round_cards = [None, None, None]
         
     def resolveGame(self):
