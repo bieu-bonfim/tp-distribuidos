@@ -140,3 +140,10 @@ class ClientHandler:
         proxy = Pyro5.api.Proxy(proxy._pyroUri)
         print(f"Changing screen to game")
         proxy.set_screen(game_screen)
+        
+    def trigger_game_event(self, index):
+        lobby = self.lobbyManager.lobbyController.getLobby(index)
+        for proxy in lobby.proxies:
+            if proxy is not None:
+                proxy = Pyro5.api.Proxy(proxy._pyroUri)
+                proxy.bap()

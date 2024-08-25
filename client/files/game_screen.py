@@ -7,6 +7,7 @@ import json
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
 import win_screen
+import Pyro5.api
 
 host = 'server'
 port = 8020
@@ -130,12 +131,15 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, op1, op2, turn_order):
+    def __init__(self, session, op1, op2, turn_order, game_server, index):
         super().__init__()
         self.turn_order = turn_order
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        self.client = client
+        self.lobby_index = index
+        self.session = session
+        self.game_server = Pyro5.api.Proxy(game_server._pyroUri)
+        self.client = self.game_server.get_client(self.session)
         self.reset_position = False
         self.selected_card = None
         self.piles = None
@@ -295,6 +299,7 @@ class Game(arcade.View):
 
     
     def setup(self):
+        self.game_server.trigger_game_event(self.lobby_index)
         print("--------- ORDEM DO TURNO ------- ", self.turn_order)
         print(self.p2.name)
         print(self.p3.name)
@@ -302,7 +307,7 @@ class Game(arcade.View):
         self.held_cards = []
         self.held_cards_original_position = []
 
-        # ---  Create the mats the cards go on.
+        # --- Create the mats the cards go on.
 
         # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
