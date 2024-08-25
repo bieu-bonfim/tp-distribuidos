@@ -28,7 +28,7 @@ class GameManager:
                 }
             }
         for i in range(len(self.lobby.players)):
-            if self.lobby.players[i].username == player.username:
+            if self.lobby.players[i].get_username() == player.get_username():
                 self.round_cards[i] = card
         if self.round_cards.count(None) == 0:
             return {
@@ -37,7 +37,7 @@ class GameManager:
                     'status': 'turn_over',
                     'message': 'Cartas escolhidas',
                     'data': {
-                        'player': player.username,
+                        'player': player.get_username(),
                         'card': card
                     }
                 }
@@ -48,7 +48,7 @@ class GameManager:
                 'status': 'success',
                 'message': 'Carta escolhida',
                 'data': {
-                    'player': player.username,
+                    'player': player.get_username(),
                     'card': card
                 }
             }
@@ -109,9 +109,9 @@ class GameManager:
                 'header': 'resolve_round',
                 'response': {
                     'status': 'success',
-                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].username,
+                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].get_username(),
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner].username
+                    'winner': self.lobby.players[winner].get_username()
                 }
             }
         print('passo 3')
@@ -129,9 +129,9 @@ class GameManager:
                 'header': 'resolve_round',
                 'response': {
                     'status': 'game_over',
-                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner].username,
+                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner].get_username(),
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner].username
+                    'winner': self.lobby.players[winner].get_username()
                 }
             }
         return result
@@ -139,9 +139,9 @@ class GameManager:
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
 
-        match_data = { 'winner_deck': self.lobby.players[winner].current_deck, 
-                        'other_deck1': self.lobby.players[(winner+1)%3].current_deck,
-                        'other_deck2': self.lobby.players[(winner+2)%3].current_deck, 
+        match_data = { 'winner_deck': self.lobby.players[winner].get_current_deck(), 
+                        'other_deck1': self.lobby.players[(winner+1)%3].get_current_deck(),
+                        'other_deck2': self.lobby.players[(winner+2)%3].get_current_deck(), 
                     }
         
         match_data = [match_data['winner_deck'], match_data['other_deck1'], match_data['other_deck2']]
@@ -150,14 +150,14 @@ class GameManager:
         self.matchController.insert(tuple(match_data))
         print("---------- Inserida ----------")
         print(self.lobby.players[winner])
-        self.userController.addCreditWin(self.lobby.players[winner].username)
+        self.userController.addCreditWin(self.lobby.players[winner].get_username())
         return {
             'header': 'resolve_game',
             'response': {
                 'status': 'success',
-                'message': 'Jogo encerrado, o vencedor foi ' + self.lobby.players[winner].username,
+                'message': 'Jogo encerrado, o vencedor foi ' + self.lobby.players[winner].get_username(),
                 'winner_index': winner,
-                'winner': self.lobby.players[winner].username
+                'winner': self.lobby.players[winner].get_username()
             }
         }
     

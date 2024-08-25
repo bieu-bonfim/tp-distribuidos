@@ -143,6 +143,7 @@ class ClientHandler:
                 t.sleep(2)
                 game_result = lobby.gameManager.resolveGame()["response"]
                 return game_result["message"]
+            return round_result["message"]
         return playCard["message"]
     
     def choose_stat(self, stat, client):
