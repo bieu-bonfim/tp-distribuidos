@@ -59,7 +59,7 @@ class DeckManager:
       deck_cards = self.deckCardsController.getCardByDeck(deck[0][0])
       for card in deck_cards:
         for i in range(card[11]):
-          cards_list.append(card[1])
+          cards_list.append(card[i])
       return {
         'header': 'retrieve_deck',
         'response': {

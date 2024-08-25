@@ -144,4 +144,4 @@ class ClientHandler:
     def load_client_deck(self, client):
         deck = self.deckManager.retrieveDeck(client.get_current_deck())['response']
         if deck['status'] == 'success':
-            return deck['data']['cards_list']
+            return deck['data']['deck']['cards']
