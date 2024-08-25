@@ -28,7 +28,7 @@ class GameManager:
                 }
             }
         for i in range(len(self.lobby.players)):
-            if self.lobby.players[i].get_username() == player.get_username():
+            if self.lobby.player_names[i] == player.get_username():
                 self.round_cards[i] = card
         if self.round_cards.count(None) == 0:
             return {
@@ -109,9 +109,9 @@ class GameManager:
                 'header': 'resolve_round',
                 'response': {
                     'status': 'success',
-                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.players[winner].get_username(),
+                    'message': 'Rodada resolvida, o vencedor foi ' + self.lobby.player_names[winner],
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner].get_username()
+                    'winner': self.lobby.player_names[winner]
                 }
             }
         print('passo 3')
@@ -129,9 +129,9 @@ class GameManager:
                 'header': 'resolve_round',
                 'response': {
                     'status': 'game_over',
-                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.players[winner].get_username(),
+                    'message': 'Rodada resolvida, o vencedor foi: ' + self.lobby.player_names[winner],
                     'winner_index': winner,
-                    'winner': self.lobby.players[winner].get_username()
+                    'winner': self.lobby.player_names[winner]
                 }
             }
         return result
