@@ -155,8 +155,6 @@ class ClientHandler:
         
     def get_played_cards(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        if lobby.gameManager.round_cards.count(None) == 0:
-            pass
         return lobby.player_names, lobby.gameManager.round_cards
     
     def get_chosen_stat(self, client):
@@ -169,8 +167,8 @@ class ClientHandler:
         
     def is_turn_over(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.isTurnOver
+        return lobby.gameManager.isTurnOver
     
     def is_game_over(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.isGameOver
+        return lobby.gameManager.isGameOver
