@@ -148,6 +148,8 @@ class ClientHandler:
     def choose_stat(self, stat, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         stat = lobby.gameManager.setAttribute(client, stat)["response"]
+        print(f"Stat chosen: {stat}")
+        print(f"Mensagem: {stat['message']}")
         return stat["message"]
         
     def get_played_cards(self, client):
