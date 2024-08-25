@@ -4,8 +4,7 @@ import Pyro5.api
 class GameHandler():
     def __init__(self, screen):
         self.screen = screen
-        self.game_screen = None
-    
+
     def bap():
         print("bap")
         
@@ -23,3 +22,9 @@ class GameHandler():
         print("Starting game")
         self.screen.start_game(players)
         print("Starting game 2")
+
+    @Pyro5.api.expose
+    def set_screen(self, screen):
+        self.screen = None
+        self.screen = screen
+        print(f"Screen set to game")

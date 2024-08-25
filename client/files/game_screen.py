@@ -6,7 +6,6 @@ import time
 import json
 from arcade.gui import UIManager
 from arcade.gui.widgets import UITextArea, UIInputText, UITexturePane
-from client import Client
 import win_screen
 
 host = 'server'
@@ -310,7 +309,6 @@ class Game(arcade.View):
 
     
     def setup(self):
-        threading.Thread(target=self.receive_message).start()
         print("--------- ORDEM DO TURNO ------- ", self.turn_order)
         print(self.p2.name)
         print(self.p3.name)
@@ -360,10 +358,10 @@ class Game(arcade.View):
         self.card_list = arcade.SpriteList()
 
         # Create every card
-        for card_name in self.client.selected_deck_cards:
-            card = Card(card_name, CARD_SCALE)
-            card.position = START_X, BOTTOM_Y
-            self.card_list.append(card)
+        # for card_name in self.client.selected_deck_cards:
+        #     card = Card(card_name, CARD_SCALE)
+        #     card.position = START_X, BOTTOM_Y
+        #     self.card_list.append(card)
 
 
         

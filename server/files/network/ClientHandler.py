@@ -132,3 +132,11 @@ class ClientHandler:
                     print(f"Starting game for {proxy}")
                     proxy = Pyro5.api.Proxy(proxy._pyroUri)
                     proxy.start_game(lobby.player_names)
+                    
+    def change_to_game(self, index, client, game_screen):
+        lobby = self.lobbyManager.lobbyController.getLobby(index)
+        player_index = lobby.player_names.index(client.get_username())
+        proxy = lobby.proxies[player_index]
+        proxy = Pyro5.api.Proxy(proxy._pyroUri)
+        print(f"Changing screen to game")
+        proxy.set_screen(game_screen)

@@ -122,6 +122,7 @@ class LobbyScreen(arcade.View):
         # Clear the screen
         if self.go_to_game:
             self.new_game_screen = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
+            # self.game_server.change_to_game(self.lobby_index, self.client, self.new_game_screen)
             self.new_game_screen.setup()
             self.window.show_view(self.new_game_screen)
         
