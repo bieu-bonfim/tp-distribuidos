@@ -46,10 +46,10 @@ class LobbyScreen(arcade.View):
         self.opponent1 = "Aguardando..."
         self.opponent2 = "Aguardando..."
         self.back_to_creation = False
-        self.start_game = False
         self.own_deck = None
         self.deck_loaded = False
         self.array_players = None
+        self.go_to_game = False
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -75,8 +75,6 @@ class LobbyScreen(arcade.View):
 
 
     def on_click_ready_button(self, event):
-        if len(self.players_on_lobby) < 3:
-            return
         self.game_server.trigger_lobby_start(self.lobby_index)
         # essa função deve alterar o atributo screen do GameHanlder
         # para isso, é necessário passar a tela como argumento na chamada
@@ -117,16 +115,16 @@ class LobbyScreen(arcade.View):
                 
     def start_game(self, players):
         self.array_players = players
-        new_screen = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players, self.lobby_index, self.game_server, self.session)
-        return new_screen
-        
-    def change_screen(self, screen):
-        screen.setup()
-        self.window.show_view(screen)
+        self.go_to_game = True
         
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen
+        if self.go_to_game:
+            self.new_game_screen = game_screen.Game(self.client, self.opponent1, self.opponent2, self.array_players)
+            self.new_game_screen.setup()
+            self.window.show_view(self.new_game_screen)
+        
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()

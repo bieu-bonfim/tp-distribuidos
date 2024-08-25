@@ -131,7 +131,7 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, op1, op2, turn_order, index, game_server, session):
+    def __init__(self, client, op1, op2, turn_order):
         super().__init__()
         self.turn_order = turn_order
         self.manager = arcade.gui.UIManager()
@@ -217,14 +217,14 @@ class Game(arcade.View):
         # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list = None
 
-        self.p1 = Player(name=self.client.client_name, card=None, mat=None)
+        self.p1 = Player(name=self.client.get_username(), card=None, mat=None)
         self.p2 = Player(name=op1, card=None, mat=None)
         self.p3 = Player(name=op2, card=None, mat=None)
 
         self.opponents.append(self.p2)
         self.opponents.append(self.p3)
 
-        self.p1.name = self.client.client_name
+        self.p1.name = self.client.get_username()
 
        # self.p2_mat = None
        # self.p2_card = None
@@ -508,80 +508,80 @@ class Game(arcade.View):
             anchor_x="center",
             anchor_y="center")
 
-        if self.p2.card != None:
-            self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
-            self.p2.card.draw()
+        # if self.p2.card != None:
+        #     self.p2.card.position = (MIDDLE_SCREEN_X/2), (MIDDLE_SCREEN_Y + 270)
+        #     self.p2.card.draw()
 
-        if self.p3.card != None:
-            self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
-            self.p3.card.draw()
-
-
-        if self.has_new_log:
-            inverted = self.revert_line_order(self.text_log)
-            self.text_area.text = inverted
-            self.has_new_log = False
-
-        if self.is_turn_over_time:
-            for opponent in self.opponents:
-                opponent.card.faceUp()
-            self.is_turn_over_time = False
-
-        if self.resolve_turn:
-            if self.is_draw:
-                print('EMPATE')
-                self.is_draw = False
-                self.selected_card.faceDown()
-                self.selected_card = START_X, BOTTOM_Y
-                self.move_card_to_new_pile(self.selected_card, DRAW)
-                self.selected_card = None
-                for pos1 in range(len(self.card_list)):
-                    pos2 = random.randrange(len(self.card_list))
-                    self.card_list.swap(pos1, pos2)
-                self.has_put_play = False
-
-            elif self.turn_winner == self.client.client_name:
-                print(' Ganhou ')
-                for opponent in self.opponents:
-                    opponent.card.faceDown()
-                    opponent.card.position = START_X, BOTTOM_Y
-                    self.move_card_to_new_pile(opponent.card, DRAW)
-                    self.card_list.append(opponent.card)
-                    opponent.card = None
-                print(self.selected_card.name)
-                self.selected_card.faceDown()
-                self.selected_card.position = START_X, BOTTOM_Y
-                self.move_card_to_new_pile(self.selected_card, DRAW)
-                self.selected_card = None
-
-                self.turn_winner = None
-                self.has_put_play = False
-
-                for pos1 in range(len(self.card_list)):
-                    pos2 = random.randrange(len(self.card_list))
-                    self.card_list.swap(pos1, pos2)
+        # if self.p3.card != None:
+        #     self.p3.card.position = (MIDDLE_SCREEN_X/2)+MIDDLE_SCREEN_X, MIDDLE_SCREEN_Y + 270
+        #     self.p3.card.draw()
 
 
-            else:
-                self.card_list.remove(self.selected_card)
-                for opponent in self.opponents:
-                    opponent.card = None
-                print(" PERDEU ")
-                self.has_put_play = False
+        # if self.has_new_log:
+        #     inverted = self.revert_line_order(self.text_log)
+        #     self.text_area.text = inverted
+        #     self.has_new_log = False
 
-            self.resolve_turn = False
-            self.resolve_turn = False
-            self.actual_turn += 1
-            if self.select_name_turn < 3:
-                self.select_name_turn += 1
-                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
-            else:
-                self.select_name_turn = 0
-                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+        # if self.is_turn_over_time:
+        #     for opponent in self.opponents:
+        #         opponent.card.faceUp()
+        #     self.is_turn_over_time = False
 
-        if self.end_game:
-            win = win_screen.WinScreen(self.client, self.winner_name)
-            self.window.show_view(win)
+        # if self.resolve_turn:
+        #     if self.is_draw:
+        #         print('EMPATE')
+        #         self.is_draw = False
+        #         self.selected_card.faceDown()
+        #         self.selected_card = START_X, BOTTOM_Y
+        #         self.move_card_to_new_pile(self.selected_card, DRAW)
+        #         self.selected_card = None
+        #         for pos1 in range(len(self.card_list)):
+        #             pos2 = random.randrange(len(self.card_list))
+        #             self.card_list.swap(pos1, pos2)
+        #         self.has_put_play = False
+
+        #     elif self.turn_winner == self.client.client_name:
+        #         print(' Ganhou ')
+        #         for opponent in self.opponents:
+        #             opponent.card.faceDown()
+        #             opponent.card.position = START_X, BOTTOM_Y
+        #             self.move_card_to_new_pile(opponent.card, DRAW)
+        #             self.card_list.append(opponent.card)
+        #             opponent.card = None
+        #         print(self.selected_card.name)
+        #         self.selected_card.faceDown()
+        #         self.selected_card.position = START_X, BOTTOM_Y
+        #         self.move_card_to_new_pile(self.selected_card, DRAW)
+        #         self.selected_card = None
+
+        #         self.turn_winner = None
+        #         self.has_put_play = False
+
+        #         for pos1 in range(len(self.card_list)):
+        #             pos2 = random.randrange(len(self.card_list))
+        #             self.card_list.swap(pos1, pos2)
+
+
+        #     else:
+        #         self.card_list.remove(self.selected_card)
+        #         for opponent in self.opponents:
+        #             opponent.card = None
+        #         print(" PERDEU ")
+        #         self.has_put_play = False
+
+        #     self.resolve_turn = False
+        #     self.resolve_turn = False
+        #     self.actual_turn += 1
+        #     if self.select_name_turn < 3:
+        #         self.select_name_turn += 1
+        #         self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+        #     else:
+        #         self.select_name_turn = 0
+        #         self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+
+        # if self.end_game:
+        #     win = win_screen.WinScreen(self.client, self.winner_name)
+        #     self.window.show_view(win)
 
 
 
@@ -750,66 +750,6 @@ class Game(arcade.View):
     #        self.has_sent_message = False
     #    except socket.error as e:
     #        print(str(e))
-
-    def send_message(self, client_socket, message):
-        data = {'message': message}
-        data_str = json.dumps(data)
-        try:
-            client_socket.sendall(bytes(data_str,encoding="utf-8"))
-        except socket.error as e:
-            print(str(e))
-
-    def send_card(self, client_socket, card):
-        
-        data = {'header': 'card_send', 'card': card, 'player_name': self.p1.name}
-        data_str = json.dumps(data)
-        
-        try:
-            client_socket.sendall(bytes(data_str,encoding="utf-8"))
-        except socket.error as e:
-            print(str(e))
-
-            
-    def receive_message(self):
-        while True:
-            try:
-                data_dict = self.client.receiveMessage()
-                if data_dict['header'] == 'played_card':
-                    player_in_question = data_dict['response']['data']['player']
-                    card = data_dict['response']['data']['card']
-                    self.render_opponent_card(card, player_in_question)
-                if data_dict['header'] == 'choose_stat':
-
-                    print("STAT CHOOSED!")
-                    print(data_dict['response']['message'])
-                    self.text_log += data_dict['response']['message'] + "\n"
-                    self.has_new_log = True
-                    if data_dict['response']['status'] == 'error':
-                        data = {'header': 'ACK', 'request': {}}
-                        self.client.sendMessage(data)
-                if data_dict['header'] == 'turn_over':
-                    print("----------- TURNING OVER CARDS ---------")
-                    self.is_turn_over_time = True
-                if data_dict['header'] == 'resolve_round':
-                    print("------------- RESOLVING TURN ---------------")
-                    if data_dict['response']['status'] == 'draw':
-                        self.text_log += data_dict['response']['message'] + "\n"
-                        self.has_new_log = True
-                        self.is_draw = True
-                        self.resolve_turn = True
-                    if data_dict['response']['status'] == 'success':
-                        self.text_log += data_dict['response']['message'] + "\n"
-                        self.has_new_log = True
-                        self.turn_winner = data_dict['response']['winner']
-                        self.resolve_turn = True
-                if data_dict['header'] == 'resolve_game':
-                    name_winner = data_dict['response']['winner']
-                    self.winner_name = name_winner
-                    self.end_game = True
-                    break
-
-            except Exception as e:
-                print(str(e))
 
 
     def render_opponent_card(self, card_name, player_name):

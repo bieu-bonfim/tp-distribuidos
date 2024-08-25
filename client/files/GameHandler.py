@@ -20,5 +20,6 @@ class GameHandler():
         
     @Pyro5.api.expose
     def start_game(self, players):
-        self.game_screen = self.screen.start_game(players)
-        self.screen.change_screen(self.game_screen)
+        print("Starting game")
+        self.screen.start_game(players)
+        print("Starting game 2")
