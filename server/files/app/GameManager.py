@@ -65,7 +65,7 @@ class GameManager:
     
         
     def setAttribute(self, player, stat):
-        if player.get_username() != self.lobby.players[self.current_player].get_username():
+        if player.get_username() != self.lobby.player_names[self.current_player]:
             return {
                 'header': 'choose_stat',
                 'response': {
