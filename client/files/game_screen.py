@@ -151,7 +151,6 @@ class Game(arcade.View):
         self.actual_turn = 1
         self.select_name_turn = 0
         self.turn_name = turn_order[0]
-        # Create the UITextArea with initial text
         self.text_area = UITextArea(x=650, y=320, width=300, height=150, text=self.text_log)
         self.text_area_pane = UITexturePane(self.text_area.with_space_around(right=20),
                                             tex=bg_text, padding=(20, 20, 20, 20))
@@ -168,7 +167,7 @@ class Game(arcade.View):
         self.has_new_log = False
 
         self.is_turn_over_time = False
-        # Create a vertical BoxGroup to align buttons
+
         self.v_box = arcade.gui.UIBoxLayout()
 
         tipo_button = arcade.gui.UIFlatButton(text="Tipo", width=200, height = 30)
@@ -199,21 +198,12 @@ class Game(arcade.View):
         confirmar_button = arcade.gui.UIFlatButton(text="Escolher Carta", width=200, height = 40)
         confirmar_button.on_click = self.on_click_confirmar
 
-        # Sprite list with all the cards, no matter what pile they are in.
+
         self.card_list = None
-
         self.background = arcade.load_texture("/home/sprites/game_screen.png")
-        #arcade.set_background_color(arcade.color.CHARLESTON_GREEN)
-
-        # List of cards we are dragging with the mouse
         self.held_cards = None
         self.opponents = []
-
-        # Original location of cards we are dragging with the mouse in case
-        # they have to go back.
         self.held_cards_original_position = None
-
-        # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list = None
 
         self.p1 = Player(name=self.client.get_username(), card=None, mat=None)
@@ -224,11 +214,6 @@ class Game(arcade.View):
         self.opponents.append(self.p3)
 
         self.p1.name = self.client.get_username()
-
-       # self.p2_mat = None
-       # self.p2_card = None
-       # self.p3_mat = None
-       # self.p3_card = None
 
         self.has_sent_message = False
         self.has_interacted_card = False
@@ -245,7 +230,6 @@ class Game(arcade.View):
             )
         )
 
-        # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="center_x",
@@ -321,20 +305,12 @@ class Game(arcade.View):
         # Sprite list with all the mats tha cards lay on.
         self.pile_mat_list: arcade.SpriteList = arcade.SpriteList()
 
-        # Create the mats for the bottom face down and face up piles
         pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = START_X, BOTTOM_Y
         self.pile_mat_list.append(pile)
-
-        # Create the mats for the bottom face down and face up piles
         pile = arcade.Sprite("/home/sprites/hand.png", scale=0.2)
         pile.position = (START_X+ 630), BOTTOM_Y
         self.pile_mat_list.append(pile)
-
-        #pile = arcade.SpriteSolidColor(MAT_WIDTH, MAT_HEIGHT, arcade.color.DARK_OLIVE_GREEN)
-        #pile.position = START_X + X_SPACING, BOTTOM_Y
-        #self.pile_mat_list.append(pile)
-
 
         pile = arcade.Sprite("/home/sprites/card_mat.png", scale=0.2)
         pile.position = MIDDLE_SCREEN_X, (MIDDLE_SCREEN_Y + 120)
@@ -353,8 +329,6 @@ class Game(arcade.View):
         pile = arcade.Sprite("/home/sprites/preview_card_mat.png", scale=0.35)
         pile.position = END_X, TOP_Y_SHOWCASE
         self.pile_mat_list.append(pile)
-
-        # Sprite list with all the cards, no matter what pile they are in.
         self.card_list = arcade.SpriteList()
 
         # Create every card
@@ -412,34 +386,24 @@ class Game(arcade.View):
                 card.position = (START_X+ 630), BOTTOM_Y     
         if size == 2:
             count = 0
-            #for card in self.piles[pile_index]:
-            #    card.position = ((START_X+ 510) + 60 * (count)), BOTTOM_Y
-             #   count += 1
             for card in self.piles[pile_index]:
                 card.position = card.center_x - 60, card.center_y         
         if size == 3:
             count = 0
-            #for card in self.piles[pile_index]:
-            #    card.position = ((START_X+ 510) + 60 * (count)), BOTTOM_Y
-             #   count += 1
             for card in self.piles[pile_index]:
                 card.position = card.center_x - 60, card.center_y    
 
     def on_draw(self):
-        """ Render the screen. """
-        # Clear the screen
         self.clear()
         arcade.start_render()
 
         arcade.draw_lrwh_rectangle_textured(0, 0, 1412, 868, self.background)
         self.manager.draw()
 
-        # Draw the mats the cards go on to
         self.pile_mat_list.draw()
         self.p2.mat.draw()
         self.p3.mat.draw()
 
-        # Draw the cards
         self.card_list.draw()
 
         arcade.draw_text(
@@ -584,39 +548,25 @@ class Game(arcade.View):
 
 
     def on_mouse_press(self, x, y, button, key_modifiers):
-        """ Called when the user presses a mouse button. """
         self.has_interacted_card = True
-        # Get list of cards we've clicked on
         cards = arcade.get_sprites_at_point((x, y), self.card_list)
 
-        # Have we clicked on a card?
         if len(cards) > 0:
-
-
-
-            # Might be a stack of cards, get the top one
             primary_card = cards[-1]
-
-            # All other cases, grab the face-up card we are clicking on
             self.held_cards = [primary_card]
-            # Save the position
             self.held_cards_original_position = [self.held_cards[0].position]
-            # Put on top in drawing order
             self.pull_to_top(self.held_cards[0])
 
     def on_mouse_release(self, x: float, y: float, button: int,
                          modifiers: int):
-        """ Called when the user presses a mouse button. """
 
-        # If we don't have any cards, who cares
+
         if len(self.held_cards) == 0:
             return
 
-        # Find the closest pile, in case we are in contact with more than one
         pile, distance = arcade.get_closest_sprite(self.held_cards[0], self.pile_mat_list)
         self.reset_position = True
 
-        # See if we are in contact with the closest pile
         if arcade.check_for_collision(self.held_cards[0], pile):
 
             pile_index = self.pile_mat_list.index(pile)
@@ -703,31 +653,24 @@ class Game(arcade.View):
             card.center_x += dx
             card.center_y += dy
 
-        # Handle hover action
         self.handle_hover(x, y)
 
     def handle_hover(self, x, y):
-        """ Handle card hover action """
-        # Get the card currently under the mouse pointer
         cards = arcade.get_sprites_at_point((x, y), self.card_list)
 
-        # If hovering over a card, change its appearance or perform an action
         if len(cards) > 0:
             hovered_card = cards[-1]
 
             # Check if this card is already hovered
             if self.last_hovered_card != hovered_card:
                 if self.last_hovered_card is not None:
-                    self.last_hovered_card.alpha = 255  # Reset previous hovered card
-                #hovered_card.alpha = 200  # Example action: Change transparency
+                    self.last_hovered_card.alpha = 255
                 self.last_hovered_card = hovered_card
 
-            # Update the current hovered card for drawing the amplified image
             if hovered_card.isFaceUp() == True:
                 self.current_hovered_card = hovered_card
 
         else:
-            # Reset the last hovered card if no card is under the mouse pointer
             if self.last_hovered_card is not None:
                 self.last_hovered_card.alpha = 255
                 self.last_hovered_card = None
@@ -741,14 +684,6 @@ class Game(arcade.View):
         # Remove, and append to the end
         self.card_list.remove(card)
         self.card_list.append(card)
-
-    #def send_message(self, client_socket, message):
-    #    try:
-    #        client_socket.sendall(message.encode())
-    #        self.has_sent_message = False
-    #    except socket.error as e:
-    #        print(str(e))
-
 
     def render_opponent_card(self, card_name, player_name):
         for opponent in self.opponents:

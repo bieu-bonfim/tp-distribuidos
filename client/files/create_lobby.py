@@ -109,7 +109,7 @@ class CreateLobby(arcade.View):
 
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.game_server, self.client)
+        menu = main_menu.MainMenu(self.game_server, self.session)
         self.window.show_view(menu)
 
     def on_click_create_lobby(self, event):

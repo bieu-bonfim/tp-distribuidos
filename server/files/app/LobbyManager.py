@@ -153,6 +153,7 @@ class LobbyManager:
                 }
             }
         lobby = self.lobbyController.removePlayer(client.get_current_lobby(), client)
+        print("removido do lobby: ", lobby)
         client.set_in_lobby(False)
 
         
