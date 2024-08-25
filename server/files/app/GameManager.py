@@ -18,6 +18,7 @@ class GameManager:
         self.max_rounds = 3
         self.winner_name = ""
         self.isTurnOver = False
+        self.isGameOver = False
         
     def playCard(self, player, card):
         print('playing card')
@@ -156,6 +157,7 @@ class GameManager:
         print("---------- Inserida ----------")
         print(self.lobby.players[winner])
         self.userController.addCreditWin(self.lobby.players[winner].get_username())
+        self.isGameOver = True
         return {
             'header': 'resolve_game',
             'response': {

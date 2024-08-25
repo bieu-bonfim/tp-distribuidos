@@ -169,4 +169,8 @@ class ClientHandler:
         
     def is_turn_over(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.turnOver 
+        return lobby.isTurnOver
+    
+    def is_game_over(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        return lobby.isGameOver
