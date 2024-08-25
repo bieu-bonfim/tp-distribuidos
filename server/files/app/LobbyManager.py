@@ -154,6 +154,7 @@ class LobbyManager:
             }
         lobby = self.lobbyController.removePlayer(client.get_current_lobby(), client)
         client.set_in_lobby(False)
+        client.set_current_lobby(None)
 
         
     def startGame(self, index, conn):

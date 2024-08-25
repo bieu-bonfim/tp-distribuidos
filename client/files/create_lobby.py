@@ -13,6 +13,7 @@ import main_menu
 import lobby_screen
 import Pyro5.api
 import os
+import game_screen
 from GameHandler import GameHandler
 
 container_name = os.getenv("CONTAINER_NAME", "default_container_name")
@@ -107,7 +108,6 @@ class CreateLobby(arcade.View):
                 child=self.v_box)
         )
 
-
     def on_click_voltar(self, event):
         menu = main_menu.MainMenu(self.game_server, self.client)
         self.window.show_view(menu)
@@ -131,7 +131,8 @@ class CreateLobby(arcade.View):
                 self.game_server, 
                 self.session, 
                 self.lobby_data['players'], 
-                self.lobby_data['index'])
+                self.lobby_data['index']),
+            game_screen.Game()
             )
         self.register_connection(self.game_server, self.session, self.lobby_data['index'])
         self.go_to_lobby = True

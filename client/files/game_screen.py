@@ -130,6 +130,9 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
+    def __init__(self):
+        pass
+
     def __init__(self, client, op1, op2, turn_order):
         super().__init__()
         self.turn_order = turn_order

@@ -2,8 +2,9 @@ import Pyro5.api
 
 @Pyro5.api.expose
 class GameHandler():
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, lobby_screen, game_screen):
+        self.lobby_screen = lobby_screen
+        self.game_screen = game_screen
 
     def bap():
         print("bap")
@@ -15,16 +16,11 @@ class GameHandler():
 
     @Pyro5.api.expose
     def update_players(self, players):
-        self.screen.update_players(players)
+        self.lobby_screen.update_players(players)
+        
         
     @Pyro5.api.expose
     def start_game(self, players):
         print("Starting game")
-        self.screen.start_game(players)
+        self.lobby_screen.start_game(players)
         print("Starting game 2")
-
-    @Pyro5.api.expose
-    def set_screen(self, screen):
-        self.screen = None
-        self.screen = screen
-        print(f"Screen set to game")
