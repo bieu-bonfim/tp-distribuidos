@@ -258,7 +258,7 @@ class Game(arcade.View):
         inverted = self.revert_line_order(self.text_log)
         self.text_area.text = inverted
 
-    def bap():
+    def bap(self):
         print("bap")
 
     def revert_line_order(self, input_string):

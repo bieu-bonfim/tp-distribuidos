@@ -50,6 +50,7 @@ class LobbyScreen(arcade.View):
         self.deck_loaded = False
         self.array_players = None
         self.go_to_game = False
+        self.new_game_screen = None
 
         self.v_box = arcade.gui.UIBoxLayout()
 
@@ -70,6 +71,8 @@ class LobbyScreen(arcade.View):
                 child=self.v_box)
         )
 
+    def bap(self):
+        print("bap")
 
     def on_click_ready_button(self, event):
         self.game_server.trigger_lobby_start(self.lobby_index)

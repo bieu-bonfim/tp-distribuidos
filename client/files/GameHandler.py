@@ -7,7 +7,7 @@ class GameHandler():
         self.game_screen = None
 
     def bap(self):
-        self.lobby_screen.new_game_screen.bap()
+        self.lobby_screen.bap()
         
     @Pyro5.api.expose
     def receive_event(self, message):
