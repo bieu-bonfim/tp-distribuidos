@@ -249,7 +249,7 @@ class Game(arcade.View):
         if self.selected_card != None:
             print("enviar carta")
             self.hand_size -= 1
-            self.game_proxy.play_card(self.selected_card.name, self.client.get_username())
+            self.game_proxy.play_card(self.selected_card.name, self.client)
             self.add_log(f"Você escolheu {self.selected_card.name}...\n")
         else:
             print("Escolha uma carta")
@@ -694,8 +694,6 @@ class Game(arcade.View):
 
     def render_opponent_card(self, card_name, player_name):
         for opponent in self.opponents:
-            print(f"oponente name: {opponent.name}")
-            print(card_name)
             if opponent.name == player_name:
                 for card in CARD_NAMES:
                     if card == card_name:
@@ -706,6 +704,8 @@ class Game(arcade.View):
 
     def game_logic(self):
         player_names, played_cards  = self.game_proxy.get_played_cards(self.client)
+        print(played_cards)
+        print(player_names)
         for i in range(len(player_names)):
             if player_names[i] == self.p1.name:
                 continue
