@@ -25,6 +25,7 @@ class ClientHandler:
         lobby_data = create["data"]["lobby"]
         lobby_result = create["status"]
         print(f"Lobby creation result: {lobby_result}")
+        print(f"Lobby data: {lobby_data}")
         return lobby_data if lobby_result == "success" else 0
     
     def join_lobby(self, lobby_id, client):
@@ -102,3 +103,17 @@ class ClientHandler:
     
     def bap(self):
         print('bap')
+        
+    def register(self, client, client_uri, index):
+        self.lobbyManager.register_client(client, Pyro5.api.Proxy(client_uri), index)
+        print(f"Client registered with URI: {client_uri}")
+
+        
+    def trigger_lobby_event(self, index, message):
+        lobby = self.lobbyManager.lobbyController.getLobby(index)
+        print("bap")
+        for proxy in lobby.proxies:
+            if proxy is not None:
+                proxy = Pyro5.api.Proxy(proxy._pyroUri)
+                print(f"Sending message to {proxy}")
+                proxy.receive_event(message)

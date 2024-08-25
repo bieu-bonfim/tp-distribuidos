@@ -11,6 +11,11 @@ import client
 import json
 import main_menu
 import lobby_screen
+import Pyro5.api
+import os
+from GameHandler import GameHandler
+
+container_name = os.getenv("CONTAINER_NAME", "default_container_name")
 
 # Screen title and size
 SCREEN_WIDTH = 1412
@@ -63,16 +68,18 @@ class TextBox:
 class CreateLobby(arcade.View):
     """ Main application class. """
 
-    def __init__(self, game_server, client):
+    def __init__(self, game_server, session):
         super().__init__()
-        self.client = client
+        self.session = session
         self.game_server = game_server
+        self.client = self.game_server.get_client(self.session)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.lobbyText = TextBox((SCREEN_WIDTH//2), (SCREEN_HEIGHT//2)-100, 250, 40) 
         self.active = False
         self.go_to_lobby = False
         self.lobby_data = None
+        self.gameHandler = GameHandler()
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -107,6 +114,7 @@ class CreateLobby(arcade.View):
 
     def on_click_create_lobby(self, event):
         self.lobby_data = self.game_server.create_lobby(self.client)
+        self.register_connection(self.game_server, self.session, self.lobby_data['index'])
         self.go_to_lobby = True
 
     def on_click_enter_lobby(self, event):
@@ -123,7 +131,7 @@ class CreateLobby(arcade.View):
         self.lobbyText.draw()
 
         if self.go_to_lobby == True:
-            lobby = lobby_screen.LobbyScreen(self.game_server, self.client, self.lobby_data['players'])
+            lobby = lobby_screen.LobbyScreen(self.game_server, self.session, self.lobby_data['players'], self.lobby_data['index'])
             lobby.setup()
             self.window.show_view(lobby)
 
@@ -140,7 +148,19 @@ class CreateLobby(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
             self.lobbyText.on_mouse_press(x, y, button, modifiers)
 
+    def register_connection(self, server, session, index):
+        server = Pyro5.api.Proxy(server._pyroUri)
+        client = server.get_client(session)
+        daemon = Pyro5.api.Daemon(host=container_name)
+        client_uri = daemon.register(self.gameHandler)
+        server.register(client, client_uri, index)
+        print(f"Client {client.get_username()} registered with URI: {client_uri}")
+        threading.Thread(target=daemon.requestLoop, daemon=True).start()
 
+    def trigger_other_client_event(server):
+        target_client = input("Enter the target client name: ")
+        message = input("Enter the message to send: ")
+        server.trigger_event(target_client, message)
 
 
 

@@ -26,16 +26,17 @@ MIDDLE_Y = SCREEN_HEIGHT/2
 class MainMenu(arcade.View):
     """ Main application class. """
 
-    def __init__(self, server, client):
+    def __init__(self, server, session):
         super().__init__()
-        self.client = client
+        self.session = session
+        self.game_server = server
+        self.client = self.game_server.get_client(self.session)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.go_to_edit = False
         self.data_dict = None
         self.go_to_shop = False
         self.player_coin = None
-        self.game_server = server
         self.monetario = 0
 
 
@@ -71,7 +72,7 @@ class MainMenu(arcade.View):
         )
 
     def on_click_play(self, event):
-        create_lobby_window = create_lobby.CreateLobby(self.game_server, self.client)
+        create_lobby_window = create_lobby.CreateLobby(self.game_server, self.session)
         self.window.show_view(create_lobby_window)
 
     def on_click_edit(self, event):

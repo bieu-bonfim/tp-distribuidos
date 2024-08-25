@@ -12,6 +12,7 @@ import json
 import main_menu
 import create_lobby
 import game_screen
+import Pyro5.api
 
 # Screen title and size
 SCREEN_WIDTH = 1412
@@ -30,10 +31,12 @@ s = None
 class LobbyScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self, game_server, client, players_on_lobby):
+    def __init__(self, game_server, session, players_on_lobby, lobby_index):
         super().__init__()
-        self.client = client
-        self.game_server = game_server
+        self.session = session
+        self.lobby_index = lobby_index
+        self.game_server = Pyro5.api.Proxy(game_server._pyroUri)
+        self.client = self.game_server.get_client(self.session)
         self.player_name = self.client.get_username()
         self.manager = arcade.gui.UIManager()
         self.data_dict = None
@@ -89,7 +92,15 @@ class LobbyScreen(arcade.View):
                 self.opponent2 = player
         print(self.opponent1)
         print(self.opponent2)
-
+        
+        new_proxy = Pyro5.api.Proxy(self.game_server._pyroUri)
+        try:
+            new_proxy.trigger_lobby_event(self.lobby_index, "bap")
+        except Pyro5.errors.CommunicationError as e:
+            print(f"Error communicating with server: {e}")
+        except Pyro5.errors.PyroError as e:
+            print(f"Pyro Error: {e}")
+        
     def on_draw(self):
         """ Render the screen. """
         # Clear the screen

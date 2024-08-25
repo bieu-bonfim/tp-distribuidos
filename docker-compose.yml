@@ -31,6 +31,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
+      - CONTAINER_NAME=thui
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Thui
     volumes:
@@ -47,6 +48,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
+      - CONTAINER_NAME=bija
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Bija
     volumes:
@@ -63,6 +65,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
+      - CONTAINER_NAME=patic
       - DISPLAY=$DISPLAY
       - CLIENT_NAME=Patic
     volumes:

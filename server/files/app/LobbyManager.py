@@ -1,5 +1,5 @@
 from controller.LobbyController import LobbyController
-
+import Pyro5.api
 class LobbyManager:
     def __init__(self):
         self.lobbyController = LobbyController()
@@ -114,7 +114,7 @@ class LobbyManager:
                     }
                 }
             }
-        lobby = self.lobbyController.addPlayer(int(index), client.get_username())
+        lobby = self.lobbyController.addPlayer(int(index), client)
         client.set_in_lobby(True)
         client.set_current_lobby(index)
         return {
@@ -133,6 +133,12 @@ class LobbyManager:
                 }
             }
         }
+        
+    def register_client(self, client, proxy, index):
+        lobby = self.lobbyController.getLobby(index)
+        client_index = lobby.players.index(client)
+        print(f"proxy uri {proxy._pyroUri}")
+        lobby.proxies[client_index] = Pyro5.api.Proxy(proxy._pyroUri)
         
     def leaveLobby(self, client):
         if client.get_in_lobby() == False:

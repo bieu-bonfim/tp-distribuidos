@@ -104,8 +104,8 @@ class Login(arcade.View):
         self.active = False
         self.key_active = False
         self.valid_login = False
+        self.session_id = ""
 
-        self.client = None
         self.game_server = None
 
         # Create a vertical BoxGroup to align buttons
@@ -130,16 +130,16 @@ class Login(arcade.View):
 
 
     def on_click_login(self, event):
-        print(self.loginText.text)
-        print(self.loginKey.text)
         ns = Pyro5.api.locate_ns(host='pyro-ns', port=8020)
         uri = ns.lookup("cryptids.game")
+
         self.game_server = Pyro5.api.Proxy(uri)
-        print(f"Server URI: {uri}")
-        session_id = self.game_server.login(self.loginText.text, self.loginKey.text)
-        print(f"Session ID: {session_id}")
-        self.client = self.game_server.get_client(session_id)
-        if self.client.get_id() != 0:
+
+        self.session_id = self.game_server.login(self.loginText.text, self.loginKey.text)
+
+        client = self.game_server.get_client(self.session_id)
+
+        if client.get_id() != 0:
             self.valid_login = True     
 
     def on_draw(self):
@@ -153,7 +153,7 @@ class Login(arcade.View):
 
         if self.valid_login:
             # print(self.client.client_name)
-            menu_main = main_menu.MainMenu(self.game_server, self.client)
+            menu_main = main_menu.MainMenu(self.game_server, self.session_id)
             self.window.show_view(menu_main)
 
 
