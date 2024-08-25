@@ -130,22 +130,18 @@ class ClientHandler:
         
     def play_card(self, cardName, client):
         playCard = self.gameManager.playCard(client, cardName)["response"]
-        playCard_data = playCard["data"]
-        playCard_result = playCard["status"]
-        print(f"Start game result: {playCard_result}")
-        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        
+        return playCard["message"]        
     
     def choose_stat(self, stat, client):
         stat = self.gameManager.setAttribute(client, stat)["response"]
-        stat_data = stat["data"]
-        stat_result = stat["status"]
-        print(f"Choose stat result: {stat_result}")
+        return stat["message"]
         
     def get_played_cards(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.player_names, lobby.game_manager.round_cards
+        if lobby.gameManager.round_cards.count(None) == 0:
+            return lobby.gameManager.round_cards
+        return lobby.player_names, lobby.gameManager.round_cards
     
     def get_chosen_stat(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.game_manager.round_attribute
+        return lobby.gameManager.round_attribute
