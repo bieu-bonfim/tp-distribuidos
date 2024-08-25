@@ -266,33 +266,27 @@ class Game(arcade.View):
         return result
     
     def on_click_tipo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Tipo'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Tipo', self.client)
         print("tipo")
     
     def on_click_tamanho(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Tamanho'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Tamanho', self.client)
         print("tamanho")
 
     def on_click_perigo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Perigo'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Perigo', self.client)
         print("perigo")
 
     def on_click_medo(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Medo'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Medo', self.client)
         print("medo")
 
     def on_click_raridade(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Raridade'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Raridade', self.client)
         print("raridade")
 
     def on_click_avistamento(self, event):
-        data = {'header': 'choose_stat', 'request': {'stat': 'Avistamento'}}
-        self.client.sendMessage(data)
+        self.game_proxy.choose_stat('Avistamento', self.client)
         print("avistamento")
 
     
