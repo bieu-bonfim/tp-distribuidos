@@ -131,8 +131,7 @@ class CreateLobby(arcade.View):
                 self.game_server, 
                 self.session, 
                 self.lobby_data['players'], 
-                self.lobby_data['index']),
-            game_screen.Game()
+                self.lobby_data['index'])
             )
         self.register_connection(self.game_server, self.session, self.lobby_data['index'])
         self.go_to_lobby = True
@@ -146,7 +145,7 @@ class CreateLobby(arcade.View):
         self.lobbyText.draw()
 
         if self.go_to_lobby == True:
-            lobby = self.gameHandler.screen
+            lobby = self.gameHandler.lobby_screen
             lobby.setup()
             self.window.show_view(lobby)
 

@@ -130,9 +130,6 @@ class Player():
 class Game(arcade.View):
     """ Main application class. """
 
-    def __init__(self):
-        pass
-
     def __init__(self, client, op1, op2, turn_order):
         super().__init__()
         self.turn_order = turn_order
@@ -257,6 +254,8 @@ class Game(arcade.View):
         inverted = self.revert_line_order(self.text_log)
         self.text_area.text = inverted
 
+    def bap():
+        print("bap")
 
     def revert_line_order(self, input_string):
         lines = input_string.splitlines()
