@@ -272,26 +272,31 @@ class Game(arcade.View):
         self.game_proxy.choose_stat('Tipo', self.client)
         self.winner_setted = False
         print("tipo")
+        self.add_log(f"Atributo Tipo escolhido...\n")
     
     def on_click_tamanho(self, event):
         self.game_proxy.choose_stat('Tamanho', self.client)
         self.winner_setted = False
         print("tamanho")
+        self.add_log(f"Atributo Tamanho escolhido...\n")
 
     def on_click_perigo(self, event):
         self.game_proxy.choose_stat('Perigo', self.client)
         self.winner_setted = False
         print("perigo")
+        self.add_log(f"Atributo Perigo escolhido...\n")
 
     def on_click_medo(self, event):
         self.game_proxy.choose_stat('Medo', self.client)
         self.winner_setted = False
         print("medo")
+        self.add_log(f"Atributo Medo escolhido...\n")
 
     def on_click_raridade(self, event):
         self.game_proxy.choose_stat('Raridade', self.client)
         self.winner_setted = False
         print("raridade")
+        self.add_log(f"Atributo Raridade escolhido...\n")
 
     def on_click_avistamento(self, event):
         self.game_proxy.choose_stat('Avistamento', self.client)
@@ -436,7 +441,16 @@ class Game(arcade.View):
             anchor_y="center"
         )
 
-        
+        arcade.draw_text(
+            "Escolhendo agora: "+ str(self.turn_order[self.select_name_turn]),
+            start_x= MIDDLE_SCREEN_X/2 + 70,
+            start_y= MIDDLE_SCREEN_Y -270,
+            color=arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
 
         arcade.draw_text(
             "Cartas no deck: "+ str(len(self.piles[DRAW])),
@@ -540,12 +554,6 @@ class Game(arcade.View):
 
 
             self.actual_turn += 1
-            if self.select_name_turn < 3:
-                self.select_name_turn += 1
-                #self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
-            else:
-                self.select_name_turn = 0
-                #self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
 
         if self.end_game:
             win = win_screen.WinScreen(self.session, self.game_server_backup, self.winner_name)
@@ -705,8 +713,13 @@ class Game(arcade.View):
         moment_winner = self.game_proxy.get_winner(self.client)
         if  moment_winner != "" and self.winner_setted == False:
                 self.winner_setted = True
+                self.add_log(f"O vencedor do turno é {moment_winner}...\n")
                 self.turn_winner = moment_winner
                 self.resolve_turn = True
+                if self.select_name_turn < 3 and self.actual_turn < 3:
+                    self.select_name_turn += 1
+                else:
+                    self.select_name_turn = 0
         elif moment_winner == "draw":
             self.is_draw = True
             self.resolve_turn = True
