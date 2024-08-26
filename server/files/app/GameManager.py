@@ -17,6 +17,7 @@ class GameManager:
         self.userController = UserController(conn)
         self.max_rounds = 3
         self.winner_name = ""
+        self.game_winner = ""
         self.isTurnOver = False
         self.isGameOver = False
         
@@ -146,9 +147,9 @@ class GameManager:
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)
 
-        match_data = { 'winner_deck': self.lobby.deck[winner], 
-                        'other_deck1': self.lobby.deck[(winner+1)%3],
-                        'other_deck2': self.lobby.deck[(winner+2)%3], 
+        match_data = { 'winner_deck': self.lobby.decks[winner], 
+                        'other_deck1': self.lobby.decks[(winner+1)%3],
+                        'other_deck2': self.lobby.decks[(winner+2)%3], 
                     }
         
         match_data = [match_data['winner_deck'], match_data['other_deck1'], match_data['other_deck2']]
@@ -156,16 +157,17 @@ class GameManager:
         print("---------- Inserindo Partida no Banco ----------")
         self.matchController.insert(tuple(match_data))
         print("---------- Inserida ----------")
-        print(self.lobby.players[winner])
-        self.userController.addCreditWin(self.lobby.players[winner].get_username())
+        print(self.lobby.player_names[winner])
+        self.userController.addCreditWin(self.lobby.player_names[winner])
         self.isGameOver = True
+        self.game_winner = self.lobby.player_names[winner]
         return {
             'header': 'resolve_game',
             'response': {
                 'status': 'success',
-                'message': 'Jogo encerrado, o vencedor foi ' + self.lobby.players[winner].get_username(),
+                'message': 'Jogo encerrado, o vencedor foi ' + self.lobby.player_names[winner],
                 'winner_index': winner,
-                'winner': self.lobby.players[winner].get_username()
+                'winner': self.lobby.player_names[winner]
             }
         }
     
