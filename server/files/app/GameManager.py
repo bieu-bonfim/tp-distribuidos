@@ -77,6 +77,7 @@ class GameManager:
                 }
             }
         self.round_attribute = stat
+        self.winner_name = ''
         str_response = f'O atributo escolhido foi {stat}'
         self.isTurnOver = False
         return {
@@ -104,6 +105,8 @@ class GameManager:
                     'message': 'Empate! Ninguém ganhou essa rodada',
                 }
             }
+            self.winner_name = "draw"
+            
         else:
             print('passo 2')
             print('winner', winner)
@@ -118,7 +121,7 @@ class GameManager:
                     'winner': self.lobby.player_names[winner]
                 }
             }
-        self.winner_name = self.lobby.player_names[winner]
+            self.winner_name = self.lobby.player_names[winner]
         print('winners', self.winners)
         self.current_player = (self.current_player + 1) % 3
         print('current_player', self.current_player)

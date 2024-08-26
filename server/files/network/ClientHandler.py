@@ -168,3 +168,7 @@ class ClientHandler:
     def is_game_over(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         return lobby.gameManager.isGameOver
+    
+    def get_winner(self, client):
+        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
+        return lobby.gameManager.winner_name
