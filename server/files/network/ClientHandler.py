@@ -172,5 +172,4 @@ class ClientHandler:
     def get_winner(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
         winner = lobby.gameManager.winner_name
-        lobby.gameManager.winner_name = ''
         return winner
