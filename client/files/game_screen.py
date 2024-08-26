@@ -696,6 +696,13 @@ class Game(arcade.View):
 
 
     def game_logic(self):
+        moment_winner = self.game_proxy.get_winner(self.client)
+        if  moment_winner != "":
+                self.turn_winner = moment_winner
+                self.resolve_turn = True
+        elif moment_winner == "draw":
+            self.is_draw = True
+            self.resolve_turn = True
         player_names, played_cards  = self.game_proxy.get_played_cards(self.client)
         print(played_cards)
         print(player_names)
