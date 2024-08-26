@@ -248,7 +248,7 @@ class Game(arcade.View):
         if self.selected_card != None:
             print("enviar carta")
             self.hand_size -= 1
-            self.game_proxy.play_card(self.selected_card.name, self.client)
+            _, self.is_turn_over_time = self.game_proxy.play_card(self.selected_card.name, self.client)
             self.add_log(f"Você escolheu {self.selected_card.name}...\n")
         else:
             print("Escolha uma carta")
@@ -709,9 +709,6 @@ class Game(arcade.View):
 
         if played_cards.count(None) == 0:
             self.is_turn_over_time = True
-
-        if self.game_proxy.is_turn_over(self.client):
-            self.game_proxy.clean_for_real(self.client)
 
 
 
