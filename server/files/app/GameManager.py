@@ -78,6 +78,7 @@ class GameManager:
             }
         self.round_attribute = stat
         str_response = f'O atributo escolhido foi {stat}'
+        self.isTurnOver = False
         return {
             'header': 'choose_stat',
             'response': {
@@ -125,6 +126,7 @@ class GameManager:
         print('round', self.round)
         self.round_attribute = ''
         self.round += 1
+        self.round_cards = [None, None, None]
         if self.round-1 >= self.max_rounds:
             return {
                 'header': 'resolve_round',
@@ -137,10 +139,6 @@ class GameManager:
             }
         self.isTurnOver = True
         return result
-    
-    def clean_card_vector(self):
-        self.isTurnOver = False
-        self.round_cards = [None, None, None]
         
     def resolveGame(self):
         winner = max(self.winners, key=self.winners.get)

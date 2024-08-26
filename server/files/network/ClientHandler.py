@@ -142,9 +142,9 @@ class ClientHandler:
             if round_result["status"] == "game_over":
                 t.sleep(2)
                 game_result = lobby.gameManager.resolveGame()["response"]
-                return game_result["message"]
-            return round_result["message"]
-        return playCard["message"]
+                return game_result["message"], True
+            return round_result["message"], True
+        return playCard["message"], False
     
     def choose_stat(self, stat, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
@@ -159,11 +159,7 @@ class ClientHandler:
     
     def get_chosen_stat(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        return lobby.gameManager.round_attribute
-    
-    def clean_for_real(self, client):
-        lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
-        lobby.gameManager.clean_card_vector()
+        return lobby.gameManager.round_attribute    
         
     def is_turn_over(self, client):
         lobby = self.lobbyManager.lobbyController.getLobby(client.get_current_lobby())
