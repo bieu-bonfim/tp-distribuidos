@@ -436,6 +436,8 @@ class Game(arcade.View):
             anchor_y="center"
         )
 
+        
+
         arcade.draw_text(
             "Cartas no deck: "+ str(len(self.piles[DRAW])),
             start_x= START_X,

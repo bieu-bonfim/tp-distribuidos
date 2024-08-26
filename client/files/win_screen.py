@@ -58,7 +58,7 @@ class WinScreen(arcade.View):
 
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.session, self.game_server)
+        menu = main_menu.MainMenu(session=self.session, server=self.game_server)
         self.window.show_view(menu)
 
     def on_draw(self):
