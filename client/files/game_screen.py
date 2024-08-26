@@ -502,7 +502,7 @@ class Game(arcade.View):
                     self.card_list.swap(pos1, pos2)
                 self.has_put_play = False
 
-            elif self.turn_winner == self.client.client_name:
+            elif self.turn_winner == self.client.get_username():
                 print(' Ganhou ')
                 for opponent in self.opponents:
                     opponent.card.faceDown()
@@ -525,6 +525,7 @@ class Game(arcade.View):
 
 
             else:
+                print("CARD = ", self.selected_card.name)
                 self.card_list.remove(self.selected_card)
                 for opponent in self.opponents:
                     opponent.card = None
@@ -704,8 +705,6 @@ class Game(arcade.View):
             self.is_draw = True
             self.resolve_turn = True
         player_names, played_cards  = self.game_proxy.get_played_cards(self.client)
-        print(played_cards)
-        print(player_names)
         for i in range(len(player_names)):
             if player_names[i] == self.p1.name:
                 continue
