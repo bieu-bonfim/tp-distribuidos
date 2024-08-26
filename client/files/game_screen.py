@@ -138,6 +138,7 @@ class Game(arcade.View):
         self.manager.enable()
         self.lobby_index = index
         self.session = session
+        self.game_server_backup = game_server
         self.game_server = Pyro5.api.Proxy(game_server._pyroUri)
         self.client = self.game_server.get_client(self.session)
         self.reset_position = False
@@ -160,6 +161,7 @@ class Game(arcade.View):
                                             tex=bg_text, padding=(20, 20, 20, 20))
         self.manager.add(self.text_area_pane)
         self.game_proxy = None
+        self.winner_setted = False
 
         # winner logic -----------
         self.is_draw = False
@@ -250,8 +252,10 @@ class Game(arcade.View):
             self.hand_size -= 1
             _, self.is_turn_over_time = self.game_proxy.play_card(self.selected_card.name, self.client)
             self.add_log(f"Você escolheu {self.selected_card.name}...\n")
+            self.winner_setted = False
         else:
             print("Escolha uma carta")
+            self.winner_setted = False
 
     def add_log(self, new_log):
         self.text_log += new_log
@@ -266,26 +270,32 @@ class Game(arcade.View):
     
     def on_click_tipo(self, event):
         self.game_proxy.choose_stat('Tipo', self.client)
+        self.winner_setted = False
         print("tipo")
     
     def on_click_tamanho(self, event):
         self.game_proxy.choose_stat('Tamanho', self.client)
+        self.winner_setted = False
         print("tamanho")
 
     def on_click_perigo(self, event):
         self.game_proxy.choose_stat('Perigo', self.client)
+        self.winner_setted = False
         print("perigo")
 
     def on_click_medo(self, event):
         self.game_proxy.choose_stat('Medo', self.client)
+        self.winner_setted = False
         print("medo")
 
     def on_click_raridade(self, event):
         self.game_proxy.choose_stat('Raridade', self.client)
+        self.winner_setted = False
         print("raridade")
 
     def on_click_avistamento(self, event):
         self.game_proxy.choose_stat('Avistamento', self.client)
+        self.winner_setted = False
         print("avistamento")
 
     
@@ -427,16 +437,6 @@ class Game(arcade.View):
         )
 
         arcade.draw_text(
-            "Escolhendo agora: "+ str(self.turn_order[self.select_name_turn]),
-            start_x= MIDDLE_SCREEN_X/2 + 70,
-            start_y= MIDDLE_SCREEN_Y -270,
-            color=arcade.color.WHITE,
-            font_size=12,
-            anchor_x="center",
-            anchor_y="center"
-        )
-
-        arcade.draw_text(
             "Cartas no deck: "+ str(len(self.piles[DRAW])),
             start_x= START_X,
             start_y= TOP_Y -370,
@@ -490,6 +490,7 @@ class Game(arcade.View):
             self.is_turn_over_time = False
 
         if self.resolve_turn:
+            self.resolve_turn = False
             if self.is_draw:
                 print('EMPATE')
                 self.is_draw = False
@@ -500,24 +501,25 @@ class Game(arcade.View):
                 for pos1 in range(len(self.card_list)):
                     pos2 = random.randrange(len(self.card_list))
                     self.card_list.swap(pos1, pos2)
-                self.has_put_play = False
+                self.have_put_play = False
 
             elif self.turn_winner == self.client.get_username():
                 print(' Ganhou ')
                 for opponent in self.opponents:
-                    opponent.card.faceDown()
-                    opponent.card.position = START_X, BOTTOM_Y
-                    self.move_card_to_new_pile(opponent.card, DRAW)
-                    self.card_list.append(opponent.card)
-                    opponent.card = None
-                print(self.selected_card.name)
-                self.selected_card.faceDown()
-                self.selected_card.position = START_X, BOTTOM_Y
-                self.move_card_to_new_pile(self.selected_card, DRAW)
-                self.selected_card = None
+                    if opponent.card != None:
+                        opponent.card.faceDown()
+                        opponent.card.position = START_X, BOTTOM_Y
+                        self.move_card_to_new_pile(opponent.card, DRAW)
+                        self.card_list.append(opponent.card)
+                        opponent.card = None
+                if self.selected_card != None:
+                    self.selected_card.faceDown()
+                    self.selected_card.position = START_X, BOTTOM_Y
+                    self.move_card_to_new_pile(self.selected_card, DRAW)
+                    self.selected_card = None
 
                 self.turn_winner = None
-                self.has_put_play = False
+                self.have_put_play = False
 
                 for pos1 in range(len(self.card_list)):
                     pos2 = random.randrange(len(self.card_list))
@@ -526,24 +528,25 @@ class Game(arcade.View):
 
             else:
                 print("CARD = ", self.selected_card.name)
-                self.card_list.remove(self.selected_card)
+                if self.have_put_play:
+                    self.card_list.remove(self.selected_card)
+                    self.have_put_play = False
                 for opponent in self.opponents:
                     opponent.card = None
                 print(" PERDEU ")
-                self.has_put_play = False
 
-            self.resolve_turn = False
-            self.resolve_turn = False
+
+
             self.actual_turn += 1
             if self.select_name_turn < 3:
                 self.select_name_turn += 1
-                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+                #self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
             else:
                 self.select_name_turn = 0
-                self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
+                #self.add_log(f"O turno é de {self.turn_order[self.select_name_turn]}...\n")
 
         if self.end_game:
-            win = win_screen.WinScreen(self.client, self.winner_name)
+            win = win_screen.WinScreen(self.session, self.game_server_backup, self.winner_name)
             self.window.show_view(win)
 
 
@@ -698,7 +701,8 @@ class Game(arcade.View):
 
     def game_logic(self):
         moment_winner = self.game_proxy.get_winner(self.client)
-        if  moment_winner != "":
+        if  moment_winner != "" and self.winner_setted == False:
+                self.winner_setted = True
                 self.turn_winner = moment_winner
                 self.resolve_turn = True
         elif moment_winner == "draw":
@@ -716,5 +720,9 @@ class Game(arcade.View):
         if played_cards.count(None) == 0:
             self.is_turn_over_time = True
 
+        end_game_winner = self.game_proxy.get_game_winner(self.client)
+        if end_game_winner != "":
+            self.winner_name = end_game_winner
+            self.end_game = True
 
 

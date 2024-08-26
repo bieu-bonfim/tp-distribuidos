@@ -28,9 +28,10 @@ s = None
 class WinScreen(arcade.View):
     """ Main application class. """
 
-    def __init__(self, client, winner):
+    def __init__(self, session, game_server, winner):
         super().__init__()
-        self.client = client
+        self.session = session
+        self.game_server = game_server
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.winner = winner
@@ -57,7 +58,7 @@ class WinScreen(arcade.View):
 
 
     def on_click_voltar(self, event):
-        menu = main_menu.MainMenu(self.client)
+        menu = main_menu.MainMenu(self.session, self.game_server)
         self.window.show_view(menu)
 
     def on_draw(self):
