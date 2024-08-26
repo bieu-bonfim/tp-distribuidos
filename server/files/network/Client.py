@@ -25,11 +25,8 @@ class Client():
         self.played_card = [None, None, None]
         self.played_card_flag = False
         pass
-    
-    @Pyro5.api.expose
-    def bap(self):
-        print('bap')
 
+    @Pyro5.api.expose
     def get_username(self):
         return self.username
     
@@ -37,6 +34,7 @@ class Client():
     def get_id(self):
         return self.id
     
+    @Pyro5.api.expose
     def get_current_deck(self):
         return self.current_deck
     
